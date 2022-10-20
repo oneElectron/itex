@@ -1,14 +1,14 @@
-use std::env;
 
 fn main() -> std::io::Result<()> {
-    let path = env::current_dir()?;
-    println!("The current directory is {}", path.display());
-    let cudir = path.to_str();
-    std::fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
-    drop(path);
-    let mut path:String = String::new();
+    // Create out folder
+    //let path = std::env::current_dir()?;
+    //let cudir = path.to_str();
+    //std::fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
 
-    for (key, value) in env::vars() {
+    // Print all env variables to stdout
+    let mut path:String = String::new();
+    for (key, value) in std::env::vars() {
+        println!("{} = {}", key, value);
         if key == "PATH" {
             path = value;
         }
@@ -17,7 +17,9 @@ fn main() -> std::io::Result<()> {
     for itpath in paths {
         println!("{}", itpath);
     }
-    println!();
 
+
+
+    
     Ok(())
 }
