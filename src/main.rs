@@ -1,13 +1,28 @@
 use std::env;
-use std::fs;
-use console;
+use std::process::Command;
 
 fn main() -> std::io::Result<()> {
     let path = env::current_dir()?;
     println!("The current directory is {}", path.display());
     let cudir = path.to_str();
-    if fs::create_dir([cudir.unwrap(), "/out"].join("")).is_err(){
-        print!("{}", console::style("Failed to create directory").bold().red())
+    //fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
+    drop(path);
+    let mut path:String = String::new();
+
+    for (key, value) in env::vars() {
+        if key == "PATH" {
+            path = value;
+        }
     }
+    let paths = path.split(":");
+    for itpath in paths {
+        println!("{}", itpath);
+    }
+    println!();
+
+    let output = Command::new("brew").output();
+    println!("{}", output.unwrap().stdout.);
+    
+
     Ok(())
 }
