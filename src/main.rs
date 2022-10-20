@@ -1,11 +1,10 @@
 use std::env;
-use std::process::Command;
 
 fn main() -> std::io::Result<()> {
     let path = env::current_dir()?;
     println!("The current directory is {}", path.display());
     let cudir = path.to_str();
-    //fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
+    std::fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
     drop(path);
     let mut path:String = String::new();
 
@@ -19,10 +18,6 @@ fn main() -> std::io::Result<()> {
         println!("{}", itpath);
     }
     println!();
-
-    let output = Command::new("brew").output();
-    println!("{}", output.unwrap().stdout.);
-    
 
     Ok(())
 }
