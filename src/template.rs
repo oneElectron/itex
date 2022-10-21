@@ -2,9 +2,9 @@
 
 pub fn copy_template(name:String) {
   // find templates folder
-  let mut maintex = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.1/templates/iSci/main.tex");
-  let mainbib = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.1/templates/iSci/main.bib");
-  let makefile = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.1/templates/iSci/Makefile");
+  let mut maintex = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.2/templates/iSci/main.tex");
+  let mainbib = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.2/templates/iSci/main.bib");
+  let makefile = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.2/templates/iSci/Makefile");
 
   // find current dir
   let mut pwd = String::new();
