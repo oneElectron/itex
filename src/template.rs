@@ -1,21 +1,40 @@
 
 
-pub fn copy_template(name:String) {
-  // find templates folder
-  let mut maintex = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.4/templates/iSci/main.tex");
-  let mainbib = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.4/templates/iSci/main.bib");
-  let makefile = std::path::PathBuf::from("/opt/homebrew/Cellar/itex/0.1.4/templates/iSci/Makefile");
+pub fn copy_template(name:&str) {
+  // find the Cellar
+  let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
+  if cellar_path.is_err() {
+    println!("Something went wrong finding the Cellar");
+    panic!();
+  }
+
+  // let out equal path to Cellar/itex/{version}/templates/{template name}
+  let path_to_templates = std::string::String::from_utf8(cellar_path.unwrap().stdout.to_vec()).unwrap();
+  let mut path_to_templates = std::string::String::from(path_to_templates.trim_end());
+  path_to_templates.push_str("/itex");
+  let path_to_templates = std::path::PathBuf::from(path_to_templates);
+  let versions = std::fs::read_dir(path_to_templates).unwrap();
+  let mut path_to_templates = std::string::String::new();
+  for version in versions {
+    path_to_templates = std::string::String::from(version.unwrap().path().to_str().unwrap());
+  }
+  path_to_templates.push_str("/templates");
+  path_to_templates.push_str(name);
+  println!("path to templates: {}", path_to_templates);
+  let template_files = std::fs::read_dir(&path_to_templates).unwrap();
 
   // find current dir
   let mut pwd = String::new();
   for (key, value) in std::env::vars() {
-      if key == "PWD" { pwd = key; }
+      if key == "PWD" { pwd = value; }
   }
-  let pwd:std::path::PathBuf = std::path::PathBuf::from(pwd.clone());
+  pwd.push_str("/file.txt");
+  let pwd:std::path::PathBuf = std::path::PathBuf::from(pwd);
 
   // copy template to current dir
-  println!("{}", maintex.display());
-  println!("{:?}", std::fs::copy(maintex, pwd.with_file_name("main.tex")));
-  std::fs::copy(mainbib, pwd.with_file_name("main.bib"));
-  std::fs::copy(makefile, pwd.with_file_name("Makefile"));
+  for file in template_files {
+    if std::fs::copy(file.as_ref().unwrap().path(), pwd.as_path().with_file_name(file.unwrap().file_name())).is_err() {
+      println!("could not copy");
+    }
+  }
 }
