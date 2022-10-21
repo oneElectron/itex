@@ -10,7 +10,6 @@ fn main() -> std::io::Result<()> {
     }
 
     // pick template
-    print!("Which template would you like to use: ");
     let template_name:String = String::from("iSci");
     //std::io::stdin()
     //                .read_line(&mut template_name)
