@@ -20,7 +20,6 @@ pub fn copy_template(name:&str) {
   }
   path_to_templates.push_str("/templates");
   path_to_templates.push_str(name);
-  println!("path to templates: {}", path_to_templates);
   let template_files = std::fs::read_dir(&path_to_templates).unwrap();
 
   // find current dir
