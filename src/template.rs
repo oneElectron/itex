@@ -18,7 +18,7 @@ pub fn copy_template(name:&str) {
   for version in versions {
     path_to_templates = std::string::String::from(version.unwrap().path().to_str().unwrap());
   }
-  path_to_templates.push_str("/templates");
+  path_to_templates.push_str("/itex-templates");
   path_to_templates.push_str(name);
   let template_files = std::fs::read_dir(&path_to_templates).unwrap();
 
