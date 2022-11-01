@@ -13,7 +13,7 @@ fn main() -> std::io::Result<()> {
     //                .expect("Could not read input");
 
     // copy template
-    template::copy_template(template_name);
+    template::find_templates_folder();
     
     Ok(())
 }

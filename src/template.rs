@@ -1,23 +1,39 @@
 
-
-pub fn copy_template(name:&str) {
-  // find the Cellar
+pub fn find_templates_folder() {
   let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
   if cellar_path.is_err() {
-    println!("Something went wrong finding the Cellar");
-    panic!();
+    println!("failed to find homebrew is your path");
   }
+  else {
+    let cellar_path = std::string::String::from_utf8(cellar_path.unwrap().stdout.to_vec());
+    if cellar_path.is_err() {
+      println!("error while decoding homebrew cellar path");
+      panic!();
+    }
+    let cellar_path = cellar_path.unwrap().replace("\n", "");
+    let mut path_to_templates = std::path::PathBuf::from(cellar_path);
+    
+    path_to_templates.push("itex");
+    
+    let versions = std::fs::read_dir(&path_to_templates);
+    if versions.is_err(){
+      println!("failed to read {:?}", path_to_templates.as_os_str());
+    }
+    let versions = versions.unwrap();
+    if !(versions.count() == 1) {
+      println!("You have more than more version of itex installed");
+      panic!();
+    }
+    
 
-  // let out equal path to Cellar/itex/{version}/templates/{template name}
-  let path_to_templates = std::string::String::from_utf8(cellar_path.unwrap().stdout.to_vec()).unwrap();
-  let mut path_to_templates = std::string::String::from(path_to_templates.trim_end());
-  path_to_templates.push_str("/itex");
-  let path_to_templates = std::path::PathBuf::from(path_to_templates);
-  let versions = std::fs::read_dir(path_to_templates).unwrap();
-  let mut path_to_templates = std::string::String::new();
-  for version in versions {
-    path_to_templates = std::string::String::from(version.unwrap().path().to_str().unwrap());
+
   }
+}
+
+/*
+pub fn copy_template(name:&str) {
+  let mut path_to_templates = find_templates();
+
   path_to_templates.push_str("/itex-templates");
   path_to_templates.push_str(name);
   let template_files = std::fs::read_dir(&path_to_templates).unwrap();
@@ -36,4 +52,4 @@ pub fn copy_template(name:&str) {
       println!("could not copy");
     }
   }
-}
+}*/
