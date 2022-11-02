@@ -52,6 +52,8 @@ pub fn ask_for_template_name() -> std::string::String {
   return input;
 }
 
+
+
 pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   // search current directory
   let pwd = std::env::current_dir();
@@ -67,7 +69,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   let pwd = pwd.unwrap();
   let mut previous_dir = std::path::PathBuf::from(pwd.parent().unwrap());
   previous_dir.push("itex-templates");
-  if pwd.is_dir() {
+  if previous_dir.is_dir() {
     return Ok(previous_dir);
   }
   drop(pwd);
