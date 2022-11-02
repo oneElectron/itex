@@ -1,10 +1,17 @@
 pub mod template;
 
 fn main() -> std::io::Result<()> {
+    // Check to see if you can find templates folder
+    if template::find_templates_folder().is_err() {
+        println!("could not find templates folder");
+        panic!();
+    }
+
     // Create out folder
-    let path = std::env::current_dir()?;
-    let cudir = path.to_str();
-    std::fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
+    let mut out_folder = std::env::current_dir().unwrap();
+    out_folder.push("out");
+    std::fs::create_dir(out_folder).expect("failed to create out folder");
+    
 
     // print args
     let mut template_name = std::env::args().nth(1);
@@ -13,8 +20,6 @@ fn main() -> std::io::Result<()> {
     }
     let template_name = std::string::String::from(template_name.unwrap().replace("\n", ""));
     template::copy_template(template_name);
-    
-
     
     Ok(())
 }
