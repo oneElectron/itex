@@ -6,3 +6,6 @@ pdf:
 	@if [ -a ./out/main.toc ]; then rm ./out/main.toc; fi;
 	@if [ -a ./out/texput.log ]; then rm ./out/texput.log; fi;
 	@if [ -a ./out/main.run.xml ]; then rm ./out/main.run.xml; fi;
+
+debug:
+	pdflatex -no-shell-escape -output-directory ./out/ main.tex
