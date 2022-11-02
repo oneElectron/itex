@@ -2,16 +2,7 @@
 
 pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   // search current directory
-  let mut pwd:Option<std::path::PathBuf> = None;
-  for (key, value) in std::env::vars() {
-      if key == "PWD" { 
-        pwd = Some(std::path::PathBuf::from(value));
-      }
-  }
-  if pwd.is_none() {
-    println!("could not find PWD");
-    panic!();
-  }
+  let pwd = std::env::current_dir();
   let mut pwd = pwd.unwrap();
   pwd.push("itex-templates");
   if pwd.is_dir() {
@@ -20,25 +11,16 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   drop(pwd);
 
   // search in ../
-  let mut pwd:Option<std::path::PathBuf> = None;
-  for (key, value) in std::env::vars() {
-      if key == "PWD" { 
-        pwd = Some(std::path::PathBuf::from(value));
-      }
-  }
-  if pwd.is_none() {
-    println!("could not find PWD");
-    panic!();
-  }
+  let pwd = std::env::current_dir();
   let pwd = pwd.unwrap();
   let mut previous_dir = std::path::PathBuf::from(pwd.parent().unwrap());
   previous_dir.push("itex-templates");
   if pwd.is_dir() {
-    return Ok(pwd);
+    return Ok(previous_dir);
   }
   drop(pwd);
 
-
+  // find if installed with homebrew
   let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
 
   if !cellar_path.is_err() {
@@ -52,7 +34,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
     
     path_to_templates.push("itex");
     if !path_to_templates.is_dir() {
-      println!("itex is not a folder");
+      println!("{}", console::style("itex is not a folder in homebrew's cellar").red().bold());
       panic!();
     }
     

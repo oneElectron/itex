@@ -1,4 +1,5 @@
 pub mod file;
+use std::io::Write; 
 
 pub fn copy_template(name:std::string::String) {
   let path_to_templates = file::find_templates_folder();
@@ -33,4 +34,16 @@ pub fn copy_template(name:std::string::String) {
       println!("could not copy");
     }
   }
+}
+
+pub fn ask_for_template_name() -> std::string::String {
+  let mut input = std::string::String::new();
+  print!("Enter template name: ");
+  std::io::stdout().flush().expect("failed to flush");
+  let result = std::io::stdin().read_line(&mut input);
+  if result.is_err() {
+    panic!();
+  }
+
+  return input;
 }

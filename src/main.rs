@@ -7,19 +7,14 @@ fn main() -> std::io::Result<()> {
     std::fs::create_dir([cudir.unwrap(), "/out"].join("")).expect("printed");
 
     // print args
-    let template_name = std::env::args().nth(1);
+    let mut template_name = std::env::args().nth(1);
     if template_name.is_none() {
-        println!("failed to parse or find template name");
-        panic!();
+        template_name = Some(template::ask_for_template_name());
     }
-    let template_name = template_name.unwrap();
-
-    // pick template
-    let template_name = std::string::String::from(template_name);
-
-    // copy template
-    let template_name = template_name.replace("\n", "");
+    let template_name = std::string::String::from(template_name.unwrap().replace("\n", ""));
     template::copy_template(template_name);
+    
+
     
     Ok(())
 }
