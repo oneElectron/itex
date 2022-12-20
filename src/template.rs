@@ -72,7 +72,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   }
   drop(pwd);
 
-  if !cfg!(windows) {
+  if !cfg!(windows) { // is os UNIX
     let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
 
     if !cellar_path.is_err() {
@@ -104,24 +104,26 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
 
         return Ok(path_to_templates);
       }
+      else { return Err(2); }
     } // end if homebrew is found
-
-    return Err(1);
+    else {
+      return Err(1);
+    }
   }
-  else { // if os is windows
+
+  else { // if OS is windows
     let app_data_dir = std::env::var("APP_DATA").expect("No App Data dir found");
 
     let mut app_data_path = std::path::PathBuf::from_str(app_data_dir.as_str()).unwrap();
+    app_data_path.push("itex");
     app_data_path.push("itex-templates");
 
-    if app_data_path.is_dir() {
-      println!("path to dir: {}", app_data_path.to_str().unwrap());
-    }
-    else {
+    if !app_data_path.is_dir() {
       add_windows_template_folder()
     }
+    println!("path to dir: {}", app_data_path.to_str().unwrap());
 
-    return Err(1);
+    return Ok(app_data_path);
   }
 }
 
