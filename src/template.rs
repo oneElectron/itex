@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::{io::Write, str::FromStr};
 
 pub fn copy_template(name:std::string::String) {
   let path_to_templates = find_templates_folder();
@@ -52,8 +52,6 @@ pub fn ask_for_template_name() -> std::string::String {
   return input;
 }
 
-
-
 pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   // search current directory
   let pwd = std::env::current_dir();
@@ -74,39 +72,59 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   }
   drop(pwd);
 
-  // find if installed with homebrew
-  let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
+  if !cfg!(windows) {
+    let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
 
-  if !cellar_path.is_err() {
-    let cellar_path = std::string::String::from_utf8(cellar_path.unwrap().stdout.to_vec());
-    if cellar_path.is_err() {
-      println!("{}", console::style("error while decoding homebrew cellar path").bold().red());
-      panic!();
-    }
-    let cellar_path = cellar_path.unwrap().replace("\n", "");
-    let mut path_to_templates = std::path::PathBuf::from(cellar_path);
-    
-    path_to_templates.push("itex");
-    
-    if path_to_templates.is_dir() {
-      let versions = std::fs::read_dir(&path_to_templates);
-      if versions.is_err(){
-        println!("failed to read {:?}", path_to_templates.as_os_str());
-      }
-      let versions = versions.unwrap();
-      if versions.count() != 1 {
-        println!("{}", console::style("You have more than more version of itex installed").bold().red());
+    if !cellar_path.is_err() {
+      let cellar_path = std::string::String::from_utf8(cellar_path.unwrap().stdout.to_vec());
+      if cellar_path.is_err() {
+        println!("{}", console::style("error while decoding homebrew cellar path").bold().red());
         panic!();
       }
-      let versions = std::fs::read_dir(&path_to_templates).unwrap();
-      for version in versions {
-        path_to_templates.push(version.unwrap().file_name());
+      let cellar_path = cellar_path.unwrap().replace("\n", "");
+      let mut path_to_templates = std::path::PathBuf::from(cellar_path);
+      
+      path_to_templates.push("itex");
+      
+      if path_to_templates.is_dir() {
+        let versions = std::fs::read_dir(&path_to_templates);
+        if versions.is_err(){
+          println!("failed to read {:?}", path_to_templates.as_os_str());
+        }
+        let versions = versions.unwrap();
+        if versions.count() != 1 {
+          println!("{}", console::style("You have more than more version of itex installed").bold().red());
+          panic!();
+        }
+        let versions = std::fs::read_dir(&path_to_templates).unwrap();
+        for version in versions {
+          path_to_templates.push(version.unwrap().file_name());
+        }
+        path_to_templates.push("itex-templates");
+
+        return Ok(path_to_templates);
       }
-      path_to_templates.push("itex-templates");
+    } // end if homebrew is found
 
-      return Ok(path_to_templates);
+    return Err(1);
+  }
+  else { // if os is windows
+    let app_data_dir = std::env::var("APP_DATA").expect("No App Data dir found");
+
+    let mut app_data_path = std::path::PathBuf::from_str(app_data_dir.as_str()).unwrap();
+    app_data_path.push("itex-templates");
+
+    if app_data_path.is_dir() {
+      println!("path to dir: {}", app_data_path.to_str().unwrap());
     }
-  } // end if homebrew is found
+    else {
+      add_windows_template_folder()
+    }
 
-  return Err(1);
+    return Err(1);
+  }
+}
+
+fn add_windows_template_folder() {
+  
 }
