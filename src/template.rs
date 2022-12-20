@@ -8,9 +8,14 @@ pub fn copy_template(name:std::string::String) {
   let mut path_to_templates = path_to_templates.unwrap();
   path_to_templates.push(name);
 
-  println!("{:?}", &path_to_templates);
+  println!("{}", path_to_templates.to_str().unwrap());
 
-  let template_files = std::fs::read_dir(&path_to_templates).unwrap();
+  let template_files = std::fs::read_dir(&path_to_templates);
+  if template_files.is_err() {
+    println!("Could not find path: {}", path_to_templates.to_str().unwrap());
+    panic!();
+  }
+  let template_files = template_files.unwrap();
 
   // find current dir
   let mut pwd:Option<std::path::PathBuf> = None;
@@ -46,6 +51,7 @@ pub fn ask_for_template_name() -> std::string::String {
   std::io::stdout().flush().expect("failed to flush");
   let result = std::io::stdin().read_line(&mut input);
   if result.is_err() {
+    println!("could read line");
     panic!();
   }
 
@@ -62,7 +68,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   }
   drop(pwd);
 
-  // search in ../
+  // search in ..
   let pwd = std::env::current_dir();
   let pwd = pwd.unwrap();
   let mut previous_dir = std::path::PathBuf::from(pwd.parent().unwrap());
