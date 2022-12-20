@@ -32,7 +32,7 @@ pub fn copy_template(name:std::string::String) {
 
 pub fn ask_for_template_name() -> std::string::String {
   let mut input = std::string::String::new();
-  println!("{}", console::style("avaliable template names:").cyan());
+  println!("{}", console::style("available template names:").cyan());
   for folder in std::fs::read_dir(find_templates_folder().unwrap()).unwrap() {
     println!("{}", console::style(folder.unwrap().file_name().as_os_str().to_string_lossy()).bold());
   }
@@ -115,7 +115,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
     app_data_path.push("itex-templates");
 
     if !app_data_path.is_dir() {
-      add_windows_template_folder()
+      add_windows_template_folder();
     }
     println!("path to dir: {}", app_data_path.to_str().unwrap());
 
@@ -123,6 +123,10 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   }
 }
 
-fn add_windows_template_folder() {
-  
+async fn add_windows_template_folder() {
+  let app_data_dir = std::env::var("APP_DATA").expect("No App Data dir found");
+
+  let body = reqwest::get("https://www.rust-lang.org/").await;
+
+  println!("{}", body.unwrap().text().await.unwrap());
 }
