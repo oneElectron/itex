@@ -7,13 +7,6 @@ fn main() -> std::io::Result<()> {
         panic!();
     }
 
-    let stuff = std::fs::read_dir(".");
-    let stuff = stuff.unwrap();
-    for i in stuff {
-        println!("{}", i.unwrap().file_name().to_str().unwrap());
-    }
-
-
     // Create out folder
     let mut out_folder = std::env::current_dir().unwrap();
     out_folder.push("out");
