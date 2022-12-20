@@ -10,7 +10,9 @@ fn main() -> std::io::Result<()> {
     // Create out folder
     let mut out_folder = std::env::current_dir().unwrap();
     out_folder.push("out");
-    std::fs::create_dir(out_folder).expect("failed to create out folder");
+    if !out_folder.is_dir() {
+        std::fs::create_dir(out_folder).expect("failed to create out folder");
+    }
     
 
     // print args
