@@ -10,7 +10,7 @@ pub fn copy_template(name:std::string::String) {
 
   println!("{}", path_to_templates.to_str().unwrap());
 
-  let template_files = std::fs::read_dir(&path_to_templates);
+  let template_files = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());
   if template_files.is_err() {
     println!("Could not find path: {}", path_to_templates.to_str().unwrap());
     panic!();
@@ -18,18 +18,8 @@ pub fn copy_template(name:std::string::String) {
   let template_files = template_files.unwrap();
 
   // find current dir
-  let mut pwd:Option<std::path::PathBuf> = None;
-  for (key, value) in std::env::vars() {
-      if key == "PWD" { 
-        pwd = Some(std::path::PathBuf::from(value));
-      }
-  }
-  if !pwd.is_some() {
-    println!("could not find PWD");
-    panic!();
-  }
+  let mut pwd = std::env::current_dir().unwrap();
 
-  let mut pwd = pwd.unwrap();
   pwd.push("file.txt");
 
   // copy template to current dir
