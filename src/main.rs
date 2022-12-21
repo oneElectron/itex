@@ -14,7 +14,6 @@ fn main() -> std::io::Result<()> {
         std::fs::create_dir(out_folder).expect("failed to create out folder");
     }
     
-
     // print args
     let mut template_name = std::env::args().nth(1);
     if template_name.is_none() {

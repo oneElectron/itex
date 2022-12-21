@@ -1,4 +1,4 @@
-use std::{io::Write, str::FromStr};
+pub mod search_for_templates;
 
 pub fn copy_template(name:std::string::String) {
   let path_to_templates = find_templates_folder();
@@ -34,11 +34,11 @@ pub fn ask_for_template_name() -> std::string::String {
   let mut input = std::string::String::new();
   println!("{}", console::style("available template names:").cyan());
   for folder in std::fs::read_dir(find_templates_folder().unwrap()).unwrap() {
-    println!("{}", console::style(folder.unwrap().file_name().as_os_str().to_string_lossy()).bold());
+    println!("{}", console::style(folder.unwrap().file_name().to_str().unwrap()).red().bold());
   }
 
   print!("Enter template name: ");
-  std::io::stdout().flush().expect("failed to flush");
+  std::io::Write::flush(&mut std::io::stdout()).expect("failed to flush");
   let result = std::io::stdin().read_line(&mut input);
   if result.is_err() {
     println!("could read line");
@@ -67,66 +67,25 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
     return Ok(previous_dir);
   }
   drop(pwd);
-
-  if !cfg!(windows) { // is os UNIX
-    let cellar_path = std::process::Command::new("brew").arg("--Cellar").output();
-
-    if !cellar_path.is_err() {
-      let cellar_path = std::string::String::from_utf8(cellar_path.unwrap().stdout.to_vec());
-      if cellar_path.is_err() {
-        println!("{}", console::style("error while decoding homebrew cellar path").bold().red());
-        panic!();
-      }
-      let cellar_path = cellar_path.unwrap().replace("\n", "");
-      let mut path_to_templates = std::path::PathBuf::from(cellar_path);
-      
-      path_to_templates.push("itex");
-      
-      if path_to_templates.is_dir() {
-        let versions = std::fs::read_dir(&path_to_templates);
-        if versions.is_err(){
-          println!("failed to read {:?}", path_to_templates.as_os_str());
-        }
-        let versions = versions.unwrap();
-        if versions.count() != 1 {
-          println!("{}", console::style("You have more than more version of itex installed").bold().red());
-          panic!();
-        }
-        let versions = std::fs::read_dir(&path_to_templates).unwrap();
-        for version in versions {
-          path_to_templates.push(version.unwrap().file_name());
-        }
-        path_to_templates.push("itex-templates");
-
-        return Ok(path_to_templates);
-      }
-      else { return Err(2); }
-    } // end if homebrew is found
-    else {
-      return Err(1);
+  if cfg!(windows) { // if OS is windows
+    if let Ok(path_to_templates) = search_for_templates::search_in_windows() {
+      return Ok(path_to_templates);
     }
+    add_windows_template_folder();
+    return Err(0);    
   }
 
-  else { // if OS is windows
-    let app_data_dir = std::env::var("APP_DATA").expect("No App Data dir found");
-
-    let mut app_data_path = std::path::PathBuf::from_str(app_data_dir.as_str()).unwrap();
-    app_data_path.push("itex");
-    app_data_path.push("itex-templates");
-
-    if !app_data_path.is_dir() {
-      add_windows_template_folder();
+  else { // if os is UNIX
+    if let Ok(path_to_templates) = search_for_templates::search_in_homebrew() {
+      return Ok(path_to_templates);
     }
-    println!("path to dir: {}", app_data_path.to_str().unwrap());
-
-    return Ok(app_data_path);
-  }
+    return Err(0);
+  }  
 }
 
-async fn add_windows_template_folder() {
-  let app_data_dir = std::env::var("APP_DATA").expect("No App Data dir found");
-
-  let body = reqwest::get("https://www.rust-lang.org/").await;
-
-  println!("{}", body.unwrap().text().await.unwrap());
+fn add_windows_template_folder() {
+  let mut app_data_dir = std::path::PathBuf::from(std::env::var("APP_DATA").expect("No App Data dir found"));
+  app_data_dir.push("Local");
+  app_data_dir.push("itex");
+  
 }
