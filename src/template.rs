@@ -71,7 +71,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
     if let Ok(path_to_templates) = search_for_templates::search_in_windows() {
       return Ok(path_to_templates);
     }
-    add_windows_template_folder();
+    //add_windows_template_folder();
     return Err(0);    
   }
 
@@ -86,4 +86,16 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
 fn add_windows_template_folder() {
   let mut app_data_dir = std::path::PathBuf::from(std::env::var("LOCALAPPDATA").expect("No App Data dir found"));
   app_data_dir.push("itex");
+  if !app_data_dir.is_dir() {
+    if std::fs::create_dir(&app_data_dir).is_err() {
+      println!("{}", console::style("Something went wrong creating a folder in AppData").red().bold());
+      panic!();
+    }
+  }
+  app_data_dir.push("itex-templates");
+  if !app_data_dir.is_dir() {
+    app_data_dir.push("itex.zip");
+    let output = std::process::Command::new("curl").arg("-o").arg(app_data_dir.to_str().unwrap().trim()).arg("https://github.com/oneelectron/itex/releases/latest/download/");
+    
+  }
 }
