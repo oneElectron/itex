@@ -84,8 +84,6 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
 }
 
 fn add_windows_template_folder() {
-  let mut app_data_dir = std::path::PathBuf::from(std::env::var("APP_DATA").expect("No App Data dir found"));
-  app_data_dir.push("Local");
+  let mut app_data_dir = std::path::PathBuf::from(std::env::var("LOCALAPPDATA").expect("No App Data dir found"));
   app_data_dir.push("itex");
-  
 }

@@ -18,8 +18,7 @@ pub fn search_in_homebrew() -> std::result::Result<std::path::PathBuf, i32> {
 }
 
 pub fn search_in_windows() -> std::result::Result<std::path::PathBuf, i32> {
-  let mut app_data_dir = std::path::PathBuf::from(std::env::var("APP_DATA").expect("No App Data dir found"));
-  app_data_dir.push("Local");
+  let mut app_data_dir = std::path::PathBuf::from(std::env::var("LOCALAPPDATA").expect("No App Data dir found"));
   app_data_dir.push("itex");
   app_data_dir.push("itex-templates");  
   if app_data_dir.is_dir() {
