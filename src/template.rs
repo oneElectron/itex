@@ -1,7 +1,7 @@
 pub mod search_for_templates;
 
-pub fn copy_template(name:std::string::String, debug: bool) {
-  let path_to_templates = find_templates_folder(debug);
+pub fn copy_template(name:std::string::String, debug: bool, disable_os_search:bool) {
+  let path_to_templates = find_templates_folder(debug, disable_os_search);
   if path_to_templates.is_err() {
     println!("{}", console::style("Failed to find templates folder").red().bold())
   }
@@ -34,12 +34,29 @@ pub fn copy_template(name:std::string::String, debug: bool) {
 
 pub fn list_template_names(debug: bool) {
   println!("available template names:");
-  for folder in std::fs::read_dir(find_templates_folder(debug).unwrap()).unwrap() {
+  for folder in std::fs::read_dir(find_templates_folder(debug, false).unwrap()).unwrap() {
     println!("    {}", console::style(folder.unwrap().file_name().to_str().unwrap()).blue());
   }
 }
 
-pub fn find_templates_folder(debug: bool) -> std::result::Result<std::path::PathBuf, i32> {
+pub fn find_templates_folder(debug: bool, disable_os_search:bool) -> std::result::Result<std::path::PathBuf, i32> {
+  if !disable_os_search {
+    if !cfg!(windows) { // if os is UNIX
+      if let Ok(path_to_templates) = search_for_templates::search_in_homebrew(debug) {
+        return Ok(path_to_templates);
+      }
+      return Err(0);
+    }
+
+    else { // if OS is windows
+      if let Ok(path_to_templates) = search_for_templates::search_in_windows() {
+        return Ok(path_to_templates);
+      }
+      //add_windows_template_folder();
+      return Err(0);    
+    }
+  }
+
   // search current directory
   let pwd = std::env::current_dir();
   let mut pwd = pwd.unwrap();
@@ -56,20 +73,7 @@ pub fn find_templates_folder(debug: bool) -> std::result::Result<std::path::Path
     return Ok(previous_dir);
   }
 
-  if cfg!(windows) { // if OS is windows
-    if let Ok(path_to_templates) = search_for_templates::search_in_windows() {
-      return Ok(path_to_templates);
-    }
-    //add_windows_template_folder();
-    return Err(0);    
-  }
-
-  else { // if os is UNIX
-    if let Ok(path_to_templates) = search_for_templates::search_in_homebrew(debug) {
-      return Ok(path_to_templates);
-    }
-    return Err(0);
-  }  
+  Err(0)
 }
 
 fn _add_windows_template_folder() { // TODO

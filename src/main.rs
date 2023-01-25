@@ -11,7 +11,7 @@ fn main() -> std::io::Result<()> {
     }
 
     // Check to see if you can find templates folder
-    if template::find_templates_folder(opts.debug).is_err() {
+    if template::find_templates_folder(opts.debug, opts.disable_os_search).is_err() {
         println!("could not find templates folder");
         panic!();
     }
@@ -24,7 +24,7 @@ fn main() -> std::io::Result<()> {
     }
     
     // print args
-    template::copy_template(std::string::String::from(opts.template_name.clone().replace("\n", "")), opts.debug);
+    template::copy_template(std::string::String::from(opts.template_name.clone().replace("\n", "")), opts.debug, opts.disable_os_search);
     
     Ok(())
 }
