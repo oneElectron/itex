@@ -8,7 +8,7 @@ itex <options> template
 itex --list-templates
 ```
 
-avaliable templates:
+available templates:
 - default (just the basics with an out folder and a Makefile)
 - iSci
 - tmlr
