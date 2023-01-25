@@ -70,7 +70,7 @@ pub fn parse(args: Vec<String>) -> Options {
 
 pub fn print_help() {
     println!("usage: itex <options> template");
-    println!("  -d --debug                use debug mode");
+     // println!("  -d --debug                use debug mode");
     println!("  -l --list-templates       output a list of templates");
-    println!("  -p --search-path <path>   pass a templates directory");
+    // println!("  -p --search-path <path>   pass a templates directory");
 }
