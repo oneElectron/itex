@@ -8,7 +8,9 @@ pub fn copy_template(name:std::string::String, debug: bool) {
   let mut path_to_templates = path_to_templates.unwrap();
   path_to_templates.push(name);
 
-  println!("{}", path_to_templates.to_str().unwrap());
+  if debug {
+    println!("{}", path_to_templates.to_str().unwrap());
+  }
 
   let template_files = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());
   if template_files.is_err() {
