@@ -1,30 +1,34 @@
-use std::ffi::OsString;
+use std::process::{Command};
+use std::string::{String};
+use std::path::{PathBuf};
 
 pub fn search_in_homebrew(debug: bool) -> std::result::Result<std::path::PathBuf, i32> {
-  let output = std::process::Command::new("brew").arg("-v").output();
+  let output = Command::new("brew").arg("-v").output();
   if output.is_err() {
     return Err(0);
   }
   drop(output);
-  let cellar_path = std::string::String::from_utf8(std::process::Command::new("brew").arg("--Cellar").output().unwrap().stdout.to_vec());
+  let cellar_path = String::from_utf8(Command::new("brew").arg("--Cellar").output().unwrap().stdout.to_vec());
   if cellar_path.is_err() {
     eprintln!("Failed to run brew --Cellar and read the output");
     return Err(0);
   }
-  let mut cellar_path = std::path::PathBuf::from(cellar_path.unwrap().trim());
+  let mut cellar_path = PathBuf::from(cellar_path.unwrap().trim());
   cellar_path.push("itex");
   
   let itex_dir = std::fs::read_dir(&cellar_path);
   if itex_dir.is_err() {
     println!("path: {}", cellar_path.to_str().unwrap());
     println!("itex not found in homebrew");
-    panic!();
+    return Err(0)
   }
-  let itex_dir = itex_dir.unwrap();
-  let mut itex_version_number:OsString = Default::default();
-  for dl in itex_dir {
-    itex_version_number = dl.unwrap().file_name();
-  }
+  let mut new_itex_dir = itex_dir.unwrap();
+  let first_dir = new_itex_dir.nth(0);
+
+  let tmp = first_dir.unwrap().unwrap().file_name();
+  let itex_version_number = tmp.to_str().unwrap().to_string();
+
+
   cellar_path.push(itex_version_number);
   
   if debug {

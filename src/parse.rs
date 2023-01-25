@@ -75,6 +75,7 @@ pub fn parse(args: Vec<String>) -> Options {
 
 pub fn print_help() {
     println!("usage: itex <options> template");
+    println!("");
     println!("  -d --debug                use debug mode");
     println!("  -l --list-templates       output a list of templates");
     println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");

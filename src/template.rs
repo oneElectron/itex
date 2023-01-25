@@ -13,16 +13,30 @@ pub fn copy_template(name:std::string::String, debug: bool, disable_os_search:bo
   }
 
   let template_files = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());
+  let template_files1 = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());
   if template_files.is_err() {
     println!("Could not find path: {}", path_to_templates.to_str().unwrap());
     panic!();
   }
   let template_files = template_files.unwrap();
+  let template_files1 = template_files1.unwrap();
 
   // find current dir
   let mut pwd = std::env::current_dir().unwrap();
 
   pwd.push("file.txt");
+
+  let mut exit = false;
+  for file in template_files1 {
+    let file = file.unwrap().file_name();
+    if pwd.with_file_name(&file).exists() {
+      println!("file exists: {}, remove this file before running", file.to_str().unwrap());
+      exit = true;
+    }
+  }
+  if exit {
+    std::process::exit(0);
+  }
 
   // copy template to current dir
   for file in template_files {
