@@ -1,6 +1,11 @@
+<div align="center">
+
+# ITex 
+
 ![version](https://img.shields.io/github/v/tag/oneelectron/itex)
 ![lines of code](https://img.shields.io/tokei/lines/github.com/oneelectron/itex)
-# ITex
+
+</div>
 
 Initialize a latex project in the current folder
 
