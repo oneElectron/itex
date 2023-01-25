@@ -6,12 +6,12 @@ fn main() -> std::io::Result<()> {
     let opts = parse::parse(std::env::args().collect());
 
     if opts.list_templates {
-        template::list_template_names();
+        template::list_template_names(opts.debug);
         std::process::exit(0);
     }
 
     // Check to see if you can find templates folder
-    if template::find_templates_folder().is_err() {
+    if template::find_templates_folder(opts.debug).is_err() {
         println!("could not find templates folder");
         panic!();
     }
@@ -24,7 +24,7 @@ fn main() -> std::io::Result<()> {
     }
     
     // print args
-    template::copy_template(std::string::String::from(opts.template_name.clone().replace("\n", "")));
+    template::copy_template(std::string::String::from(opts.template_name.clone().replace("\n", "")), opts.debug);
     
     Ok(())
 }

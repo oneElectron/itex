@@ -1,6 +1,6 @@
 use std::ffi::OsString;
 
-pub fn search_in_homebrew() -> std::result::Result<std::path::PathBuf, i32> {
+pub fn search_in_homebrew(debug: bool) -> std::result::Result<std::path::PathBuf, i32> {
   let output = std::process::Command::new("brew").arg("-v").output();
   if output.is_err() {
     return Err(0);
@@ -26,7 +26,10 @@ pub fn search_in_homebrew() -> std::result::Result<std::path::PathBuf, i32> {
     itex_version_number = dl.unwrap().file_name();
   }
   cellar_path.push(itex_version_number);
-  println!("cellar path = {}", cellar_path.to_str().unwrap());
+  
+  if debug {
+    println!("cellar path = {}", cellar_path.to_str().unwrap());
+  }
   cellar_path.push("itex-templates");
 
   return Ok(cellar_path);
