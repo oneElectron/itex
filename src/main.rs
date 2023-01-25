@@ -1,6 +1,15 @@
 pub mod template;
+pub mod parse;
 
 fn main() -> std::io::Result<()> {
+    // parse args
+    let opts = parse::parse(std::env::args().collect());
+
+    if opts.list_templates {
+        template::list_template_names();
+        std::process::exit(0);
+    }
+
     // Check to see if you can find templates folder
     if template::find_templates_folder().is_err() {
         println!("could not find templates folder");
@@ -15,12 +24,7 @@ fn main() -> std::io::Result<()> {
     }
     
     // print args
-    let mut template_name = std::env::args().nth(1);
-    if template_name.is_none() {
-        template_name = Some(template::ask_for_template_name());
-    }
-    let template_name = std::string::String::from(template_name.unwrap().replace("\n", ""));
-    template::copy_template(template_name);
+    template::copy_template(std::string::String::from(opts.template_name.clone().replace("\n", "")));
     
     Ok(())
 }

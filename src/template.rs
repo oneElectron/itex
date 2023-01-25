@@ -30,22 +30,11 @@ pub fn copy_template(name:std::string::String) {
   }
 }
 
-pub fn ask_for_template_name() -> std::string::String {
-  let mut input = std::string::String::new();
-  println!("{}", console::style("available template names:").cyan());
+pub fn list_template_names() {
+  println!("available template names:");
   for folder in std::fs::read_dir(find_templates_folder().unwrap()).unwrap() {
-    println!("{}", console::style(folder.unwrap().file_name().to_str().unwrap()).red().bold());
+    println!("    {}", console::style(folder.unwrap().file_name().to_str().unwrap()).blue());
   }
-
-  print!("Enter template name: ");
-  std::io::Write::flush(&mut std::io::stdout()).expect("failed to flush");
-  let result = std::io::stdin().read_line(&mut input);
-  if result.is_err() {
-    println!("could read line");
-    panic!();
-  }
-
-  return input;
 }
 
 pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
@@ -59,14 +48,12 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   drop(pwd);
 
   // search in ..
-  let pwd = std::env::current_dir();
-  let pwd = pwd.unwrap();
-  let mut previous_dir = std::path::PathBuf::from(pwd.parent().unwrap());
+  let mut previous_dir = std::env::current_dir().unwrap().parent().unwrap().to_path_buf();
   previous_dir.push("itex-templates");
   if previous_dir.is_dir() {
     return Ok(previous_dir);
   }
-  drop(pwd);
+
   if cfg!(windows) { // if OS is windows
     if let Ok(path_to_templates) = search_for_templates::search_in_windows() {
       return Ok(path_to_templates);
@@ -83,7 +70,7 @@ pub fn find_templates_folder() -> std::result::Result<std::path::PathBuf, i32> {
   }  
 }
 
-fn add_windows_template_folder() {
+fn _add_windows_template_folder() { // TODO
   let mut app_data_dir = std::path::PathBuf::from(std::env::var("LOCALAPPDATA").expect("No App Data dir found"));
   app_data_dir.push("itex");
   if !app_data_dir.is_dir() {
@@ -95,7 +82,7 @@ fn add_windows_template_folder() {
   app_data_dir.push("itex-templates");
   if !app_data_dir.is_dir() {
     app_data_dir.push("itex.zip");
-    let output = std::process::Command::new("curl").arg("-o").arg(app_data_dir.to_str().unwrap().trim()).arg("https://github.com/oneelectron/itex/releases/latest/download/");
+    let _output = std::process::Command::new("curl").arg("-o").arg(app_data_dir.to_str().unwrap().trim()).arg("https://github.com/oneelectron/itex/releases/latest/download/");
     
   }
 }
