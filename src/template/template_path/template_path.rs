@@ -1,6 +1,8 @@
-use std::process::{Command};
-use std::string::{String};
-use std::path::{PathBuf};
+use std::{
+  process::Command,
+  string::String,
+  path::PathBuf
+};
 
 pub fn search_in_homebrew(debug: bool) -> std::result::Result<std::path::PathBuf, i32> {
   let output = Command::new("brew").arg("-v").output();

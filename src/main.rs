@@ -20,9 +20,9 @@ fn main() -> io::Result<()> {
     // copy template
     copy_template(
         opts.template_name
-            .replace("\n", ""), 
-        opts.debug, 
-        opts.disable_os_search);
+            .replace("\n", ""),
+        opts
+    );
     
     // Create out folder
     let mut out_folder = env::current_dir().expect("Could not find current path");

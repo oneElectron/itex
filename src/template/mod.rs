@@ -1,59 +1,66 @@
-mod search_for_templates;
+mod template_path;
+
+use template_path::find_templates_folder;
+
+use super::runtime_helper::Options;
 
 use std::{
-  process::exit
+  process::exit,
+  fs,
+  env
 };
 
-pub fn copy_template(name:std::string::String, debug: bool, disable_os_search:bool) {
-  let path_to_templates = find_templates_folder(debug, disable_os_search);
-  if path_to_templates.is_err() {
-    println!("{}", console::style("Failed to find templates folder").red().bold())
-  }
-  let mut path_to_templates = path_to_templates.unwrap();
-  path_to_templates.push(name.clone());
+pub fn copy_template(name: std::string::String, runtime_options: Options) {
+  let mut path_to_templates = find_templates_folder(runtime_options.debug, runtime_options.disable_os_search)
+    .expect("Failed to find templates folder"); 
 
-  if debug {
+  path_to_templates.push(name);
+
+  if runtime_options.debug {
     println!("{}", path_to_templates.to_str().unwrap());
   }
   if !path_to_templates.is_dir() {
-    println!("Could not find a template with the name: {}", name);
+    println!("could not find a template with the name provided");
     println!("use itex --list to get a list of available templates");
     exit(1);
   }
 
-  let template_files = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());
-  let template_files1 = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());
-  if template_files.is_err() {
-    println!("Could not find path: {}", path_to_templates.to_str().unwrap());
-    panic!();
-  }
-  let template_files = template_files.unwrap();
-  let template_files1 = template_files1.unwrap();
+  let path_to_templates = path_to_templates
+  .to_str()
+  .unwrap()
+  .trim();
+
+  let template_files = fs::read_dir(path_to_templates)
+    .expect("could not find template folder");
 
   // find current dir
-  let mut pwd = std::env::current_dir().unwrap();
+  let mut pwd = env::current_dir().expect("could not find current directory");
 
   pwd.push("file.txt");
 
-  let mut exit = false;
-  for file in template_files1 {
+  // dry run: find any files in the current folder that will conflict with the template files
+  let mut end = false;
+  for file in template_files {
     let file = file.unwrap().file_name();
     if pwd.with_file_name(&file).exists() {
       println!("file exists: {}, remove this file before running", file.to_str().unwrap());
-      exit = true;
+      end = true;
     }
   }
-  if exit {
-    std::process::exit(0);
+  if end {
+    exit(0);
   }
 
-  // copy template to current dir
+  let template_files = fs::read_dir(path_to_templates)
+    .expect("could not find template folder");
+  // copy template to current directory
   for file in template_files {
     if std::fs::copy(file.as_ref().unwrap().path(), pwd.with_file_name(file.unwrap().file_name())).is_err() {
       println!("could not copy");
     }
   }
 }
+
 
 pub fn list_template_names(debug: bool) {
   println!("available template names:");
@@ -62,42 +69,6 @@ pub fn list_template_names(debug: bool) {
   }
 }
 
-pub fn find_templates_folder(debug: bool, disable_os_search:bool) -> std::result::Result<std::path::PathBuf, i32> {
-  if !disable_os_search {
-    if !cfg!(windows) { // if os is UNIX
-      if let Ok(path_to_templates) = search_for_templates::search_in_homebrew(debug) {
-        return Ok(path_to_templates);
-      }
-      return Err(0);
-    }
-
-    else { // if OS is windows
-      if let Ok(path_to_templates) = search_for_templates::search_in_windows() {
-        return Ok(path_to_templates);
-      }
-      //add_windows_template_folder();
-      return Err(0);    
-    }
-  }
-
-  // search current directory
-  let pwd = std::env::current_dir();
-  let mut pwd = pwd.unwrap();
-  pwd.push("itex-templates");
-  if pwd.is_dir() {
-    return Ok(pwd);
-  }
-  drop(pwd);
-
-  // search in ..
-  let mut previous_dir = std::env::current_dir().unwrap().parent().unwrap().to_path_buf();
-  previous_dir.push("itex-templates");
-  if previous_dir.is_dir() {
-    return Ok(previous_dir);
-  }
-
-  Err(0)
-}
 
 fn _add_windows_template_folder() { // TODO
   let mut app_data_dir = std::path::PathBuf::from(std::env::var("LOCALAPPDATA").expect("No App Data dir found"));
