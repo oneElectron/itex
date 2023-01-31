@@ -13,7 +13,9 @@ Usage:
 ```
 itex <options> template
 
-itex --list-templates
+  -d --debug                use debug mode
+  -l --list                 output a list of templates
+  -s --disable-os-search    prevent itex from searching the os for the templates folder
 ```
 
 available templates:
