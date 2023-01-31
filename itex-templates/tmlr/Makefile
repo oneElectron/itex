@@ -3,7 +3,7 @@ NAME = main
 pdf:
 	@pdflatex -no-shell-escape -output-directory ./out/ $(NAME).tex
 	@if [ -a ./out/main.aux ]; then rm ./out/$(NAME).aux; fi;
-	@if [ -a ./out/main.out ]; then rm ./out/$(NAME).aux; fi;
+	@if [ -a ./out/main.out ]; then rm ./out/$(NAME).out; fi;
 	@if [ -a ./out/main.log ]; then rm ./out/$(NAME).log; fi;
 	@if [ -a ./out/main.bcf ]; then rm ./out/$(NAME).bcf; fi;
 	@if [ -a ./out/main.toc ]; then rm ./out/$(NAME).toc; fi;
