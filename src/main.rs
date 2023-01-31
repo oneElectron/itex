@@ -6,14 +6,11 @@ use runtime_helper::parse_options;
 use std::{
     process::exit,
     io,
-    env::{
-        current_dir,
-        args,
-    }
+    env
 };
 
 fn main() -> io::Result<()> {
-    let opts = parse_options(std::env::args().collect());
+    let opts = parse_options(env::args().collect());
 
     if opts.list_templates { // list templates and exit
         template::list_template_names(opts.debug);
@@ -23,17 +20,15 @@ fn main() -> io::Result<()> {
     // copy template
     copy_template(
         opts.template_name
-            .clone()
-            .replace("\n", "")
-            .to_string(), 
+            .replace("\n", ""), 
         opts.debug, 
         opts.disable_os_search);
     
     // Create out folder
-    let mut out_folder = current_dir().unwrap();
+    let mut out_folder = env::current_dir().expect("Could not find current path");
     out_folder.push("out");
     if !out_folder.is_dir() {
-    std::fs::create_dir(out_folder)
+        std::fs::create_dir(out_folder)
         .expect("failed to create out folder");
     }
 

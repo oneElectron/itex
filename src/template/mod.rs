@@ -1,15 +1,24 @@
 mod search_for_templates;
 
+use std::{
+  process::exit
+};
+
 pub fn copy_template(name:std::string::String, debug: bool, disable_os_search:bool) {
   let path_to_templates = find_templates_folder(debug, disable_os_search);
   if path_to_templates.is_err() {
     println!("{}", console::style("Failed to find templates folder").red().bold())
   }
   let mut path_to_templates = path_to_templates.unwrap();
-  path_to_templates.push(name);
+  path_to_templates.push(name.clone());
 
   if debug {
     println!("{}", path_to_templates.to_str().unwrap());
+  }
+  if !path_to_templates.is_dir() {
+    println!("Could not find a template with the name: {}", name);
+    println!("use itex --list to get a list of available templates");
+    exit(1);
   }
 
   let template_files = std::fs::read_dir(path_to_templates.to_str().unwrap().trim());

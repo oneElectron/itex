@@ -80,4 +80,5 @@ pub fn print_help() {
     println!("  -l --list                 output a list of templates");
     println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
     // println!("  -p --search-path <path>   pass a templates directory");
+    // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
 }
