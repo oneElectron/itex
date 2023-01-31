@@ -1,30 +1,41 @@
-pub mod template;
-pub mod parse;
+mod template;
+mod runtime_helper;
 
-fn main() -> std::io::Result<()> {
-    // parse args
-    let opts = parse::parse(std::env::args().collect());
+use template::copy_template;
+use runtime_helper::parse_options;
+use std::{
+    process::exit,
+    io,
+    env::{
+        current_dir,
+        args,
+    }
+};
 
-    if opts.list_templates {
+fn main() -> io::Result<()> {
+    let opts = parse_options(std::env::args().collect());
+
+    if opts.list_templates { // list templates and exit
         template::list_template_names(opts.debug);
-        std::process::exit(0);
+        exit(0);
     }
 
-    // Check to see if you can find templates folder
-    if template::find_templates_folder(opts.debug, opts.disable_os_search).is_err() {
-        println!("could not find templates folder");
-        panic!();
-    }
-
+    // copy template
+    copy_template(
+        opts.template_name
+            .clone()
+            .replace("\n", "")
+            .to_string(), 
+        opts.debug, 
+        opts.disable_os_search);
+    
     // Create out folder
-    let mut out_folder = std::env::current_dir().unwrap();
+    let mut out_folder = current_dir().unwrap();
     out_folder.push("out");
     if !out_folder.is_dir() {
-        std::fs::create_dir(out_folder).expect("failed to create out folder");
+    std::fs::create_dir(out_folder)
+        .expect("failed to create out folder");
     }
-    
-    // print args
-    template::copy_template(std::string::String::from(opts.template_name.clone().replace("\n", "")), opts.debug, opts.disable_os_search);
-    
+
     Ok(())
 }

@@ -1,4 +1,4 @@
-pub mod search_for_templates;
+mod search_for_templates;
 
 pub fn copy_template(name:std::string::String, debug: bool, disable_os_search:bool) {
   let path_to_templates = find_templates_folder(debug, disable_os_search);

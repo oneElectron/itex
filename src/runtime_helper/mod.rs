@@ -8,7 +8,7 @@ pub struct Options {
     pub disable_os_search: bool
 }
 
-pub fn parse(args: Vec<String>) -> Options {
+pub fn parse_options(args: Vec<String>) -> Options {
     if args.len() <= 1 {
         println!("not enough arguments");
         std::process::exit(0);
@@ -33,7 +33,7 @@ pub fn parse(args: Vec<String>) -> Options {
         if args[x] == "--debug" || args[x] == "-d" {
             out.debug = true;
         }
-        if args[x] == "--list-templates" || args[x] == "-l" {
+        if args[x] == "--list" || args[x] == "-l" {
             out.list_templates = true;
         }
         if args[x] == "--disable-os-search" || args[x] == "-s" {
@@ -77,7 +77,7 @@ pub fn print_help() {
     println!("usage: itex <options> template");
     println!("");
     println!("  -d --debug                use debug mode");
-    println!("  -l --list-templates       output a list of templates");
+    println!("  -l --list                 output a list of templates");
     println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
     // println!("  -p --search-path <path>   pass a templates directory");
 }
