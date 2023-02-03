@@ -13,7 +13,7 @@ fn main() -> io::Result<()> {
     let opts = parse_options(env::args().collect());
 
     if opts.list_templates { // list templates and exit
-        template::list_template_names(opts.debug);
+        template::list_template_names();
         exit(0);
     }
 

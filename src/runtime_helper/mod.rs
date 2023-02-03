@@ -4,7 +4,6 @@ pub struct Options {
     pub search_path: std::option::Option<std::path::PathBuf>,
     pub print_help: bool,
     pub list_templates: bool,
-    pub debug: bool,
     pub disable_os_search: bool
 }
 
@@ -19,7 +18,6 @@ pub fn parse_options(args: Vec<String>) -> Options {
         search_path: None,
         print_help: false,
         list_templates: false,
-        debug: false,
         disable_os_search: false
     };
     let mut template_name: std::option::Option<String> = None;
@@ -29,9 +27,6 @@ pub fn parse_options(args: Vec<String>) -> Options {
         if args[x] == "--help" || args[x] == "-h" || args[x].starts_with("?") || args[x] == "-help" {
             print_help();
             std::process::exit(0);
-        }
-        if args[x] == "--debug" || args[x] == "-d" {
-            out.debug = true;
         }
         if args[x] == "--list" || args[x] == "-l" {
             out.list_templates = true;
@@ -76,7 +71,6 @@ pub fn parse_options(args: Vec<String>) -> Options {
 pub fn print_help() {
     println!("usage: itex <options> template");
     println!("");
-    println!("  -d --debug                use debug mode");
     println!("  -l --list                 output a list of templates");
     println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
     // println!("  -p --search-path <path>   pass a templates directory");
