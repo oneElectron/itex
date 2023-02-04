@@ -5,11 +5,10 @@ use template::copy_template;
 use runtime_helper::parse_options;
 use std::{
     process::exit,
-    io,
     env
 };
 
-fn main() -> io::Result<()> {
+fn main() {
     let opts = parse_options(env::args().collect());
 
     if opts.list_templates { // list templates and exit
@@ -29,8 +28,6 @@ fn main() -> io::Result<()> {
     out_folder.push("out");
     if !out_folder.is_dir() {
         std::fs::create_dir(out_folder)
-        .expect("failed to create out folder");
+            .expect("failed to create out folder");
     }
-
-    Ok(())
 }
