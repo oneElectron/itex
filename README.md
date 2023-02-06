@@ -3,7 +3,7 @@
 # ITex 
 
 ![version](https://img.shields.io/github/v/tag/oneelectron/itex?color=orange)
-![lines of code](https://img.shields.io/tokei/lines/github.com/oneelectron/itex)
+![licence](https://img.shields.io/github/license/oneelectron/itex?color=blue)
 
 </div>
 
