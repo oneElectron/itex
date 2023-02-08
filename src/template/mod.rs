@@ -1,18 +1,28 @@
 mod template_path;
+mod template_updater;
 
 use template_path::find_templates_folder;
+use template_updater::download_templates;
 
 use super::runtime_helper::Options;
 
 use std::{
   fs,
   env,
-  process::exit
+  process::exit,
 };
 
 pub fn copy_template(name: std::string::String, runtime_options: Options) {
-  let mut path_to_templates = find_templates_folder(runtime_options.disable_os_search)
-    .expect("Failed to find templates folder");
+  let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
+  let mut path_to_templates = match path_to_templates {
+    Ok(p) => {p}
+    Err(1) => {
+      download_templates();
+      exit(0);
+    }
+    Err(_) => exit(0)
+  };
+
 
   path_to_templates.push(name);
 
@@ -64,7 +74,17 @@ pub fn copy_template(name: std::string::String, runtime_options: Options) {
 
 pub fn list_template_names() {
   println!("available template names:");
-  for folder in fs::read_dir(find_templates_folder(false).unwrap()).unwrap() {
+  let template_folder = find_templates_folder(false);
+  let template_folder = match template_folder {
+    Ok(p) => {p}
+    Err(1) => {
+      download_templates();
+      exit(0);
+    }
+    Err(_) => exit(0)
+  };
+  
+  for folder in fs::read_dir(template_folder).unwrap() {
     println!("    {}", folder.unwrap().file_name().to_str().unwrap());
   }
 }
