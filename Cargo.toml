@@ -1,4 +1,8 @@
 [package]
 name = "itex"
+authors = ["oneElectron <one.electron109@protonmail.com"]
+description = "Initialize a LaTex project inside a folder instantly"
+readme = "README.md"
+license-file = "license"
 version = "1.0.1"
 edition = "2021"
