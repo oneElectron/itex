@@ -8,4 +8,4 @@ version = "1.0.1"
 edition = "2021"
 
 [dependencies]
-template_updater = { path = "./template_updater" }
+template_updater = { version = "1.0.0", path = "./template_updater" }
