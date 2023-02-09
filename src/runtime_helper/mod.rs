@@ -1,7 +1,13 @@
+use std::{
+    option::Option,
+    process::exit,
+    path::PathBuf
+};
+
 
 pub struct Options {
     pub template_name: String,
-    pub search_path: std::option::Option<std::path::PathBuf>,
+    pub search_path: Option<PathBuf>,
     pub print_help: bool,
     pub list_templates: bool,
     pub disable_os_search: bool,
@@ -11,7 +17,8 @@ pub struct Options {
 pub fn parse_options(args: Vec<String>) -> Options {
     if args.len() <= 1 {
         println!("not enough arguments");
-        std::process::exit(0);
+        print_help();
+        exit(0);
     }
     
     let mut out = Options {
@@ -22,9 +29,9 @@ pub fn parse_options(args: Vec<String>) -> Options {
         disable_os_search: false,
         update: false
     };
-    let mut template_name: std::option::Option<String> = None;
+    let mut template_name: Option<String> = None;
     
-    let mut x:usize = 1;
+    let mut x: usize = 1;
     while x < args.len() {
         if args[x] == "--help" || args[x] == "-h" || args[x].starts_with("?") || args[x] == "-help" {
             print_help();
@@ -47,10 +54,10 @@ pub fn parse_options(args: Vec<String>) -> Options {
             }
             if args[x].starts_with("-") {
                 print_help();
-                std::process::exit(0);
+                exit(0);
             }
 
-            out.search_path = Some(std::path::PathBuf::from(args[x].clone()));
+            out.search_path = Some(PathBuf::from(args[x].clone()));
         }
 
         if !args[x].starts_with("-") {

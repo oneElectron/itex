@@ -12,7 +12,7 @@ use std::{
 fn main() {
     let opts = parse_options(env::args().collect());
 
-    if opts.list_templates { // list templates and exit
+    if opts.list_templates {
         template::list_template_names();
         exit(0);
     }
@@ -22,15 +22,15 @@ fn main() {
         exit(0);
     }
 
-    // copy template
     copy_template(
         opts.template_name
             .replace("\n", ""),
         opts
     );
     
-    // Create out folder
-    let mut out_folder = env::current_dir().expect("Could not find current path");
+    let mut out_folder = env::current_dir()
+        .expect("Could not find current path");
+
     out_folder.push("out");
     if !out_folder.is_dir() {
         std::fs::create_dir(out_folder)
