@@ -1,0 +1,34 @@
+\PassOptionsToPackage{hidelinks}{hyperref}
+\documentclass[12pt,man,floatsintext,a4paper,donotrepeattitle]{apa7} % For LaTeX2e
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{subfig}
+
+\title{Title}
+\shorttitle{Running Head: lorem impsum} % Will be in the header text
+\author{Author}
+\note{A Note}
+%\setcounter{secnumdepth}{3} ---- Sets title to have numbers - NOT APA like
+\affiliation{Author Affiliation}
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%References
+\newpage
+\bibliography{export}
+\bibliographystyle{apa} %Sets the refrence style
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
