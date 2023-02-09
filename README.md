@@ -4,6 +4,7 @@
 
 ![version](https://img.shields.io/github/v/tag/oneelectron/itex?color=orange)
 ![licence](https://img.shields.io/github/license/oneelectron/itex?color=blue)
+![lines of code](https://img.shields.io/tokei/lines/github/oneelectron/itex)
 
 </div>
 
