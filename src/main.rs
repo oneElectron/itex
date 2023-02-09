@@ -1,5 +1,6 @@
 mod template;
 mod runtime_helper;
+mod template_updater;
 
 use template::copy_template;
 use runtime_helper::parse_options;

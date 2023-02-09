@@ -455,7 +455,12 @@ checksum = "30e22bd8629359895450b59ea7a776c850561b96a3b1d31321c1949d9e6c9146"
 name = "itex"
 version = "1.0.1"
 dependencies = [
- "template_updater",
+ "reqwest",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "url",
+ "zip",
 ]
 
 [[package]]
@@ -895,18 +900,6 @@ dependencies = [
  "redox_syscall",
  "remove_dir_all",
  "winapi",
-]
-
-[[package]]
-name = "template_updater"
-version = "0.0.0"
-dependencies = [
- "reqwest",
- "serde",
- "serde_derive",
- "serde_json",
- "url",
- "zip",
 ]
 
 [[package]]

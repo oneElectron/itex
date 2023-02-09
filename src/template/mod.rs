@@ -1,7 +1,7 @@
 mod template_path;
 
 use template_path::find_templates_folder;
-use template_updater::download_templates;
+use super::template_updater::download_templates;
 
 use super::runtime_helper::Options;
 
