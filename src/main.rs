@@ -16,6 +16,11 @@ fn main() {
         exit(0);
     }
 
+    if opts.update {
+        template_updater::download_templates();
+        exit(0);
+    }
+
     // copy template
     copy_template(
         opts.template_name

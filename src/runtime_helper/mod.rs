@@ -4,7 +4,8 @@ pub struct Options {
     pub search_path: std::option::Option<std::path::PathBuf>,
     pub print_help: bool,
     pub list_templates: bool,
-    pub disable_os_search: bool
+    pub disable_os_search: bool,
+    pub update: bool
 }
 
 pub fn parse_options(args: Vec<String>) -> Options {
@@ -18,7 +19,8 @@ pub fn parse_options(args: Vec<String>) -> Options {
         search_path: None,
         print_help: false,
         list_templates: false,
-        disable_os_search: false
+        disable_os_search: false,
+        update: false
     };
     let mut template_name: std::option::Option<String> = None;
     
@@ -33,6 +35,9 @@ pub fn parse_options(args: Vec<String>) -> Options {
         }
         if args[x] == "--disable-os-search" || args[x] == "-s" {
             out.disable_os_search = true;
+        }
+        if args[x] == "--update" || args[x] == "-u" {
+            out.update = true;
         }
         if args[x] == "--search-path" || args[x] == "-p" {
             x += 1;
@@ -54,7 +59,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
         x += 1
     }
 
-    if template_name.is_none() &&out.list_templates {
+    if template_name.is_none() && (out.list_templates | out.update) {
         return out
     }
 
@@ -70,9 +75,9 @@ pub fn parse_options(args: Vec<String>) -> Options {
 
 pub fn print_help() {
     println!("usage: itex <options> template");
-    println!("");
     println!("  -l --list                 output a list of templates");
     println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
+    println!("  -u --update               update the itex-templates folder");
     // println!("  -p --search-path <path>   pass a templates directory");
     // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
 }

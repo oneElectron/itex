@@ -1,11 +1,9 @@
 mod target_location;
+mod template_url;
 
 use reqwest::blocking::Client;
 use zip::ZipArchive;
 use std::{
-  fs::{
-    read_dir
-  },
   process::exit, 
   io::Write,
 };
@@ -32,7 +30,7 @@ pub fn download_templates() {
   println!("downloading...");
 
   let client = Client::new();
-  let mut downloaded_file = client.get("https://github.com/oneElectron/itex/archive/refs/tags/v1.0.1.zip")
+  let mut downloaded_file = client.get(template_url::get_template_url())
     .send()
     .expect("Couldn't download templates folder");
 
@@ -44,10 +42,4 @@ pub fn download_templates() {
   
   archive.extract(target_location::install_location())
     .expect("could not extract to app data folder");
-  
-  // move correctly
-  let itex_folder = target_location::itex_app_data_folder();
-  let contents_itex_folder = read_dir(itex_folder).unwrap();
-
-  todo!();
 }
