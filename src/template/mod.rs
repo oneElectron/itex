@@ -1,5 +1,4 @@
 mod template_path;
-mod template_updater;
 
 use template_path::find_templates_folder;
 use template_updater::download_templates;

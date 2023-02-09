@@ -4,11 +4,10 @@ use reqwest::blocking::Client;
 use zip::ZipArchive;
 use std::{
   fs::{
-    File,
     read_dir
   },
   process::exit, 
-  io::Write, iter::Zip
+  io::Write,
 };
 
 pub fn download_templates() {
