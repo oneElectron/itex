@@ -1,13 +1,19 @@
+#[cfg(feature = "updater")]
 mod target_location;
+#[cfg(feature = "updater")]
 mod template_url;
 
+#[cfg(feature = "updater")]
 use reqwest::blocking::Client;
+#[cfg(feature = "updater")]
 use zip::ZipArchive;
+#[cfg(feature = "updater")]
 use std::{
   process::exit, 
   io::Write,
 };
 
+#[cfg(feature = "updater")]
 pub fn download_templates() {
   let mut input = String::new();
   println!("It looks like the itex-templates folder is not installed, would you like to install it?");
@@ -42,4 +48,9 @@ pub fn download_templates() {
   
   archive.extract(target_location::install_location())
     .expect("could not extract to app data folder");
+}
+
+#[cfg(not(feature = "updater"))]
+pub fn download_templates() {
+  println!("updater is not enabled for this build. If you used a package manager to install itex, the templates are kept up to date by the package manager");
 }

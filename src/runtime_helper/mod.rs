@@ -80,6 +80,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
     return out
 }
 
+#[cfg(feature = "updater")]
 pub fn print_help() {
     println!("usage: itex <options> template");
     println!("  -l --list                 output a list of templates");
@@ -87,4 +88,11 @@ pub fn print_help() {
     println!("  -u --update               update the itex-templates folder");
     // println!("  -p --search-path <path>   pass a templates directory");
     // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
+}
+
+#[cfg(not(feature = "updater"))]
+pub fn print_help() {
+    println!("usage: itex <options> template");
+    println!("  -l --list                 output a list of templates");
+    println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
 }
