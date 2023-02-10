@@ -31,3 +31,11 @@ itex isn't on homebrew's default taps so you need to add my tap then install ite
 brew tap oneelectron/oneelectron
 brew install itex -s
 ```
+
+## Install on Windows
+itex doesn't have a windows installer yet, so the recommended way is to use cargo to install itex, then use itex to install it's template folder.
+Install rust then:
+```
+cargo install itex
+itex --update
+```
