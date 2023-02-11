@@ -2,10 +2,13 @@
 import libgithub as gh
 from libgithub import pretty_print as pp
 
-itex_repo = gh.Repo("oneElectron", "test", gh.getAuthToken(), debuging=True)
+# tag_name = input("Tag name: ")
+tag_name = "v1.0.0"
 
+itex_repo = gh.Repo("oneElectron", "test", gh.getAuthToken(), name=tag_name, debuging=True)
 
-tag_name = input("Tag name: ")
+data = open("./itex-templates.zip", mode='rb').read()
+
 if not itex_repo.tagExists(tag_name):
   print("Tag", tag_name, "does not exist")
   exit()
@@ -15,6 +18,8 @@ if itex_repo.releaseExists(tag_name):
   exit()
 
 itex_repo.genRelease(tag_name)
+
+itex_repo.uploadReleaseContent(data, "itex-templates.zip")
 
 
 # TODO

@@ -17,12 +17,17 @@ def pretty_print(input:dict):
 class Repo:
     token: str
     prefix: str
+    upload_url:str
     debug: bool
+    release_name: str
+    release_id: int
 
-    def __init__(self, user_name:str, repo_name:str, auth_token:str, debuging:bool = False):
+    def __init__(self, user_name:str, repo_name:str, auth_token:str, name:str, debuging:bool = False):
         self.prefix = "https://api.github.com/repos/" + user_name + "/" + repo_name + "/"
+        self.upload_url = "https://uploads.github.com/repos/" + user_name + "/" + repo_name + "/"
         self.token = auth_token
         self.debug = debuging
+        self.release_name = name
 
     def releases(self) -> dict:
         response_content = requests.get(self.prefix + "releases", headers={"Authorization": "Bearer " + self.token}).text
@@ -32,17 +37,19 @@ class Repo:
     def genRelease(self, tag_name: str):
         release_data = {
             "tag_name": tag_name,
-            "target_commitish": "main",
-            "body": "Description",
             "name": tag_name,
+            "body": "PLACEHOLDER",
             "draft": True,
-            "prerelease": True,
-            "generate_release_notes": False,
-            "make_latest": False
+            "prerelease": False,
+            "generate_release_notes": False
         }
-        json_data = json.JSONEncoder().encode(release_data)
-        print(json_data)
-        response = requests.post(self.prefix + "releases", json=json_data, headers={"Authorization": "Bearer " + self.token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
+        response = requests.post(self.prefix + "releases", json=release_data, headers={"Authorization": "Bearer " + self.token})
+        response_json = json.JSONDecoder().decode(response.text)
+        self.release_id = int(response_json["id"])
+    
+    def uploadReleaseContent(self, bin_data:bytes, filename:str):
+        response = requests.post(self.upload_url + "releases/" + str(self.release_id) + "/assets?name=" + filename, data=bin_data, headers={"Authorization": "Bearer " + self.token, "Content-Type": "application/zip"})
+        print(response.text)
     
     def releaseExists(self, release_name) -> bool:
         response_content = requests.get(self.prefix + "releases", headers={"Authorization": "Bearer " + self.token}).text

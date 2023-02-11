@@ -4,3 +4,4 @@ out
 .vscode
 github_auth.token
 *.token
+*.zip
