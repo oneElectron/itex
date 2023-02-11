@@ -2,3 +2,7 @@ target
 out
 .DS_Store
 .vscode
+github_auth.token
+*.token
+*.zip
+*.pyc

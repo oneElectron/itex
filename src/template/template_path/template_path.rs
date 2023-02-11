@@ -1,10 +1,11 @@
 use std::{
   process::Command,
   string::String,
-  path::PathBuf
+  path::PathBuf,
+  result::Result
 };
 
-pub fn search_in_homebrew() -> std::result::Result<std::path::PathBuf, i32> {
+pub fn search_in_homebrew() -> Result<std::path::PathBuf, i32> {
   let cellar_path = String::from_utf8(Command::new("brew").arg("--prefix").output().unwrap().stdout.to_vec());
   if cellar_path.is_err() {
     eprintln!("Failed to run brew --prefix and read the output");
@@ -23,8 +24,8 @@ pub fn search_in_homebrew() -> std::result::Result<std::path::PathBuf, i32> {
   return Ok(cellar_path);
 }
 
-pub fn search_in_windows() -> std::result::Result<std::path::PathBuf, i32> {
-  let mut app_data_dir = std::path::PathBuf::from(std::env::var("LOCALAPPDATA")
+pub fn search_in_windows() -> Result<std::path::PathBuf, i32> {
+  let mut app_data_dir = PathBuf::from(std::env::var("LOCALAPPDATA")
     .expect("No App Data dir found"));
 
   app_data_dir.push("itex");
