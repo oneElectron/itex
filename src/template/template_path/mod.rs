@@ -12,7 +12,7 @@ pub fn find_templates_folder(disable_os_search:bool) -> Result<std::path::PathBu
       if let Ok(path_to_templates) = search_in_homebrew() {
         return Ok(path_to_templates);
       }
-      return Err(1);
+      return Err(0);
     }
 
     else { // if OS is Windows
@@ -39,8 +39,6 @@ pub fn find_templates_folder(disable_os_search:bool) -> Result<std::path::PathBu
   if previous_dir.is_dir() {
     return Ok(previous_dir);
   }
-
-  
 
   Err(0)
 }

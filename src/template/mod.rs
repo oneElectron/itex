@@ -71,9 +71,9 @@ pub fn copy_template(name: std::string::String, runtime_options: Options) {
 }
 
 
-pub fn list_template_names() {
+pub fn list_template_names(disable_os_search: bool) {
   println!("available template names:");
-  let template_folder = find_templates_folder(false);
+  let template_folder = find_templates_folder(disable_os_search);
   let template_folder = match template_folder {
     Ok(p) => {p}
     Err(1) => {

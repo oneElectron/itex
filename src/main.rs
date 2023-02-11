@@ -13,7 +13,7 @@ fn main() {
     let opts = parse_options(env::args().collect());
 
     if opts.list_templates {
-        template::list_template_names();
+        template::list_template_names(opts.disable_os_search);
         exit(0);
     }
 
