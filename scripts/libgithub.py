@@ -32,15 +32,17 @@ class Repo:
     def genRelease(self, tag_name: str):
         release_data = {
             "tag_name": tag_name,
+            "target_commitish": "main",
+            "body": "Description",
             "name": tag_name,
-            "draft": False,
+            "draft": True,
+            "prerelease": True,
             "generate_release_notes": False,
             "make_latest": False
         }
         json_data = json.JSONEncoder().encode(release_data)
         print(json_data)
-        response = requests.post(self.prefix + "releases", json=json_data)
-        print(response.text)
+        response = requests.post(self.prefix + "releases", json=json_data, headers={"Authorization": "Bearer " + self.token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
     
     def releaseExists(self, release_name) -> bool:
         response_content = requests.get(self.prefix + "releases", headers={"Authorization": "Bearer " + self.token}).text
@@ -58,8 +60,6 @@ class Repo:
     def tagExists(self, tag_name:str) -> bool:
         response_content = requests.get(self.prefix + "tags", headers={"Authorization": "Bearer " + self.token}).text
         data = json.loads(response_content)
-        if self.debug:
-            pretty_print(data)
         for tag in data:
             if tag["name"] == tag_name:
                 return True
