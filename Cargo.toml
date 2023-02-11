@@ -4,7 +4,7 @@ authors = ["oneElectron <one.electron109@protonmail.com"]
 description = "Initialize a LaTex project inside a folder instantly"
 readme = "README.md"
 license-file = "license"
-version = "1.1.2"
+version = "1.2.0"
 edition = "2021"
 
 [dependencies]
