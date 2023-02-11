@@ -9,6 +9,10 @@ def zipFolder(p: Path, z:ZipFile):
     if file.is_dir():
       zipFolder(file, z)
 
+print("Before running the script make sure you have updated the version in cargo.toml and created a new git tag")
+if not input("If you have done this type done") == "done":
+  exit()
+
 tag_name = input("Tag name: ")
 
 itex_repo = gh.Repo("oneElectron", "itex", gh.getAuthToken(), name=tag_name)
@@ -32,6 +36,11 @@ z.close()
 # Upload the templates folder
 data = open("./itex-templates.zip", mode='rb').read()
 itex_repo.uploadReleaseContent(data, "itex-templates.zip")
+
+print("Next steps:")
+print("    - Go to GitHub and finialze the release")
+print("    - Publish the new version to crates.io (cargo publish)")
+print("    - Update homebrew-oneelectron with the new version of itex")
 
 
 # TODO
