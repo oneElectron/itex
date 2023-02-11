@@ -1,13 +1,10 @@
-mod template;
 mod runtime_helper;
+mod template;
 mod template_updater;
 
-use template::copy_template;
 use runtime_helper::parse_options;
-use std::{
-    process::exit,
-    env
-};
+use std::{env, process::exit};
+use template::copy_template;
 
 fn main() {
     let opts = parse_options(env::args().collect());
@@ -22,18 +19,12 @@ fn main() {
         exit(0);
     }
 
-    copy_template(
-        opts.template_name
-            .replace("\n", ""),
-        opts
-    );
-    
-    let mut out_folder = env::current_dir()
-        .expect("Could not find current path");
+    copy_template(opts.template_name.replace("\n", ""), opts);
+
+    let mut out_folder = env::current_dir().expect("Could not find current path");
 
     out_folder.push("out");
     if !out_folder.is_dir() {
-        std::fs::create_dir(out_folder)
-            .expect("failed to create out folder");
+        std::fs::create_dir(out_folder).expect("failed to create out folder");
     }
 }

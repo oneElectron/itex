@@ -1,9 +1,4 @@
-use std::{
-    option::Option,
-    process::exit,
-    path::PathBuf
-};
-
+use std::{option::Option, path::PathBuf, process::exit};
 
 pub struct Options {
     pub template_name: String,
@@ -11,7 +6,7 @@ pub struct Options {
     pub print_help: bool,
     pub list_templates: bool,
     pub disable_os_search: bool,
-    pub update: bool
+    pub update: bool,
 }
 
 pub fn parse_options(args: Vec<String>) -> Options {
@@ -20,20 +15,21 @@ pub fn parse_options(args: Vec<String>) -> Options {
         print_help();
         exit(0);
     }
-    
+
     let mut out = Options {
         template_name: "".to_string(),
         search_path: None,
         print_help: false,
         list_templates: false,
         disable_os_search: false,
-        update: false
+        update: false,
     };
     let mut template_name: Option<String> = None;
-    
+
     let mut x: usize = 1;
     while x < args.len() {
-        if args[x] == "--help" || args[x] == "-h" || args[x].starts_with("?") || args[x] == "-help" {
+        if args[x] == "--help" || args[x] == "-h" || args[x].starts_with("?") || args[x] == "-help"
+        {
             print_help();
             std::process::exit(0);
         }
@@ -67,7 +63,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
     }
 
     if template_name.is_none() && (out.list_templates | out.update) {
-        return out
+        return out;
     }
 
     if template_name.is_none() {
@@ -77,14 +73,16 @@ pub fn parse_options(args: Vec<String>) -> Options {
     }
     out.template_name = template_name.unwrap();
 
-    return out
+    return out;
 }
 
 #[cfg(feature = "updater")]
 pub fn print_help() {
     println!("usage: itex <options> template");
     println!("  -l --list                 output a list of templates");
-    println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
+    println!(
+        "  -s --disable-os-search    prevent itex from searching the os for the templates folder"
+    );
     println!("  -u --update               update the itex-templates folder");
     // println!("  -p --search-path <path>   pass a templates directory");
     // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
@@ -94,5 +92,7 @@ pub fn print_help() {
 pub fn print_help() {
     println!("usage: itex <options> template");
     println!("  -l --list                 output a list of templates");
-    println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
+    println!(
+        "  -s --disable-os-search    prevent itex from searching the os for the templates folder"
+    );
 }
