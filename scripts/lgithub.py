@@ -48,8 +48,7 @@ class Repo:
         self.release_id = int(response_json["id"])
     
     def uploadReleaseContent(self, bin_data:bytes, filename:str):
-        response = requests.post(self.upload_url + "releases/" + str(self.release_id) + "/assets?name=" + filename, data=bin_data, headers={"Authorization": "Bearer " + self.token, "Content-Type": "application/zip"})
-        print(response.text)
+        requests.post(self.upload_url + "releases/" + str(self.release_id) + "/assets?name=" + filename, data=bin_data, headers={"Authorization": "Bearer " + self.token, "Content-Type": "application/zip"})
     
     def releaseExists(self, release_name) -> bool:
         response_content = requests.get(self.prefix + "releases", headers={"Authorization": "Bearer " + self.token}).text

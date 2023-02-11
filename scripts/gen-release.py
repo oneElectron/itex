@@ -1,13 +1,17 @@
 #! /usr/bin/env python3
-import libgithub as gh
-from libgithub import pretty_print as pp
+import lgithub as gh
+from pathlib import Path
+from zipfile import ZipFile
 
-# tag_name = input("Tag name: ")
-tag_name = "v1.0.0"
+def zipFolder(p: Path, z:ZipFile):
+  for file in p.iterdir():
+    z.write(file.relative_to("."))
+    if file.is_dir():
+      zipFolder(file, z)
 
-itex_repo = gh.Repo("oneElectron", "test", gh.getAuthToken(), name=tag_name, debuging=True)
+tag_name = input("Tag name: ")
 
-data = open("./itex-templates.zip", mode='rb').read()
+itex_repo = gh.Repo("oneElectron", "itex", gh.getAuthToken(), name=tag_name)
 
 if not itex_repo.tagExists(tag_name):
   print("Tag", tag_name, "does not exist")
@@ -17,8 +21,16 @@ if itex_repo.releaseExists(tag_name):
   print("Release already exists!")
   exit()
 
+# Generate the release
 itex_repo.genRelease(tag_name)
 
+# Zip the templates folder
+z = ZipFile("itex-templates.zip", mode='w')
+zipFolder(Path("./itex-templates"), z)
+z.close()
+
+# Upload the templates folder
+data = open("./itex-templates.zip", mode='rb').read()
 itex_repo.uploadReleaseContent(data, "itex-templates.zip")
 
 
