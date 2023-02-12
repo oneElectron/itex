@@ -8,7 +8,8 @@ def getAuthToken() -> str:
     if not github_auth_token_path.is_file():
         print("Could not find the github auth token")
         exit()
-    out = next(fileinput.input(files=github_auth_token_path)).removesuffix("\n")
+    f = open(github_auth_token_path)
+    out = f.readline().replace("\n", "")
     return out
 
 def pretty_print(input:dict):
