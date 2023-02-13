@@ -27,7 +27,7 @@ pub fn download_templates() {
 
     let input = input.trim();
 
-    if input != "y".to_string() {
+    if input != "y" && input != "Y" && input !="yes" && input != "Yes" {
         println!("Aborting");
         exit(0);
     };

@@ -13,7 +13,10 @@ pub fn copy_template(name: std::string::String, runtime_options: Options) {
         Ok(p) => p,
         Err(1) => {
             download_templates();
-            exit(0);
+            match find_templates_folder(runtime_options.disable_os_search) {
+                Ok(p) => p,
+                _ => exit(0)
+            }
         }
         Err(_) => exit(0),
     };
