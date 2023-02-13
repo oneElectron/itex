@@ -14,10 +14,10 @@ Initialize a latex project in the current folder
 Usage:
 ```
 itex <options> template
-
   -d --debug                use debug mode
   -l --list                 output a list of templates
   -s --disable-os-search    prevent itex from searching the os for the templates folder
+  -u --update               update the itex-templates folder
 ```
 
 available templates:
