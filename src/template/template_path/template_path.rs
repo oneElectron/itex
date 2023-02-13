@@ -1,4 +1,4 @@
-use std::{path::PathBuf, process::Command, result::Result, string::String, env};
+use std::{env, path::PathBuf, process::Command, result::Result, string::String};
 
 pub fn search_in_homebrew() -> Result<PathBuf, i32> {
     let cellar_path = String::from_utf8(
@@ -27,15 +27,14 @@ pub fn search_in_homebrew() -> Result<PathBuf, i32> {
 }
 
 pub fn search_in_unix() -> Result<PathBuf, i32> {
-    let home = env::var("HOME")
-        .expect("Could not find home");
+    let home = env::var("HOME").expect("Could not find home");
 
     let path = PathBuf::from(home + "/.local/share/itex/itex-templates");
     if path.is_dir() {
-        return Ok(path)
+        return Ok(path);
     }
 
-    return Err(0)
+    return Err(0);
 }
 
 pub fn search_in_windows() -> Result<PathBuf, i32> {
