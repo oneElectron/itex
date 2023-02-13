@@ -14,6 +14,8 @@ def zipFolder(p: Path, z:ZipFile) -> None:
       zipFolder(file, z)
 
 def main() -> None:
+
+
   if not debug:
     print("Before running the script make sure you have updated the version in cargo.toml and created a new git tag")
     if not input("If you have done this type done: ") == "done":
@@ -23,6 +25,18 @@ def main() -> None:
     tag_name = Version(input("Tag name: "))
   else:
     tag_name = Version("v1.0.0")
+
+  cargo_version = itex.get_cargo_version()
+  if cargo_version < tag_name:
+    print("The cargo version is not up to date")
+    exit()
+
+  if cargo_version > tag_name:
+    print("Cargo version is greater than the tag version")
+    exit()
+
+  if cargo_version == tag_name:
+    print("Cargo is up to date")
 
   if not debug:
     itex_repo = gh.Repo("oneElectron", "itex", gh.getAuthToken(), name=tag_name.to_str())

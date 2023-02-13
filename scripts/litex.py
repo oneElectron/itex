@@ -2,8 +2,6 @@
 from typing import List
 from pathlib import Path
 import fileinput
-from dataclasses import dataclass, field
-
 
 class Version:
     __name: str
@@ -53,9 +51,6 @@ def get_cargo_version() -> Version:
                 else:
                     end_index = i
             i += 1
-        version_str:str = "v1.2.0"
+        version_str:str = line[start_index+1:end_index]
         version = Version(version_str)
         return version
-
-v = get_cargo_version()
-print(v.to_str())
