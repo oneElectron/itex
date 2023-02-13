@@ -1,14 +1,17 @@
 mod template_path;
 
 use std::{env, result::Result};
-use template_path::{search_in_homebrew, search_in_windows};
+use template_path::{search_in_homebrew, search_in_windows, search_in_unix};
 
 pub fn find_templates_folder(disable_os_search: bool) -> Result<std::path::PathBuf, i32> {
-    if !disable_os_search {
+    if ! disable_os_search {
         if !cfg!(windows) {
             // if OS is UNIX
-            if let Ok(path_to_templates) = search_in_homebrew() {
+            /*if let Ok(path_to_templates) = search_in_homebrew() {
                 return Ok(path_to_templates);
+            }*/
+            if let Ok(path_to_templates) = search_in_unix() {
+                return Ok(path_to_templates)
             }
             return Err(0);
         } else {
@@ -16,7 +19,6 @@ pub fn find_templates_folder(disable_os_search: bool) -> Result<std::path::PathB
             if let Ok(path_to_templates) = search_in_windows() {
                 return Ok(path_to_templates);
             }
-            // add_windows_template_folder();
             return Err(1);
         }
     }
