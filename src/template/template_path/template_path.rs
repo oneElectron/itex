@@ -23,7 +23,7 @@ pub fn search_in_homebrew() -> Result<PathBuf, i32> {
         return Err(1);
     }
 
-    return Ok(cellar_path);
+    Ok(cellar_path)
 }
 
 pub fn search_in_unix() -> Result<PathBuf, i32> {
@@ -34,7 +34,7 @@ pub fn search_in_unix() -> Result<PathBuf, i32> {
         return Ok(path);
     }
 
-    return Err(0);
+    Err(0)
 }
 
 pub fn search_in_windows() -> Result<PathBuf, i32> {
@@ -44,8 +44,8 @@ pub fn search_in_windows() -> Result<PathBuf, i32> {
     app_data_dir.push("itex");
     app_data_dir.push("itex-templates");
     if app_data_dir.is_dir() {
-        return Ok(app_data_dir);
+        Ok(app_data_dir)
     } else {
-        return Err(0);
+        Err(0)
     }
 }

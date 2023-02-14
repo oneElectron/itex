@@ -24,6 +24,6 @@ pub fn itex_app_data_folder() -> PathBuf {
         out_folder.push("share");
         out_folder.push("itex");
 
-        return out_folder;
+        out_folder
     }
 }

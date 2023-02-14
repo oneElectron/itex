@@ -28,7 +28,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
 
     let mut x: usize = 1;
     while x < args.len() {
-        if args[x] == "--help" || args[x] == "-h" || args[x].starts_with("?") || args[x] == "-help"
+        if args[x] == "--help" || args[x] == "-h" || args[x].starts_with('?') || args[x] == "-help"
         {
             print_help();
             std::process::exit(0);
@@ -48,7 +48,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
                 print_help();
                 std::process::exit(0);
             }
-            if args[x].starts_with("-") {
+            if args[x].starts_with('-') {
                 print_help();
                 exit(0);
             }
@@ -56,7 +56,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
             out.search_path = Some(PathBuf::from(args[x].clone()));
         }
 
-        if !args[x].starts_with("-") {
+        if !args[x].starts_with('-') {
             template_name = Some(args[x].clone())
         }
         x += 1
@@ -73,7 +73,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
     }
     out.template_name = template_name.unwrap();
 
-    return out;
+    out
 }
 
 #[cfg(feature = "updater")]

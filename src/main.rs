@@ -19,7 +19,7 @@ fn main() {
         exit(0);
     }
 
-    copy_template(opts.template_name.replace("\n", ""), opts);
+    copy_template(opts.template_name.replace('\n', ""), opts);
 
     let mut out_folder = env::current_dir().expect("Could not find current path");
 
