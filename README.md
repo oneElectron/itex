@@ -23,7 +23,8 @@ itex <options> template
 available templates:
 - default (just the basics with an out folder and a Makefile)
 - iSci
-- tmlr
+- apa
+- Electron (My own template)
 
 ## Install on MacOS
 itex isn't on homebrew's default taps so you need to add my tap then install itex:
