@@ -2,12 +2,10 @@ mod template_path;
 
 use super::template_updater::download_templates;
 use template_path::find_templates_folder;
-
 use super::runtime_helper::Options;
+use std::{string::String, env, fs, process::exit};
 
-use std::{env, fs, process::exit};
-
-pub fn copy_template(name: std::string::String, runtime_options: Options) {
+pub fn copy_template(name: String, runtime_options: Options) {
     let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
