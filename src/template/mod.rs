@@ -1,9 +1,10 @@
 mod template_path;
+mod files;
 
 use super::template_updater::download_templates;
 use template_path::find_templates_folder;
 use super::runtime_helper::Options;
-use std::{string::String, env, fs, process::exit};
+use std::{string::String, env, fs, process::exit, path::PathBuf};
 
 pub fn copy_template(name: String, runtime_options: Options) {
     let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
@@ -22,7 +23,7 @@ pub fn copy_template(name: String, runtime_options: Options) {
     path_to_templates.push(name);
 
     if cfg!(debug_assertions) {
-        println!("{}", path_to_templates.to_str().unwrap());
+        println!("[DEBUG] template path: {}", path_to_templates.to_str().unwrap());
     }
     if !path_to_templates.is_dir() {
         println!("could not find a template with the name provided");
@@ -30,9 +31,7 @@ pub fn copy_template(name: String, runtime_options: Options) {
         exit(1);
     }
 
-    let path_to_templates = path_to_templates.to_str().unwrap().trim();
-
-    let template_files = fs::read_dir(path_to_templates).expect("could not find template folder");
+    let path_to_templates = PathBuf::from(path_to_templates.to_str().unwrap().trim());
 
     // find current dir
     let mut pwd = env::current_dir().expect("could not find current directory");
@@ -40,33 +39,15 @@ pub fn copy_template(name: String, runtime_options: Options) {
     pwd.push("file.txt");
 
     // dry run: find any files in the current folder that will conflict with the template files
-    let mut end = false;
-    for file in template_files {
-        let file = file.unwrap().file_name();
-        if pwd.with_file_name(&file).exists() {
-            println!(
-                "file exists: {}, remove this file before running",
-                file.to_str().unwrap()
-            );
-            end = true;
-        }
+    match files::copy_files(path_to_templates.clone(), true) {
+        Err(files::CopyFilesExitCode::SomeFilesExist) => { println!("Remove these files before running itex"); exit(0) },
+        Err(files::CopyFilesExitCode::AllFilesExist) => { println!("All of the files in the template listed exist in this folder already"); exit(0) },
+        _ => {}
     }
-    if end {
-        exit(0);
-    }
-
-    let template_files = fs::read_dir(path_to_templates).expect("could not find template folder");
 
     // copy template to current directory
-    for file in template_files {
-        if std::fs::copy(
-            file.as_ref().unwrap().path(),
-            pwd.with_file_name(file.unwrap().file_name()),
-        )
-        .is_err()
-        {
-            println!("could not copy");
-        }
+    if files::copy_files(path_to_templates, false).is_err() {
+        println!("Unexpected error")
     }
 }
 
