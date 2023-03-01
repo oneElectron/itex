@@ -7,6 +7,7 @@ pub struct Options {
     pub list_templates: bool,
     pub disable_os_search: bool,
     pub update: bool,
+    pub info: bool,
 }
 
 pub fn parse_options(args: Vec<String>) -> Options {
@@ -23,6 +24,7 @@ pub fn parse_options(args: Vec<String>) -> Options {
         list_templates: false,
         disable_os_search: false,
         update: false,
+        info: false,
     };
     let mut template_name: Option<String> = None;
 
@@ -41,6 +43,9 @@ pub fn parse_options(args: Vec<String>) -> Options {
         }
         if args[x] == "--update" || args[x] == "-u" {
             out.update = true;
+        }
+        if args[x] == "--info" || args[x] == "-i" {
+            out.info = true;
         }
         if args[x] == "--search-path" || args[x] == "-p" {
             x += 1;
@@ -84,6 +89,7 @@ pub fn print_help() {
         "  -s --disable-os-search    prevent itex from searching the os for the templates folder"
     );
     println!("  -u --update               update the itex-templates folder");
+    println!("  -i --info                 get template info");
     // println!("  -p --search-path <path>   pass a templates directory");
     // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
 }
@@ -95,4 +101,5 @@ pub fn print_help() {
     println!(
         "  -s --disable-os-search    prevent itex from searching the os for the templates folder"
     );
+    println!("  -i --info                 get template info");
 }

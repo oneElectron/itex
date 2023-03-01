@@ -1,0 +1,9 @@
+{
+    "name": "Electron",
+    "description": "Electron's personal template",
+    "files": [
+        "main.tex",
+        "Makefile"
+    ],
+    "id": 3
+}

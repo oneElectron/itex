@@ -29,15 +29,15 @@ pub fn copy_files(from: PathBuf, dry_run: bool) -> Result<isize, CopyFilesExitCo
             end = true;
         }
 
-        if dry_run && fs::copy(
-            &file,
-            pwd.with_file_name(file.file_name().unwrap().to_str().unwrap()),
-        )
-        .is_err()
+        if dry_run
+            && fs::copy(
+                &file,
+                pwd.with_file_name(file.file_name().unwrap().to_str().unwrap()),
+            )
+            .is_err()
         {
             println!("Error copying file");
         }
-        
     }
 
     if end {

@@ -1,0 +1,10 @@
+{
+    "name": "iSci",
+    "description": "iSci template",
+    "files": [
+        "main.tex",
+        "main.bib",
+        "Makefile"
+    ],
+    "id": 1
+}

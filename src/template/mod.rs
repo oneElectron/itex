@@ -77,3 +77,24 @@ pub fn list_template_names(disable_os_search: bool) {
         println!("    {}", folder.unwrap().file_name().to_str().unwrap());
     }
 }
+
+pub fn get_template_info(name: String, runtime_options: Options) {
+    let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
+    let mut path_to_templates = match path_to_templates {
+        Ok(p) => p,
+        Err(1) => {
+            download_templates();
+            match find_templates_folder(runtime_options.disable_os_search) {
+                Ok(p) => p,
+                _ => exit(0),
+            }
+        }
+        Err(_) => exit(0),
+    };
+
+    path_to_templates.push(name);
+
+    let info = template_info::get_template_info(path_to_templates);
+
+    println!("{}: {}", info.name, info.description);    
+}
