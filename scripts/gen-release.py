@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import litex as itex
 from litex import Version
 
-debug = True
+debug = False
 
 def zipFolder(p: Path, z:ZipFile) -> None:
   for file in p.iterdir():
