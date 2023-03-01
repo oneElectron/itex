@@ -1,6 +1,7 @@
 mod runtime_helper;
 mod template;
 mod template_updater;
+mod tests;
 
 use runtime_helper::parse_options;
 use std::{env, process::exit};
