@@ -18,18 +18,20 @@ pub fn copy_files(from: PathBuf, dry_run: bool) -> Result<isize, CopyFilesExitCo
         let mut pwd = env::current_dir().unwrap();
         pwd.push("file.txt");
 
-        if pwd
-            .with_file_name(&file.file_name().unwrap().to_str().unwrap())
-            .exists()
-        {
-            println!(
-                "file exists: {}",
-                file.file_name().unwrap().to_str().unwrap()
-            );
-            end = true;
+        if dry_run {
+            if pwd
+                .with_file_name(&file.file_name().unwrap().to_str().unwrap())
+                .exists()
+            {
+                println!(
+                    "file exists: {}",
+                    file.file_name().unwrap().to_str().unwrap()
+                );
+                end = true;
+            }
         }
 
-        if dry_run
+        if !dry_run
             && fs::copy(
                 &file,
                 pwd.with_file_name(file.file_name().unwrap().to_str().unwrap()),

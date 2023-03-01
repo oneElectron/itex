@@ -7,7 +7,7 @@ use super::template_updater::download_templates;
 use std::{env, fs, path::PathBuf, process::exit, string::String};
 use template_path::find_templates_folder;
 
-pub fn copy_template(name: String, runtime_options: Options) {
+pub fn copy_template(name: String, output_path: PathBuf, runtime_options: Options) {
     let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
@@ -38,7 +38,7 @@ pub fn copy_template(name: String, runtime_options: Options) {
     let path_to_templates = PathBuf::from(path_to_templates.to_str().unwrap().trim());
 
     // find current dir
-    let mut pwd = env::current_dir().expect("could not find current directory");
+    let mut pwd = output_path;
 
     pwd.push("file.txt");
 
@@ -96,5 +96,5 @@ pub fn get_template_info(name: String, runtime_options: Options) {
 
     let info = template_info::get_template_info(path_to_templates);
 
-    println!("{}: {}", info.name, info.description);    
+    println!("{}: {}", info.name, info.description);
 }

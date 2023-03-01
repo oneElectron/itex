@@ -1,7 +1,6 @@
 mod runtime_helper;
 mod template;
 mod template_updater;
-mod tests;
 
 use runtime_helper::parse_options;
 use std::{env, process::exit};
@@ -13,20 +12,18 @@ fn main() {
     if opts.list_templates {
         template::list_template_names(opts.disable_os_search);
         exit(0);
-    }
-
-    else if opts.info {
+    } else if opts.info {
         template::get_template_info(opts.template_name.clone(), opts);
         exit(0);
-    }
-
-    else if opts.update {
+    } else if opts.update {
         template_updater::download_templates();
         exit(0);
-    }
-
-    else {
-        copy_template(opts.template_name.replace('\n', ""), opts);
+    } else {
+        let output_path = match opts.output_path.clone() {
+            None => std::path::PathBuf::from("."),
+            Some(p) => p,
+        };
+        copy_template(opts.template_name.replace('\n', ""), output_path, opts);
 
         let mut out_folder = env::current_dir().expect("Could not find current path");
 
