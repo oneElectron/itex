@@ -1,0 +1,10 @@
+{
+    "name": "apa",
+    "description": "A template for people who like apa (apa7)",
+    "files": [
+        "main.tex",
+        "export.bib",
+        "Makefile"
+    ],
+    "id": 2
+}

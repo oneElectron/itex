@@ -1,10 +1,11 @@
-mod template_path;
 mod files;
+mod template_info;
+mod template_path;
 
-use super::template_updater::download_templates;
-use template_path::find_templates_folder;
 use super::runtime_helper::Options;
-use std::{string::String, env, fs, process::exit, path::PathBuf};
+use super::template_updater::download_templates;
+use std::{env, fs, path::PathBuf, process::exit, string::String};
+use template_path::find_templates_folder;
 
 pub fn copy_template(name: String, runtime_options: Options) {
     let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
@@ -14,7 +15,7 @@ pub fn copy_template(name: String, runtime_options: Options) {
             download_templates();
             match find_templates_folder(runtime_options.disable_os_search) {
                 Ok(p) => p,
-                _ => exit(0)
+                _ => exit(0),
             }
         }
         Err(_) => exit(0),
@@ -23,7 +24,10 @@ pub fn copy_template(name: String, runtime_options: Options) {
     path_to_templates.push(name);
 
     if cfg!(debug_assertions) {
-        println!("[DEBUG] template path: {}", path_to_templates.to_str().unwrap());
+        println!(
+            "[DEBUG] template path: {}",
+            path_to_templates.to_str().unwrap()
+        );
     }
     if !path_to_templates.is_dir() {
         println!("could not find a template with the name provided");
@@ -40,8 +44,14 @@ pub fn copy_template(name: String, runtime_options: Options) {
 
     // dry run: find any files in the current folder that will conflict with the template files
     match files::copy_files(path_to_templates.clone(), true) {
-        Err(files::CopyFilesExitCode::SomeFilesExist) => { println!("Remove these files before running itex"); exit(0) },
-        Err(files::CopyFilesExitCode::AllFilesExist) => { println!("All of the files in the template listed exist in this folder already"); exit(0) },
+        Err(files::CopyFilesExitCode::SomeFilesExist) => {
+            println!("Remove these files before running itex");
+            exit(0)
+        }
+        Err(files::CopyFilesExitCode::AllFilesExist) => {
+            println!("All of the files in the template listed exist in this folder already");
+            exit(0)
+        }
         _ => {}
     }
 
@@ -66,4 +76,25 @@ pub fn list_template_names(disable_os_search: bool) {
     for folder in fs::read_dir(template_folder).unwrap() {
         println!("    {}", folder.unwrap().file_name().to_str().unwrap());
     }
+}
+
+pub fn get_template_info(name: String, runtime_options: Options) {
+    let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
+    let mut path_to_templates = match path_to_templates {
+        Ok(p) => p,
+        Err(1) => {
+            download_templates();
+            match find_templates_folder(runtime_options.disable_os_search) {
+                Ok(p) => p,
+                _ => exit(0),
+            }
+        }
+        Err(_) => exit(0),
+    };
+
+    path_to_templates.push(name);
+
+    let info = template_info::get_template_info(path_to_templates);
+
+    println!("{}: {}", info.name, info.description);    
 }
