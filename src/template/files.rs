@@ -38,6 +38,7 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
                     .unwrap()
             );
         }
+        if file.clone().file_name().unwrap().to_str().unwrap() != "itex-info.json" {
         if !dry_run
             && fs::copy(
                 &file,
@@ -46,6 +47,7 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
             .is_err()
         {
             println!("Error copying file");
+        }
         }
     }
 

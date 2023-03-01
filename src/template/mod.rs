@@ -134,6 +134,7 @@ mod tests {
 
         assert!(files.is_file());
         assert!(files.with_file_name("main.tex").is_file());
+        assert!( ! files.with_file_name("itex-info.json").is_file());
 
         cleanup();
     }
