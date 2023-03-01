@@ -19,11 +19,15 @@ fn main() {
         template_updater::download_templates();
         exit(0);
     } else {
-        let output_path = match opts.output_path.clone() {
+        let output_path = match opts.output_path {
             None => std::path::PathBuf::from("."),
             Some(p) => p,
         };
-        copy_template(opts.template_name.replace('\n', ""), output_path, opts);
+        copy_template(
+            opts.template_name.replace('\n', ""),
+            output_path,
+            opts.disable_os_search,
+        );
 
         let mut out_folder = env::current_dir().expect("Could not find current path");
 

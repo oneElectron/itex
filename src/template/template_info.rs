@@ -9,7 +9,7 @@ pub struct TemplateInfo {
 }
 
 pub fn get_template_info(template_path: PathBuf) -> TemplateInfo {
-    let mut path = template_path.clone();
+    let mut path = template_path;
     path.push("itex-info.json");
 
     let json_str =

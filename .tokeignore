@@ -2,3 +2,5 @@ itex-templates
 Cargo.toml
 README.md
 target
+scripts
+test_resources

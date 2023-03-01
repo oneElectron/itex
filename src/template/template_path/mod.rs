@@ -1,7 +1,7 @@
-mod template_path;
+mod os_search;
 
+use os_search::{search_in_homebrew, search_in_unix, search_in_windows};
 use std::{env, result::Result};
-use template_path::{search_in_homebrew, search_in_unix, search_in_windows};
 
 pub fn find_templates_folder(disable_os_search: bool) -> Result<std::path::PathBuf, i32> {
     if !disable_os_search {
