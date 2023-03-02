@@ -152,7 +152,12 @@ mod tests {
     }
 
     #[test]
-    fn list_templates() {
+    fn list_templates_os_search() { // with os_search
         super::list_template_names(false);
+    }
+
+    #[test]
+    fn list_templates() { // without os_search
+        super::list_template_names(true);
     }
 }
