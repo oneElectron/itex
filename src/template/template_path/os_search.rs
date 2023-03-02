@@ -1,6 +1,9 @@
 use std::{env, path::PathBuf, process::Command, result::Result, string::String};
 
 pub fn search_in_homebrew() -> Result<PathBuf, i32> {
+    if Command::new("brew").output().is_err() {
+        return Err(1);
+    }
     let cellar_path = String::from_utf8(
         Command::new("brew")
             .arg("--prefix")

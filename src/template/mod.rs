@@ -121,10 +121,8 @@ mod tests {
     fn cleanup() {
         let clean_dir = setup_out_folder();
 
-        std::fs::remove_dir_all(clean_dir.clone())
-            .expect("Could not cleanup out dir");
-        std::fs::create_dir(clean_dir)
-            .expect("could not create dir for testing");
+        std::fs::remove_dir_all(clean_dir.clone()).expect("Could not cleanup out dir");
+        std::fs::create_dir(clean_dir).expect("could not create dir for testing");
     }
 
     #[test]
@@ -138,7 +136,7 @@ mod tests {
 
         assert!(files.is_file());
         assert!(files.with_file_name("main.tex").is_file());
-        assert!( ! files.with_file_name("itex-info.json").is_file());
+        assert!(!files.with_file_name("itex-info.json").is_file());
 
         cleanup();
     }
@@ -146,8 +144,11 @@ mod tests {
     #[test]
     fn template_info() {
         let out = super::get_template_info("default".to_string(), true);
-        
-        assert_eq!(out, "The default template. Contains just enough to get started.".to_string());
+
+        assert_eq!(
+            out,
+            "The default template. Contains just enough to get started.".to_string()
+        );
     }
 
     #[test]

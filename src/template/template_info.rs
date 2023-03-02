@@ -22,15 +22,15 @@ pub fn get_template_info(template_path: PathBuf) -> TemplateInfo {
 
 #[cfg(test)]
 mod test {
-#[test]
-fn json_file() {
-    let output = super::get_template_info(std::path::PathBuf::from("./test_resources/default"));
+    #[test]
+    fn json_file() {
+        let output = super::get_template_info(std::path::PathBuf::from("./test_resources/default"));
 
-    assert_eq!(output.name, "Default".to_string());
-    assert_eq!(
-        output.description,
-        "The default template. Contains just enough to get started.".to_string()
-    );
-    assert_eq!(output.id, 0);
-}
+        assert_eq!(output.name, "Default".to_string());
+        assert_eq!(
+            output.description,
+            "The default template. Contains just enough to get started.".to_string()
+        );
+        assert_eq!(output.id, 0);
+    }
 }
