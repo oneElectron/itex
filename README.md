@@ -17,6 +17,7 @@ itex <options> template
   -i --info                 get template info
   -l --list                 output a list of templates
   -s --disable-os-search    prevent itex from searching the os for the templates folder
+  -o --output <path>        output template to given folder <path>
   -u --update               update the itex-templates folder
 ```
 
