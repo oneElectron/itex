@@ -2,17 +2,12 @@
 mod target_location;
 #[cfg(feature = "updater")]
 mod template_url;
-
 #[cfg(feature = "updater")]
-use reqwest::blocking::Client;
-#[cfg(feature = "updater")]
-use std::{io::Write, process::exit};
-#[cfg(feature = "updater")]
-use zip::ZipArchive;
+use std::io::Write;
 
 #[cfg(feature = "updater")]
 pub fn download_templates() {
-    let mut input = String::new();
+    let mut input = std::string::String::new();
     println!(
         "It looks like the itex-templates folder is not installed, would you like to install it?"
     );
@@ -29,12 +24,12 @@ pub fn download_templates() {
 
     if input != "y" && input != "Y" && input != "yes" && input != "Yes" {
         println!("Aborting");
-        exit(0);
+        std::process::exit(0);
     };
 
     println!("downloading...");
 
-    let client = Client::new();
+    let client = reqwest::blocking::Client::new();
     let mut downloaded_file = client
         .get(template_url::get_template_url())
         .send()
@@ -43,7 +38,7 @@ pub fn download_templates() {
     let mut file_in_vec = Vec::new();
     downloaded_file.copy_to(&mut file_in_vec).unwrap();
 
-    let mut archive = ZipArchive::new(std::io::Cursor::new(file_in_vec))
+    let mut archive = zip::ZipArchive::new(std::io::Cursor::new(file_in_vec))
         .expect("could not parse downloaded data");
 
     archive
