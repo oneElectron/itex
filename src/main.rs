@@ -13,7 +13,7 @@ fn main() {
         template::list_template_names(opts.disable_os_search);
         exit(0);
     } else if opts.info {
-        template::get_template_info(opts.template_name.clone(), opts);
+        template::get_template_info(opts.template_name.clone(), opts.disable_os_search);
         exit(0);
     } else if opts.update {
         template_updater::download_templates();

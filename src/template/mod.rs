@@ -2,7 +2,6 @@ mod files;
 mod template_info;
 mod template_path;
 
-use super::runtime_helper::Options;
 use super::template_updater::download_templates;
 use std::{fs, path::PathBuf, process::exit, string::String};
 use template_path::find_templates_folder;
@@ -82,13 +81,13 @@ pub fn list_template_names(disable_os_search: bool) {
     }
 }
 
-pub fn get_template_info(name: String, runtime_options: Options) {
-    let path_to_templates = find_templates_folder(runtime_options.disable_os_search);
+pub fn get_template_info(name: String, disable_os_search: bool) -> String {
+    let path_to_templates = find_templates_folder(disable_os_search);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
         Err(1) => {
             download_templates();
-            match find_templates_folder(runtime_options.disable_os_search) {
+            match find_templates_folder(disable_os_search) {
                 Ok(p) => p,
                 _ => exit(0),
             }
@@ -101,6 +100,8 @@ pub fn get_template_info(name: String, runtime_options: Options) {
     let info = template_info::get_template_info(path_to_templates);
 
     println!("{}: {}", info.name, info.description);
+
+    info.description
 }
 
 #[cfg(test)]
@@ -120,7 +121,10 @@ mod tests {
     fn cleanup() {
         let clean_dir = setup_out_folder();
 
-        std::fs::remove_dir_all(clean_dir).expect("Could not cleanup out dir");
+        std::fs::remove_dir_all(clean_dir.clone())
+            .expect("Could not cleanup out dir");
+        std::fs::create_dir(clean_dir)
+            .expect("could not create dir for testing");
     }
 
     #[test]
@@ -137,5 +141,17 @@ mod tests {
         assert!( ! files.with_file_name("itex-info.json").is_file());
 
         cleanup();
+    }
+
+    #[test]
+    fn template_info() {
+        let out = super::get_template_info("default".to_string(), true);
+        
+        assert_eq!(out, "The default template. Contains just enough to get started.".to_string());
+    }
+
+    #[test]
+    fn list_templates() {
+        super::list_template_names(false);
     }
 }
