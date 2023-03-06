@@ -11,7 +11,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
         Err(1) => {
-            download_templates();
+            download_templates(true);
             match find_templates_folder(disable_os_search) {
                 Ok(p) => p,
                 _ => exit(0),
@@ -70,7 +70,7 @@ pub fn list_template_names(disable_os_search: bool) {
     let template_folder = match template_folder {
         Ok(p) => p,
         Err(1) => {
-            download_templates();
+            download_templates(true);
             exit(0);
         }
         Err(_) => exit(0),
@@ -86,7 +86,7 @@ pub fn get_template_info(name: String, disable_os_search: bool) -> String {
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
         Err(1) => {
-            download_templates();
+            download_templates(true);
             match find_templates_folder(disable_os_search) {
                 Ok(p) => p,
                 _ => exit(0),
@@ -152,12 +152,14 @@ mod tests {
     }
 
     #[test]
-    fn list_templates_os_search() { // with os_search
+    fn list_templates_os_search() {
+        // with os_search
         super::list_template_names(false);
     }
 
     #[test]
-    fn list_templates() { // without os_search
+    fn list_templates() {
+        // without os_search
         super::list_template_names(true);
     }
 }

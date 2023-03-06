@@ -16,7 +16,7 @@ fn main() {
         template::get_template_info(opts.template_name.clone(), opts.disable_os_search);
         exit(0);
     } else if opts.update {
-        template_updater::download_templates();
+        template_updater::download_templates(false);
         exit(0);
     } else {
         let output_path = match opts.output_path {

@@ -6,26 +6,29 @@ mod template_url;
 use std::io::Write;
 
 #[cfg(feature = "updater")]
-pub fn download_templates() {
+pub fn download_templates(ask: bool) {
     let mut input = std::string::String::new();
-    println!(
+
+    if ask {
+        println!(
         "It looks like the itex-templates folder is not installed, would you like to install it?"
-    );
-    println!("ITex will install into your AppData folder on Windows");
+        );
+        println!("ITex will install into your AppData folder on Windows");
 
-    print!("(Y/n): ");
-    std::io::stdout().flush().expect("flush failed");
+        print!("(Y/n): ");
+        std::io::stdout().flush().expect("flush failed");
 
-    std::io::stdin()
-        .read_line(&mut input)
-        .expect("could not read from stdin");
+        std::io::stdin()
+            .read_line(&mut input)
+            .expect("could not read from stdin");
 
-    let input = input.trim();
+        let input = input.trim();
 
-    if input != "y" && input != "Y" && input != "yes" && input != "Yes" {
-        println!("Aborting");
-        std::process::exit(0);
-    };
+        if input != "y" && input != "Y" && input != "yes" && input != "Yes" {
+            println!("Aborting");
+            std::process::exit(0);
+        };
+    }
 
     println!("downloading...");
 
