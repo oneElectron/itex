@@ -72,7 +72,7 @@ pdf:
 	@if [ -a ./out/main.toc ]; then rm ./out/$(NAME).toc; fi;
 	@if [ -a ./out/texput.log ]; then rm ./out/texput.log; fi;
 	@if [ -a ./out/main.run.xml ]; then rm ./out/main.run.xml; fi;
-  
+	
 count:
 	@texcount $(NAME).tex
 
