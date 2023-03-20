@@ -119,9 +119,11 @@ mod tests {
     }
 
     fn cleanup() {
-        let clean_dir = setup_out_folder();
+        let clean_dir = std::path::PathBuf::from("./out");
 
-        std::fs::remove_dir_all(clean_dir.clone()).expect("Could not cleanup out dir");
+        if clean_dir.is_dir() {
+            std::fs::remove_dir_all(clean_dir.clone()).expect("Could not cleanup out dir");
+        }
         std::fs::create_dir(clean_dir).expect("could not create dir for testing");
     }
 
