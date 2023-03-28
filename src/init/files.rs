@@ -1,4 +1,5 @@
 use std::{fs, fs::read_dir, path::PathBuf};
+use console::style;
 
 #[allow(dead_code)]
 pub enum CopyFilesExitCode {
@@ -24,7 +25,8 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
 
         if cfg!(debug_assertions) {
             println!(
-                "[DEBUG - copy_files] pwd: {}",
+                "{} pwd: {}",
+                style("[DEBUG - copy_files]").green(),
                 pwd.clone()
                     .with_file_name(file.clone().file_name().unwrap().to_str().unwrap())
                     .to_str()

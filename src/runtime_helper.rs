@@ -37,7 +37,7 @@ struct InfoOptions {
 
 pub fn parse_options(args: Vec<String>) -> Command {
     #[cfg(debug_assertions)]
-    println!("{} args: {:?}", style("[debug - parse_options]").green(), args);
+    println!("{} args: {:?}", style("[DEBUG - parse_options]").green(), args);
 
     if args.len() <= 1 {
         println!("{}", style("Not enough arguments").red().bold());

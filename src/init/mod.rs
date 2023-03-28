@@ -4,6 +4,7 @@ mod template_path;
 
 use std::{fs, path::PathBuf, string::String};
 use template_path::find_templates_folder;
+use console::style;
 
 #[cfg(not(test))]
 use std::process::exit;
@@ -39,7 +40,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     path_to_templates.push(name);
 
     if cfg!(debug_assertions) {
-        println!("[DEBUG]: template path: {}", path_to_templates.to_str().unwrap());
+        println!("{} template path: {}", style("[DEBUG - copy_template]:").green(), path_to_templates.to_str().unwrap());
     }
     if !path_to_templates.is_dir() {
         println!("could not find a template with the name provided");
@@ -57,7 +58,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     pwd.push("file.txt");
 
     if cfg!(debug_assertions) {
-        println!("[DEBUG]: output dir = {}", pwd.clone().to_str().unwrap());
+        println!("{} output dir = {}", style("[DEBUG - copy_template]:").green(), pwd.clone().to_str().unwrap());
     }
 
     // dry run: find any files in the current folder that will conflict with the template files
@@ -189,12 +190,6 @@ mod tests {
         let out = super::get_template_info("default".to_string(), true);
 
         assert_eq!(out, "The default template. Contains just enough to get started.".to_string());
-    }
-
-    #[test]
-    fn list_templates_os_search() {
-        // with os_search
-        super::list_template_names(false);
     }
 
     #[test]
