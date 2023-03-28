@@ -1,0 +1,9 @@
+# Trailing commas
+match_block_trailing_comma = false
+
+# Whitespaces
+newline_style = "Unix"
+tab_spaces = 4
+
+# Shorthands 
+use_field_init_shorthand = true
