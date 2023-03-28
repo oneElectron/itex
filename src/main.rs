@@ -14,7 +14,7 @@ fn main() {
 
     if let Command::Init(template_name, _, output_path, disable_os_search) = command {
         let output_path = match output_path {
-            None => std::path::PathBuf::from("."),
+            None => std::env::current_dir().expect("could not find pwd"),
             Some(p) => p,
         };
 

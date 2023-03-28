@@ -37,12 +37,15 @@ struct InfoOptions {
 
 pub fn parse_options(args: Vec<String>) -> Command {
     #[cfg(debug_assertions)]
-    println!("{}: {:?}", style("[debug - parse_options]args").green(), args);
+    println!("{} args: {:?}", style("[debug - parse_options]").green(), args);
 
     if args.len() <= 1 {
         println!("{}", style("Not enough arguments").red().bold());
         print_help();
+        #[cfg(not(test))]
         exit(0);
+        #[cfg(test)]
+        panic!();
     }
 
     let mut output: Command = Command::None;
@@ -95,7 +98,10 @@ pub fn parse_options(args: Vec<String>) -> Command {
         if template_name.is_err() {
             println!("{}", style("No template name has been supplied").red().bold());
             print_help();
-            exit(1);
+            #[cfg(not(test))]
+            exit(0);
+            #[cfg(test)]
+            panic!();
         }
 
         let init_options = parse_init_options(x + 1, args.clone());
@@ -120,7 +126,10 @@ pub fn parse_options(args: Vec<String>) -> Command {
         if template_name.is_err() {
             println!("{}", style("No template name has been supplied").red().bold());
             print_help();
-            exit(1);
+            #[cfg(not(test))]
+            exit(0);
+            #[cfg(test)]
+            panic!();
         }
         let template_name = template_name.unwrap();
 
@@ -130,7 +139,10 @@ pub fn parse_options(args: Vec<String>) -> Command {
     } else if output == Command::None {
         println!("{}", style("No command given").red().bold());
         print_help();
+        #[cfg(not(test))]
         exit(0);
+        #[cfg(test)]
+        panic!();
     }
 
     output
@@ -191,6 +203,10 @@ fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
             if args[x].starts_with("-") {
                 println!("{}", style("invalid search path").red().bold());
                 print_help();
+                #[cfg(not(test))]
+                exit(0);
+                #[cfg(test)]
+                panic!();
             }
             search_path = Some(PathBuf::from(args[x].clone()));
         }
@@ -199,10 +215,18 @@ fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
             if args[x].starts_with("-") {
                 println!("{}", style("invalid output path").red().bold());
                 print_help();
+                #[cfg(not(test))]
+                exit(0);
+                #[cfg(test)]
+                panic!();
             }
             let tmp = PathBuf::from(args[x].clone());
             if !tmp.exists() {
-                println!("{}", style("Path does not exist").red().bold());
+                println!("{} \"{}\" {}", style("Path").red().bold(), tmp.as_os_str().to_str().unwrap(), style("does not exist").red().bold());
+                #[cfg(not(test))]
+                exit(0);
+                #[cfg(test)]
+                panic!();
             }
 
             output_path = Some(PathBuf::from(args[x].clone()));
@@ -251,6 +275,7 @@ fn parse_info_options(start: usize, args: Vec<String>) -> InfoOptions {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::env::current_dir;
 
     #[test]
     fn parse_command_build() {
@@ -282,8 +307,9 @@ mod tests {
         let options = vec!["/opt/homebrew/bin/itex".to_string(), "info".to_string(), "default".to_string()];
         let output = parse_options(options);
 
-        if let Command::Init(template_name, _, _, _) = output {
+        if let Command::Info(template_name, disable_os_search) = output {
             assert_eq!(template_name, "default".to_string());
+            assert_eq!(disable_os_search, false);
         } else {
             panic!();
         }
@@ -306,6 +332,7 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
     fn parse_command_error() {
         let options = vec![
             "/opt/homebrew/bin/itex".to_string(),
@@ -320,20 +347,22 @@ mod tests {
 
     #[test]
     fn parse_init_options() {
+        let search_output_path = current_dir().unwrap().to_str().unwrap().to_string();
+
         let options = vec![
             "/opt/homebrew/bin/itex".to_string(),
             "init".to_string(),
             "--search-path".to_string(),
-            "~/Documents".to_string(),
+            search_output_path.clone(),
             "default".to_string(),
             "--disable-os-search".to_string(),
             "--output-path".to_string(),
-            "~/Documents".to_string(),
+            search_output_path,
         ];
         let output = super::parse_init_options(2, options);
 
         assert_eq!(output.disable_os_search, true);
-        assert_eq!(output.output_path, Some(PathBuf::from("~/Documents")));
-        assert_eq!(output.search_path, Some(PathBuf::from("~/Documents")));
+        assert_eq!(output.output_path, Some(current_dir().unwrap()));
+        assert_eq!(output.search_path, Some(current_dir().unwrap()));
     }
 }
