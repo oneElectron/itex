@@ -31,9 +31,9 @@ fn remove_files() {
         let filename = filename.to_str().unwrap();
         let path = path.path();
 
-        if !ignore_file(&filename) {
-            if path.is_file() {
-                std::fs::remove_file(path).expect("failed to remove file in out folder");
+        if !ignore_file(&filename) && path.is_file() {
+            if std::fs::remove_file(path).is_err() {
+                println!("{}", style("failed to remove file in out folder").red().bold());
             }
         }
     }

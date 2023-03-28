@@ -13,11 +13,7 @@ pub fn get_template_url() -> Url {
         .get("https://api.github.com/repos/oneelectron/itex/releases/latest")
         .header("User-Agent", "reqwest");
 
-    let version_json = version_json
-        .send()
-        .expect("Could not connect to GitHub")
-        .text()
-        .unwrap();
+    let version_json = version_json.send().expect("Could not connect to GitHub").text().unwrap();
 
     let version_data: VersionData = serde_json::from_str(version_json.as_str()).unwrap();
 

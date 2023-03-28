@@ -17,15 +17,8 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
 
         let pwd = to.clone();
 
-        if dry_run
-            && pwd
-                .with_file_name(file.file_name().unwrap().to_str().unwrap())
-                .exists()
-        {
-            println!(
-                "file exists: {}",
-                file.file_name().unwrap().to_str().unwrap()
-            );
+        if dry_run && pwd.with_file_name(file.file_name().unwrap().to_str().unwrap()).exists() {
+            println!("file exists: {}", file.file_name().unwrap().to_str().unwrap());
             end = true;
         }
 
@@ -40,11 +33,7 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
         }
         if file.clone().file_name().unwrap().to_str().unwrap() != "itex-info.json"
             && !dry_run
-            && fs::copy(
-                &file,
-                pwd.with_file_name(file.file_name().unwrap().to_str().unwrap()),
-            )
-            .is_err()
+            && fs::copy(&file, pwd.with_file_name(file.file_name().unwrap().to_str().unwrap())).is_err()
         {
             println!("Error copying file");
         }

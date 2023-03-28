@@ -3,6 +3,7 @@ mod init;
 mod runtime_helper;
 mod updater;
 
+use console::style;
 use init::copy_template;
 use runtime_helper::parse_options;
 use runtime_helper::Command;
@@ -17,16 +18,18 @@ fn main() {
             Some(p) => p,
         };
 
-        copy_template(
-            template_name.replace('\n', ""),
-            output_path,
-            disable_os_search,
-        );
+        copy_template(template_name.replace('\n', ""), output_path, disable_os_search);
 
-        let mut out_folder = env::current_dir().expect("Could not find current path");
+        let out_folder = env::current_dir();
+        if out_folder.is_err() {
+            println!("{}", style("Could not find current path").red().bold());
+        }
+        let mut out_folder = out_folder.unwrap();
         out_folder.push("out");
         if !out_folder.is_dir() {
-            std::fs::create_dir(out_folder).expect("failed to create out folder");
+            if std::fs::create_dir(out_folder).is_err() {
+                println!("{}", style("failed to create out folder").red().bold());
+            }
         }
     } else if let Command::List(disable_os_search) = command {
         init::list_template_names(disable_os_search);

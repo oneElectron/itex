@@ -37,10 +37,10 @@ struct InfoOptions {
 
 pub fn parse_options(args: Vec<String>) -> Command {
     #[cfg(debug_assertions)]
-    println!("{}: {:?}", style("args").green(), args);
+    println!("{}: {:?}", style("[debug - parse_options]args").green(), args);
 
     if args.len() <= 1 {
-        println!("Not enough arguments");
+        println!("{}", style("Not enough arguments").red().bold());
         print_help();
         exit(0);
     }
@@ -71,10 +71,10 @@ pub fn parse_options(args: Vec<String>) -> Command {
             }
         }
         output = match args[x].as_str() {
-            "init" | "i" => Command::Init("PLACEHOLDER".to_string(), None, None, false),
+            "init" | "i" => Command::Init("".to_string(), None, None, false),
             "build" | "b" => Command::Build(false),
             "list" | "l" => Command::List(false),
-            "info" => Command::Info("PLACEHOLDER".to_string(), false),
+            "info" => Command::Info("".to_string(), false),
             "--help" | "-h" | "?" | "--Help" | "-H" => {
                 print_help();
                 exit(0)
@@ -93,7 +93,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
     if let Command::Init(_, _, _, _) = output {
         let template_name = parse_template_name(x + 1, args.clone());
         if template_name.is_err() {
-            println!("No template name has been supplied");
+            println!("{}", style("No template name has been supplied").red().bold());
             print_help();
             exit(1);
         }
@@ -118,7 +118,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
     } else if let Command::Info(_, _) = output {
         let template_name = parse_template_name(x + 1, args.clone());
         if template_name.is_err() {
-            println!("No template name has been supplied");
+            println!("{}", style("No template name has been supplied").red().bold());
             print_help();
             exit(1);
         }
@@ -128,7 +128,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
 
         output = Command::Info(template_name, info_options.disable_os_search);
     } else if output == Command::None {
-        println!("No command given");
+        println!("{}", style("No command given").red().bold());
         print_help();
         exit(0);
     }
@@ -189,7 +189,7 @@ fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
         if args[x] == "--search-path".to_string() {
             x += 1;
             if args[x].starts_with("-") {
-                println!("invalid search path");
+                println!("{}", style("invalid search path").red().bold());
                 print_help();
             }
             search_path = Some(PathBuf::from(args[x].clone()));
@@ -267,11 +267,7 @@ mod tests {
 
     #[test]
     fn parse_command_init() {
-        let options = vec![
-            "/opt/homebrew/bin/itex".to_string(),
-            "init".to_string(),
-            "default".to_string(),
-        ];
+        let options = vec!["/opt/homebrew/bin/itex".to_string(), "init".to_string(), "default".to_string()];
         let output = parse_options(options);
 
         if let Command::Init(template_name, _, _, _) = output {
@@ -283,11 +279,7 @@ mod tests {
 
     #[test]
     fn parse_command_info() {
-        let options = vec![
-            "/opt/homebrew/bin/itex".to_string(),
-            "info".to_string(),
-            "default".to_string(),
-        ];
+        let options = vec!["/opt/homebrew/bin/itex".to_string(), "info".to_string(), "default".to_string()];
         let output = parse_options(options);
 
         if let Command::Init(template_name, _, _, _) = output {

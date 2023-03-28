@@ -26,10 +26,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     path_to_templates.push(name);
 
     if cfg!(debug_assertions) {
-        println!(
-            "[DEBUG]: template path: {}",
-            path_to_templates.to_str().unwrap()
-        );
+        println!("[DEBUG]: template path: {}", path_to_templates.to_str().unwrap());
     }
     if !path_to_templates.is_dir() {
         println!("could not find a template with the name provided");
@@ -152,10 +149,7 @@ mod tests {
     fn template_info() {
         let out = super::get_template_info("default".to_string(), true);
 
-        assert_eq!(
-            out,
-            "The default template. Contains just enough to get started.".to_string()
-        );
+        assert_eq!(out, "The default template.".to_string());
     }
 
     #[test]

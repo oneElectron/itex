@@ -1,6 +1,6 @@
 {
     "name": "Default",
-    "description": "The default template. Contains just enough to get started.",
+    "description": "The default template.",
     "files": [
         "main.tex",
         "Makefile"

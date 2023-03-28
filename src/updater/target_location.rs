@@ -11,8 +11,7 @@ pub fn install_location() -> PathBuf {
 
 pub fn itex_app_data_folder() -> PathBuf {
     if cfg!(windows) {
-        let local_app_data =
-            std::env::var("LOCALAPPDATA").expect("could not find local app data folder");
+        let local_app_data = std::env::var("LOCALAPPDATA").expect("could not find local app data folder");
 
         let mut local_app_data = PathBuf::from(local_app_data);
         local_app_data.push("itex");
