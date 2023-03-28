@@ -133,8 +133,6 @@ pub fn parse_options(args: Vec<String>) -> Command {
         exit(0);
     }
 
-    println!("{:?}", output);
-
     output
 }
 
@@ -142,16 +140,14 @@ pub fn parse_options(args: Vec<String>) -> Command {
 pub fn print_help() {
     println!("usage: itex <command> <options>");
     println!("commands:");
-    println!("  b  build                  build the project in the current folder");
-    println!("  i  init                   Copy a template into the current folder");
-    println!("     info                   Get template info");
+    println!("  b  build            build the project in the current folder");
+    println!("  i  init             Copy a template into the current folder");
+    println!("     info             Get template info");
     #[cfg(feature = "updater")]
-    println!("     update                 Update the templates folder");
-    println!("  l  list                   List installed templates");
+    println!("     update           Update the templates folder");
+    println!("  l  list             List installed templates");
     println!("options:");
-    println!("  -h --help                 Shows help menu, use <command> --help to show help menu for specific commands");
-    println!("  -o --output <path>        output template to given folder <path>");
-    println!("  -s --disable-os-search    prevent itex from searching the os for the templates folder");
+    println!("  -h --help           Shows help menu for given command");
     // println!("  -p --search-path <path>   pass a templates directory");
     // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
 }

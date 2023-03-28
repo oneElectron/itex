@@ -1,5 +1,3 @@
-
-
 default: test
 
 test:
@@ -14,3 +12,9 @@ build:
 help:
     cargo run --no-default-features -- --help
     cargo run --no-default-features --features updater -- --help
+
+dev-install:
+    cargo install --path . --no-default-features
+
+dev-install-updater:
+    cargo install --path . --no-default-features --features
