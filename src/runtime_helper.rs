@@ -36,6 +36,9 @@ struct InfoOptions {
 }
 
 pub fn parse_options(args: Vec<String>) -> Command {
+    #[cfg(debug_assertions)]
+    println!("{}: {:?}", style("args").green(), args);
+
     if args.len() <= 1 {
         println!("Not enough arguments");
         print_help();
@@ -44,7 +47,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
 
     let mut output: Command = Command::None;
     let mut x = 1;
-
+    /*
     while x < args.len() {
         // SOMETHING SOMETHING
         if args[x] == "--help" || args[x] == "-h" || args[x].starts_with('?') || args[x] == "-help"
@@ -54,7 +57,8 @@ pub fn parse_options(args: Vec<String>) -> Command {
         }
         x += 1;
     }
-
+    x =  x - 2;
+    */
     loop {
         if x >= args.len() {
             break;
@@ -79,7 +83,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
             _ => Command::None,
         };
 
-        if Command::None != output {
+        if output != Command::None {
             break;
         }
 

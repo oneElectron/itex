@@ -32,5 +32,7 @@ fn main() {
         init::list_template_names(disable_os_search);
     } else if let Command::Info(name, disable_os_search) = command {
         init::get_template_info(name, disable_os_search);
+    } else if let Command::Build(debug) = command {
+        builder::build(debug);
     }
 }
