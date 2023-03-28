@@ -6,7 +6,7 @@
 ![licence](https://img.shields.io/github/license/oneelectron/itex?color=blue)
 ![lines of code](https://img.shields.io/tokei/lines/github/oneelectron/itex?color=green)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/oneelectron/itex?color=red)
-[![Ubuntu-latest](https://github.com/oneElectron/itex/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml)
+[![Ubuntu-latest](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml/badge.svg)](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml)
 
 </div>
 
