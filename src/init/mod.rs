@@ -2,9 +2,9 @@ mod files;
 mod template_info;
 mod template_path;
 
+use console::style;
 use std::{fs, path::PathBuf, string::String};
 use template_path::find_templates_folder;
-use console::style;
 
 #[cfg(not(test))]
 use std::process::exit;
@@ -40,7 +40,11 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     path_to_templates.push(name);
 
     if cfg!(debug_assertions) {
-        println!("{} template path: {}", style("[DEBUG - copy_template]:").green(), path_to_templates.to_str().unwrap());
+        println!(
+            "{} template path: {}",
+            style("[DEBUG - copy_template]:").green(),
+            path_to_templates.to_str().unwrap()
+        );
     }
     if !path_to_templates.is_dir() {
         println!("could not find a template with the name provided");
@@ -58,7 +62,11 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     pwd.push("file.txt");
 
     if cfg!(debug_assertions) {
-        println!("{} output dir = {}", style("[DEBUG - copy_template]:").green(), pwd.clone().to_str().unwrap());
+        println!(
+            "{} output dir = {}",
+            style("[DEBUG - copy_template]:").green(),
+            pwd.clone().to_str().unwrap()
+        );
     }
 
     // dry run: find any files in the current folder that will conflict with the template files

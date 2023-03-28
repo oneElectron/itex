@@ -1,5 +1,5 @@
-use std::{fs, fs::read_dir, path::PathBuf};
 use console::style;
+use std::{fs, fs::read_dir, path::PathBuf};
 
 #[allow(dead_code)]
 pub enum CopyFilesExitCode {

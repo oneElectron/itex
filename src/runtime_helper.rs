@@ -222,7 +222,12 @@ fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
             }
             let tmp = PathBuf::from(args[x].clone());
             if !tmp.exists() {
-                println!("{} \"{}\" {}", style("Path").red().bold(), tmp.as_os_str().to_str().unwrap(), style("does not exist").red().bold());
+                println!(
+                    "{} \"{}\" {}",
+                    style("Path").red().bold(),
+                    tmp.as_os_str().to_str().unwrap(),
+                    style("does not exist").red().bold()
+                );
                 #[cfg(not(test))]
                 exit(0);
                 #[cfg(test)]
