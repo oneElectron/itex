@@ -5,9 +5,7 @@ use std::process::{exit, Command};
 pub fn build(debug: bool) {
     let args = vec!["-output-directory", "./out/", "main.tex"];
 
-    let output = Command::new("pdflatex")
-        .args(args)
-        .output();
+    let output = Command::new("pdflatex").args(args).output();
 
     if output.is_err() {
         println!("{}", style("Error building pdf").red().bold());
