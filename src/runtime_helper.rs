@@ -3,7 +3,7 @@ use std::{option::Option, path::PathBuf, process::exit};
 
 #[derive(std::fmt::Debug, PartialEq)]
 pub enum Command {
-    Build,
+    Build(bool),
     Init(
         /* template_name */ String,
         /* search_path */ Option<PathBuf>, // TODO: Implement search_path
@@ -17,7 +17,9 @@ pub enum Command {
     Update,
 }
 
-struct BuildOptions {}
+struct BuildOptions {
+    debug: bool,
+}
 
 struct InitOptions {
     search_path: Option<PathBuf>,
@@ -44,7 +46,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
     let mut x = 1;
 
     while x < args.len() {
-        // SOMEHTING SOMETHING
+        // SOMETHING SOMETHING
         if args[x] == "--help" || args[x] == "-h" || args[x].starts_with('?') || args[x] == "-help"
         {
             print_help();
@@ -66,7 +68,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
         }
         output = match args[x].as_str() {
             "init" | "i" => Command::Init("PLACEHOLDER".to_string(), None, None, false),
-            "build" | "b" => Command::Build,
+            "build" | "b" => Command::Build(false),
             "list" | "l" => Command::List(false),
             "info" => Command::Info("PLACEHOLDER".to_string(), false),
             "--help" | "-h" | "?" | "--Help" | "-H" => {
@@ -101,10 +103,10 @@ pub fn parse_options(args: Vec<String>) -> Command {
             init_options.output_path,
             init_options.disable_os_search,
         );
-    } else if let Command::Build = output {
-        let build_options = parse_build_options();
+    } else if let Command::Build(_) = output {
+        let build_options = parse_build_options(x + 1, args.clone());
 
-        output = Command::Build;
+        output = Command::Build(build_options.debug);
     } else if let Command::List(_) = output {
         let list_options = parse_list_options(x + 1, args.clone());
 
@@ -162,8 +164,21 @@ fn parse_template_name(start: usize, args: Vec<String>) -> Result<String, isize>
     Err(1)
 }
 
-fn parse_build_options() -> BuildOptions {
-    return BuildOptions {};
+fn parse_build_options(start: usize, args: Vec<String>) -> BuildOptions {
+    let mut x = start;
+    let mut debug: bool = false;
+
+    while x < args.len() {
+        if args[x] == "--debug" || args[x] == "-d" {
+            debug = true;
+        }
+
+        x += 1;
+    }
+
+    return BuildOptions {
+        debug
+    };
 }
 
 fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
@@ -245,10 +260,11 @@ mod tests {
             "/opt/homebrew/bin/itex".to_string(),
             "build".to_string(),
             "default".to_string(),
+            "--debug".to_string(),
         ];
         let output = parse_options(options);
 
-        assert_eq!(output, Command::Build);
+        assert_eq!(output, Command::Build(true));
     }
 
     #[test]
