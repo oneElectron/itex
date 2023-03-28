@@ -4,6 +4,7 @@ test:
     @echo This justfile is only for development
     cargo test --no-default-features
     cargo test --no-default-features --features updater
+    cargo fmt
 
 build:
     cargo build --no-default-features
