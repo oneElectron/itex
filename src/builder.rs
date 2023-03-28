@@ -3,12 +3,10 @@ use std::path::PathBuf;
 use std::process::{exit, Command};
 
 pub fn build(debug: bool) {
-    let args = vec!["main.tex", "-output-directory", "./out/"];
+    let args = vec!["-output-directory", "./out/", "main.tex"];
 
     let output = Command::new("pdflatex")
-        .arg("-output-directory")
-        .arg("./out/")
-        .arg("main.tex")
+        .args(args)
         .output();
 
     if output.is_err() {
