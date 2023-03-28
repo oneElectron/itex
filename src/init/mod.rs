@@ -2,14 +2,17 @@ mod files;
 mod template_info;
 mod template_path;
 
-use super::template_updater::download_templates;
 use std::{fs, path::PathBuf, process::exit, string::String};
 use template_path::find_templates_folder;
+
+#[cfg(feature = "updater")]
+use super::updater::download_templates;
 
 pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool) {
     let path_to_templates = find_templates_folder(disable_os_search);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
+        #[cfg(feature = "updater")]
         Err(1) => {
             download_templates(true);
             match find_templates_folder(disable_os_search) {
@@ -69,6 +72,7 @@ pub fn list_template_names(disable_os_search: bool) {
     let template_folder = find_templates_folder(disable_os_search);
     let template_folder = match template_folder {
         Ok(p) => p,
+        #[cfg(feature = "updater")]
         Err(1) => {
             download_templates(true);
             exit(0);
@@ -85,6 +89,7 @@ pub fn get_template_info(name: String, disable_os_search: bool) -> String {
     let path_to_templates = find_templates_folder(disable_os_search);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
+        #[cfg(feature = "updater")]
         Err(1) => {
             download_templates(true);
             match find_templates_folder(disable_os_search) {

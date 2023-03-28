@@ -1,11 +1,10 @@
-#[cfg(feature = "updater")]
+#![cfg(feature = "updater")]
+
 mod target_location;
-#[cfg(feature = "updater")]
 mod template_url;
-#[cfg(feature = "updater")]
+
 use std::io::Write;
 
-#[cfg(feature = "updater")]
 pub fn download_templates(ask: bool) {
     let mut input = std::string::String::new();
 
@@ -47,9 +46,4 @@ pub fn download_templates(ask: bool) {
     archive
         .extract(target_location::install_location())
         .expect("could not extract to app data folder");
-}
-
-#[cfg(not(feature = "updater"))]
-pub fn download_templates() {
-    println!("updater is not enabled for this build. If you used a package manager to install itex, the templates are kept up to date by the package manager");
 }
