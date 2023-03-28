@@ -176,9 +176,7 @@ fn parse_build_options(start: usize, args: Vec<String>) -> BuildOptions {
         x += 1;
     }
 
-    return BuildOptions {
-        debug
-    };
+    return BuildOptions { debug };
 }
 
 fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
