@@ -3,8 +3,7 @@
 # ITex 
 
 ![version](https://img.shields.io/github/v/tag/oneelectron/itex?color=orange)
-![licence](https://img.shields.io/github/license/oneelectron/itex?color=blue)
-![lines of code](https://img.shields.io/tokei/lines/github/oneelectron/itex?color=green)
+![license](https://img.shields.io/github/license/oneelectron/itex?color=blue)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/oneelectron/itex?color=red)
 [![Ubuntu-latest](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml/badge.svg)](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml)
 
