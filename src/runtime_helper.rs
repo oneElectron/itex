@@ -4,6 +4,8 @@ use std::{option::Option, path::PathBuf, process::exit};
 #[derive(std::fmt::Debug, PartialEq)]
 pub enum Command {
     Build(bool),
+    Count,
+    Clean,
     Init(
         /* template_name */ String,
         /* search_path */ Option<PathBuf>, // TODO: Implement search_path
@@ -75,6 +77,8 @@ pub fn parse_options(args: Vec<String>) -> Command {
         }
         output = match args[x].as_str() {
             "init" | "i" => Command::Init("".to_string(), None, None, false),
+            "count" => Command::Count,
+            "clean" => Command::Clean,
             "build" | "b" => Command::Build(false),
             "list" | "l" => Command::List(false),
             "info" => Command::Info("".to_string(), false),
@@ -152,7 +156,9 @@ pub fn parse_options(args: Vec<String>) -> Command {
 pub fn print_help() {
     println!("usage: itex <command> <options>");
     println!("commands:");
-    println!("  b  build            build the project in the current folder");
+    println!("  b  build            Build the project in the current folder (requires pdflatex");
+    println!("     count            Count words in main.tex (requires texcount");
+    println!("     clean            Clean the out directory");
     println!("  i  init             Copy a template into the current folder");
     println!("     info             Get template info");
     #[cfg(feature = "updater")]

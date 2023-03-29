@@ -37,5 +37,9 @@ fn main() {
         init::get_template_info(name, disable_os_search);
     } else if let Command::Build(debug) = command {
         builder::build(debug);
+    } else if let Command::Count = command {
+        builder::count();
+    } else if let Command::Clean = command {
+        builder::remove_files();
     }
 }

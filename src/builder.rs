@@ -1,6 +1,7 @@
 use console::style;
 use std::path::PathBuf;
 use std::process::{exit, Command};
+use std::str;
 
 pub fn build(debug: bool) {
     let args = vec!["-output-directory", "./out/", "main.tex"];
@@ -16,7 +17,19 @@ pub fn build(debug: bool) {
     }
 }
 
-fn remove_files() {
+pub fn count() {
+    let output = Command::new("texcount")
+        .arg("main.tex")
+        .output()
+        .expect("Could not run texcount")
+        .stdout;
+
+    let output = String::from_utf8(output).unwrap();
+
+    println!("{}", output);
+}
+
+pub fn remove_files() {
     let out_folder_path = PathBuf::from("./out");
     if !out_folder_path.is_dir() {
         println!("{}", style("could not find out dir").red().bold());
