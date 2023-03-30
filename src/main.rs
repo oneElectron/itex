@@ -1,5 +1,6 @@
 mod builder;
 mod init;
+mod macros;
 mod runtime_helper;
 mod updater;
 
@@ -24,12 +25,11 @@ fn main() {
         if out_folder.is_err() {
             println!("{}", style("Could not find current path").red().bold());
         }
+
         let mut out_folder = out_folder.unwrap();
         out_folder.push("out");
-        if !out_folder.is_dir() {
-            if std::fs::create_dir(out_folder).is_err() {
-                println!("{}", style("failed to create out folder").red().bold());
-            }
+        if !out_folder.is_dir() && std::fs::create_dir(out_folder).is_err() {
+            println!("{}", style("failed to create out folder").red().bold());
         }
     } else if let Command::List(disable_os_search) = command {
         init::list_template_names(disable_os_search);

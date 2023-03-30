@@ -1,5 +1,6 @@
+use super::exit;
 use console::style;
-use std::{option::Option, path::PathBuf, process::exit};
+use std::{option::Option, path::PathBuf};
 
 #[derive(std::fmt::Debug, PartialEq)]
 pub enum Command {
@@ -12,8 +13,8 @@ pub enum Command {
         /* output_path */ Option<PathBuf>,
         /* disable_os_search */ bool,
     ),
-    Info(String, bool), // TODO: implement this
-    List(bool),         // TODO: implement disable_os_search
+    Info(String, bool),
+    List(bool),
     None,
     #[cfg(feature = "updater")]
     Update,
@@ -44,10 +45,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
     if args.len() <= 1 {
         println!("{}", style("Not enough arguments").red().bold());
         print_help();
-        #[cfg(not(test))]
-        exit(0);
-        #[cfg(test)]
-        panic!();
+        exit!(0);
     }
 
     let mut output: Command = Command::None;
@@ -84,7 +82,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
             "info" => Command::Info("".to_string(), false),
             "--help" | "-h" | "?" | "--Help" | "-H" => {
                 print_help();
-                exit(0)
+                exit!(0);
             }
             "updater" => break,
             _ => Command::None,
@@ -102,13 +100,10 @@ pub fn parse_options(args: Vec<String>) -> Command {
         if template_name.is_err() {
             println!("{}", style("No template name has been supplied").red().bold());
             print_help();
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
 
-        let init_options = parse_init_options(x + 1, args.clone());
+        let init_options = parse_init_options(x + 1, args);
 
         let template_name = template_name.unwrap();
         output = Command::Init(
@@ -118,11 +113,11 @@ pub fn parse_options(args: Vec<String>) -> Command {
             init_options.disable_os_search,
         );
     } else if let Command::Build(_) = output {
-        let build_options = parse_build_options(x + 1, args.clone());
+        let build_options = parse_build_options(x + 1, args);
 
         output = Command::Build(build_options.debug);
     } else if let Command::List(_) = output {
-        let list_options = parse_list_options(x + 1, args.clone());
+        let list_options = parse_list_options(x + 1, args);
 
         output = Command::List(list_options.disable_os_search);
     } else if let Command::Info(_, _) = output {
@@ -130,23 +125,17 @@ pub fn parse_options(args: Vec<String>) -> Command {
         if template_name.is_err() {
             println!("{}", style("No template name has been supplied").red().bold());
             print_help();
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
         let template_name = template_name.unwrap();
 
-        let info_options = parse_info_options(x + 1, args.clone());
+        let info_options = parse_info_options(x + 1, args);
 
         output = Command::Info(template_name, info_options.disable_os_search);
     } else if output == Command::None {
         println!("{}", style("No command given").red().bold());
         print_help();
-        #[cfg(not(test))]
-        exit(0);
-        #[cfg(test)]
-        panic!();
+        exit!(0);
     }
 
     output
@@ -173,7 +162,7 @@ pub fn print_help() {
 fn parse_template_name(start: usize, args: Vec<String>) -> Result<String, isize> {
     let mut x = start;
     while x < args.len() {
-        if !args[x].starts_with("-") {
+        if !args[x].starts_with('-') {
             return Ok(args[x].clone());
         }
         x += 1
@@ -194,7 +183,7 @@ fn parse_build_options(start: usize, args: Vec<String>) -> BuildOptions {
         x += 1;
     }
 
-    return BuildOptions { debug };
+    BuildOptions { debug }
 }
 
 fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
@@ -204,27 +193,21 @@ fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
     let mut disable_os_search: bool = false;
 
     while x < args.len() {
-        if args[x] == "--search-path".to_string() {
+        if args[x] == *"--search-path".to_string() {
             x += 1;
-            if args[x].starts_with("-") {
+            if args[x].starts_with('-') {
                 println!("{}", style("invalid search path").red().bold());
                 print_help();
-                #[cfg(not(test))]
-                exit(0);
-                #[cfg(test)]
-                panic!();
+                exit!(0);
             }
             search_path = Some(PathBuf::from(args[x].clone()));
         }
-        if args[x] == "--output-path".to_string() {
+        if args[x] == *"--output-path".to_string() {
             x += 1;
-            if args[x].starts_with("-") {
+            if args[x].starts_with('-') {
                 println!("{}", style("invalid output path").red().bold());
                 print_help();
-                #[cfg(not(test))]
-                exit(0);
-                #[cfg(test)]
-                panic!();
+                exit!(0);
             }
             let tmp = PathBuf::from(args[x].clone());
             if !tmp.exists() {
@@ -234,25 +217,22 @@ fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
                     tmp.as_os_str().to_str().unwrap(),
                     style("does not exist").red().bold()
                 );
-                #[cfg(not(test))]
-                exit(0);
-                #[cfg(test)]
-                panic!();
+                exit!(0);
             }
 
             output_path = Some(PathBuf::from(args[x].clone()));
         }
-        if args[x] == "--disable-os-search".to_string() {
+        if args[x] == *"--disable-os-search".to_string() {
             disable_os_search = true;
         }
         x += 1;
     }
 
-    return InitOptions {
+    InitOptions {
         search_path,
         output_path,
         disable_os_search,
-    };
+    }
 }
 
 fn parse_list_options(start: usize, args: Vec<String>) -> ListOptions {
@@ -260,13 +240,13 @@ fn parse_list_options(start: usize, args: Vec<String>) -> ListOptions {
 
     let mut disable_os_search: bool = false;
     while x < args.len() {
-        if args[x] == "--disable-os-search".to_string() {
+        if args[x] == *"--disable-os-search".to_string() {
             disable_os_search = true;
         }
         x += 1;
     }
 
-    return ListOptions { disable_os_search };
+    ListOptions { disable_os_search }
 }
 
 fn parse_info_options(start: usize, args: Vec<String>) -> InfoOptions {
@@ -274,13 +254,13 @@ fn parse_info_options(start: usize, args: Vec<String>) -> InfoOptions {
 
     let mut disable_os_search: bool = false;
     while x < args.len() {
-        if args[x] == "--disable-os-search".to_string() {
+        if args[x] == *"--disable-os-search".to_string() {
             disable_os_search = true;
         }
         x += 1;
     }
 
-    return InfoOptions { disable_os_search };
+    InfoOptions { disable_os_search }
 }
 
 #[cfg(test)]

@@ -2,12 +2,10 @@ mod files;
 mod template_info;
 mod template_path;
 
+use super::exit;
 use console::style;
 use std::{fs, path::PathBuf, string::String};
 use template_path::find_templates_folder;
-
-#[cfg(not(test))]
-use std::process::exit;
 
 #[cfg(feature = "updater")]
 use super::updater::download_templates;
@@ -22,18 +20,12 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
             match find_templates_folder(disable_os_search) {
                 Ok(p) => p,
                 _ => {
-                    #[cfg(not(test))]
-                    exit(0);
-                    #[cfg(test)]
-                    panic!();
+                    exit!(0);
                 }
             }
         }
         Err(_) => {
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
     };
 
@@ -49,10 +41,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     if !path_to_templates.is_dir() {
         println!("could not find a template with the name provided");
         println!("use itex --list to get a list of available templates");
-        #[cfg(not(test))]
-        exit(0);
-        #[cfg(test)]
-        panic!();
+        exit!(0);
     }
 
     let path_to_templates = PathBuf::from(path_to_templates.to_str().unwrap().trim());
@@ -73,17 +62,11 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     match files::copy_files(path_to_templates.clone(), pwd.clone(), true) {
         Err(files::CopyFilesExitCode::SomeFilesExist) => {
             println!("Remove these files before running itex");
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
         Err(files::CopyFilesExitCode::AllFilesExist) => {
             println!("All of the files in the template listed exist in this folder already");
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
         _ => {}
     }
@@ -102,16 +85,10 @@ pub fn list_template_names(disable_os_search: bool) {
         #[cfg(feature = "updater")]
         Err(1) => {
             download_templates(true);
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
         Err(_) => {
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
     };
 
@@ -130,18 +107,12 @@ pub fn get_template_info(name: String, disable_os_search: bool) -> String {
             match find_templates_folder(disable_os_search) {
                 Ok(p) => p,
                 _ => {
-                    #[cfg(not(test))]
-                    exit(0);
-                    #[cfg(test)]
-                    panic!();
+                    exit!(0);
                 }
             }
         }
         Err(_) => {
-            #[cfg(not(test))]
-            exit(0);
-            #[cfg(test)]
-            panic!();
+            exit!(0);
         }
     };
 
@@ -182,7 +153,7 @@ mod tests {
         cleanup();
         let out_dir = setup_out_folder();
         let mut files = out_dir.clone();
-        files.push("Makefile");
+        files.push("itex-build.toml");
 
         super::copy_template("default".to_string(), out_dir, true);
 
@@ -197,7 +168,7 @@ mod tests {
     fn template_info() {
         let out = super::get_template_info("default".to_string(), true);
 
-        assert_eq!(out, "The default template. Contains just enough to get started.".to_string());
+        assert_eq!(out, "The default template.".to_string());
     }
 
     #[test]

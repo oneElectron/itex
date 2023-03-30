@@ -1,9 +1,0 @@
-{
-    "name": "Default",
-    "description": "The default template. Contains just enough to get started.",
-    "files": [
-        "main.tex",
-        "Makefile"
-    ],
-    "id": 0
-}

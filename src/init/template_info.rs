@@ -1,4 +1,4 @@
-use serde_derive::Deserialize;
+use serde::Deserialize;
 use std::path::PathBuf;
 
 #[derive(Deserialize)]
@@ -10,11 +10,14 @@ pub struct TemplateInfo {
 
 pub fn get_template_info(template_path: PathBuf) -> TemplateInfo {
     let mut path = template_path;
-    path.push("itex-info.json");
+    path.push("itex-info.toml");
 
-    let json_str = std::fs::read_to_string(path).expect("could not find itex-info.json for template"); // TODO: Handel error
+    #[cfg(test)]
+    println!("path to itex-info.toml: {:?}", path.clone());
 
-    let data: TemplateInfo = serde_json::from_str(json_str.as_str()).unwrap();
+    let toml_str = std::fs::read_to_string(path).expect("Could not find itex-info.toml for template"); // TODO: Handel error
+
+    let data: TemplateInfo = toml::from_str(toml_str.as_str()).unwrap();
 
     data
 }
@@ -25,7 +28,7 @@ mod test {
     use std::path::PathBuf;
 
     #[test]
-    fn json_file() {
+    fn toml_file() {
         let output = get_template_info(PathBuf::from("./test_resources/default"));
 
         assert_eq!(output.name, "Default".to_string());

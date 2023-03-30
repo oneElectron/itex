@@ -6,3 +6,4 @@ github_auth.token
 *.token
 *.zip
 *.pyc
+*~
