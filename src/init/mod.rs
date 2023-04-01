@@ -10,6 +10,10 @@ use template_path::find_templates_folder;
 #[cfg(feature = "updater")]
 use super::updater::download_templates;
 
+const ITEX_BUILD_FILE: &str = r#"default_name = "main"
+
+"#;
+
 pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool) {
     let path_to_templates = find_templates_folder(disable_os_search);
     let mut path_to_templates = match path_to_templates {
@@ -71,6 +75,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
         _ => {}
     }
 
+    create_build_file();
     // copy template to current directory
     if files::copy_files(path_to_templates, pwd, false).is_err() {
         println!("Unexpected error")
@@ -123,6 +128,15 @@ pub fn get_template_info(name: String, disable_os_search: bool) -> String {
     println!("{}: {}", info.name, info.description);
 
     info.description
+}
+
+fn create_build_file() {
+    if !PathBuf::from("./itex-build.toml").is_file() {
+        let output = std::fs::write(PathBuf::from("./itex-build.toml"), ITEX_BUILD_FILE);
+        if output.is_err() {
+            println!("{}", style("Could not create itex-build.toml file").red().bold())
+        }
+    }
 }
 
 #[cfg(test)]

@@ -1,13 +1,14 @@
 mod builder;
 mod init;
 mod macros;
-mod runtime_helper;
+mod options;
+mod parser;
 mod updater;
 
 use console::style;
 use init::copy_template;
-use runtime_helper::parse_options;
-use runtime_helper::Command;
+use parser::parse_options;
+use parser::Command;
 use std::env;
 
 fn main() {
@@ -41,5 +42,7 @@ fn main() {
         builder::count();
     } else if let Command::Clean = command {
         builder::remove_files();
+    } else if let Command::Options(setting) = command {
+        options::handle_options(setting);
     }
 }

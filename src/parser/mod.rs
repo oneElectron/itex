@@ -1,3 +1,35 @@
+mod build;
+mod clean;
+mod count;
+mod info;
+mod init;
+mod list;
+mod options;
+#[cfg(feature = "updater")]
+mod updater;
+
+use build::parse_build_options;
+use clean::parse_clean_options;
+use count::parse_count_options;
+use info::parse_info_options;
+use init::parse_init_options;
+use list::parse_list_options;
+use options::parse_options_options;
+#[cfg(feature = "updater")]
+use updater::parse_updater_options;
+
+pub use build::print_build_help;
+pub use clean::print_clean_help;
+pub use count::print_count_help;
+pub use info::print_info_help;
+pub use init::print_init_help;
+pub use list::print_list_help;
+pub use options::print_options_help;
+#[cfg(feature = "updater")]
+pub use updater::print_updater_help;
+
+pub use options::{Options, OptionsCommand};
+
 use super::exit;
 use console::style;
 use std::{option::Option, path::PathBuf};
@@ -15,27 +47,9 @@ pub enum Command {
     ),
     Info(String, bool),
     List(bool),
+    Options(OptionsCommand),
     None,
-    #[cfg(feature = "updater")]
     Update,
-}
-
-struct BuildOptions {
-    debug: bool,
-}
-
-struct InitOptions {
-    search_path: Option<PathBuf>,
-    output_path: Option<PathBuf>,
-    disable_os_search: bool,
-}
-
-struct ListOptions {
-    disable_os_search: bool,
-}
-
-struct InfoOptions {
-    disable_os_search: bool,
 }
 
 pub fn parse_options(args: Vec<String>) -> Command {
@@ -50,18 +64,6 @@ pub fn parse_options(args: Vec<String>) -> Command {
 
     let mut output: Command = Command::None;
     let mut x = 1;
-    /*
-    while x < args.len() {
-        // SOMETHING SOMETHING
-        if args[x] == "--help" || args[x] == "-h" || args[x].starts_with('?') || args[x] == "-help"
-        {
-            print_help();
-            exit(0);
-        }
-        x += 1;
-    }
-    x =  x - 2;
-    */
     loop {
         if x >= args.len() {
             break;
@@ -79,6 +81,7 @@ pub fn parse_options(args: Vec<String>) -> Command {
             "clean" => Command::Clean,
             "build" | "b" => Command::Build(false),
             "list" | "l" => Command::List(false),
+            "options" | "o" => Command::Options(OptionsCommand::None),
             "info" => Command::Info("".to_string(), false),
             "--help" | "-h" | "?" | "--Help" | "-H" => {
                 print_help();
@@ -95,15 +98,35 @@ pub fn parse_options(args: Vec<String>) -> Command {
         x += 1;
     }
 
-    if let Command::Init(_, _, _, _) = output {
-        let template_name = parse_template_name(x + 1, args.clone());
+    if let Command::Build(_) = output {
+        let build_options = parse_build_options(x + 1, args);
+        output = Command::Build(build_options.debug);
+    } else if let Command::Clean = output {
+        let _clean_options = parse_clean_options(x + 1, args);
+        output = Command::Clean;
+    } else if let Command::Count = output {
+        parse_count_options(x + 1, args);
+    } else if let Command::Info(_, _) = output {
+        let info_options = parse_info_options(x + 1, args.clone());
+
+        let template_name = parse_template_name(x + 1, args);
         if template_name.is_err() {
             println!("{}", style("No template name has been supplied").red().bold());
             print_help();
             exit!(0);
         }
+        let template_name = template_name.unwrap();
 
-        let init_options = parse_init_options(x + 1, args);
+        output = Command::Info(template_name, info_options.disable_os_search);
+    } else if let Command::Init(_, _, _, _) = output {
+        let init_options = parse_init_options(x + 1, args.clone());
+
+        let template_name = parse_template_name(x + 1, args);
+        if template_name.is_err() {
+            println!("{}", style("No template name has been supplied").red().bold());
+            print_help();
+            exit!(0);
+        }
 
         let template_name = template_name.unwrap();
         output = Command::Init(
@@ -112,30 +135,29 @@ pub fn parse_options(args: Vec<String>) -> Command {
             init_options.output_path,
             init_options.disable_os_search,
         );
-    } else if let Command::Build(_) = output {
-        let build_options = parse_build_options(x + 1, args);
-
-        output = Command::Build(build_options.debug);
     } else if let Command::List(_) = output {
         let list_options = parse_list_options(x + 1, args);
-
         output = Command::List(list_options.disable_os_search);
-    } else if let Command::Info(_, _) = output {
-        let template_name = parse_template_name(x + 1, args.clone());
-        if template_name.is_err() {
-            println!("{}", style("No template name has been supplied").red().bold());
-            print_help();
-            exit!(0);
-        }
-        let template_name = template_name.unwrap();
+    } else if let Command::Options(_) = output {
+        let options = parse_options_options(x + 1, args);
 
-        let info_options = parse_info_options(x + 1, args);
-
-        output = Command::Info(template_name, info_options.disable_os_search);
+        output = Command::Options(options);
     } else if output == Command::None {
         println!("{}", style("No command given").red().bold());
         print_help();
         exit!(0);
+    } else if let Command::Update = output {
+        #[cfg(feature = "updater")]
+        let _options = parse_updater_options(x + 1, args);
+        #[cfg(not(feature = "updater"))]
+        {
+            println!(
+                "{}",
+                style("This version of ITex was not built with the updater enabled").red().bold()
+            )
+        }
+
+        output = Command::Update;
     }
 
     output
@@ -145,16 +167,17 @@ pub fn parse_options(args: Vec<String>) -> Command {
 pub fn print_help() {
     println!("usage: itex <command> <options>");
     println!("commands:");
-    println!("  b  build            Build the project in the current folder (requires pdflatex");
-    println!("     count            Count words in main.tex (requires texcount");
-    println!("     clean            Clean the out directory");
-    println!("  i  init             Copy a template into the current folder");
-    println!("     info             Get template info");
+    println!("  b  build                    Build the project in the current folder (requires pdflatex");
+    println!("     count                    Count words in main.tex (requires texcount");
+    println!("     clean                    Clean the out directory");
+    println!("  i  init                     Copy a template into the current folder");
+    println!("     info                     Get template info");
+    println!("  o  options                  Manage project options");
     #[cfg(feature = "updater")]
-    println!("     update           Update the templates folder");
-    println!("  l  list             List installed templates");
+    println!("     update                   Update the templates folder");
+    println!("  l  list                     List installed templates");
     println!("options:");
-    println!("  -h --help           Shows help menu for given command");
+    println!("  -h --help                   Shows help menu for given command");
     // println!("  -p --search-path <path>   pass a templates directory");
     // println!("  -e --list-error-codes     list of return error codes, useful in scripts");
 }
@@ -169,98 +192,6 @@ fn parse_template_name(start: usize, args: Vec<String>) -> Result<String, isize>
     }
 
     Err(1)
-}
-
-fn parse_build_options(start: usize, args: Vec<String>) -> BuildOptions {
-    let mut x = start;
-    let mut debug: bool = false;
-
-    while x < args.len() {
-        if args[x] == "--debug" || args[x] == "-d" {
-            debug = true;
-        }
-
-        x += 1;
-    }
-
-    BuildOptions { debug }
-}
-
-fn parse_init_options(start: usize, args: Vec<String>) -> InitOptions {
-    let mut x = start;
-    let mut search_path: Option<PathBuf> = None;
-    let mut output_path: Option<PathBuf> = None;
-    let mut disable_os_search: bool = false;
-
-    while x < args.len() {
-        if args[x] == *"--search-path".to_string() {
-            x += 1;
-            if args[x].starts_with('-') {
-                println!("{}", style("invalid search path").red().bold());
-                print_help();
-                exit!(0);
-            }
-            search_path = Some(PathBuf::from(args[x].clone()));
-        }
-        if args[x] == *"--output-path".to_string() {
-            x += 1;
-            if args[x].starts_with('-') {
-                println!("{}", style("invalid output path").red().bold());
-                print_help();
-                exit!(0);
-            }
-            let tmp = PathBuf::from(args[x].clone());
-            if !tmp.exists() {
-                println!(
-                    "{} \"{}\" {}",
-                    style("Path").red().bold(),
-                    tmp.as_os_str().to_str().unwrap(),
-                    style("does not exist").red().bold()
-                );
-                exit!(0);
-            }
-
-            output_path = Some(PathBuf::from(args[x].clone()));
-        }
-        if args[x] == *"--disable-os-search".to_string() {
-            disable_os_search = true;
-        }
-        x += 1;
-    }
-
-    InitOptions {
-        search_path,
-        output_path,
-        disable_os_search,
-    }
-}
-
-fn parse_list_options(start: usize, args: Vec<String>) -> ListOptions {
-    let mut x: usize = start;
-
-    let mut disable_os_search: bool = false;
-    while x < args.len() {
-        if args[x] == *"--disable-os-search".to_string() {
-            disable_os_search = true;
-        }
-        x += 1;
-    }
-
-    ListOptions { disable_os_search }
-}
-
-fn parse_info_options(start: usize, args: Vec<String>) -> InfoOptions {
-    let mut x: usize = start;
-
-    let mut disable_os_search: bool = false;
-    while x < args.len() {
-        if args[x] == *"--disable-os-search".to_string() {
-            disable_os_search = true;
-        }
-        x += 1;
-    }
-
-    InfoOptions { disable_os_search }
 }
 
 #[cfg(test)]
@@ -355,5 +286,30 @@ mod tests {
         assert_eq!(output.disable_os_search, true);
         assert_eq!(output.output_path, Some(current_dir().unwrap()));
         assert_eq!(output.search_path, Some(current_dir().unwrap()));
+    }
+    #[test]
+    fn parse_option_options() {
+        let args: Vec<String> = vec![
+            "/opt/homebrew/itex".to_string(),
+            "o".to_string(),
+            "set".to_string(),
+            "default_name".to_string(),
+            "main".to_string(),
+        ];
+
+        let output = super::parse_options(args);
+        if let Command::Options(option) = output {
+            if let OptionsCommand::Set(option_name) = option {
+                if let Options::default_name(value) = option_name {
+                    assert_eq!(value, "main".to_string());
+                } else {
+                    panic!("failed to find value for options");
+                }
+            } else {
+                panic!("failed to parse set command for options");
+            }
+        } else {
+            panic!("failed to parse command for option");
+        }
     }
 }
