@@ -20,3 +20,5 @@ jobs:
       run: cargo test --verbose --no-default-features --features updater
     - name: Run formatting checks
       run: cargo fmt --all -- --check
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
