@@ -20,7 +20,15 @@ jobs:
       run: cargo test --verbose --no-default-features --features updater
     - name: Run formatting checks
       run: cargo fmt --all -- --check
+
+    - name: rust-grcov
+      # You may pin to the exact commit or the version.
+      # uses: actions-rs/grcov@bb47b1ed7883a1502fa6875d562727ace2511248
+      uses: actions-rs/grcov@v0.1.5
+
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
+        fail_ci_if_error: true
