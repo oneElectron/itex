@@ -14,10 +14,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose --no-default-features
-    - name: Run tests with updater
-      run: cargo test --verbose --no-default-features --features updater
+
     - name: Run formatting checks
       run: cargo fmt --all -- --check
 
@@ -25,6 +22,16 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: actions-rs/grcov@bb47b1ed7883a1502fa6875d562727ace2511248
       uses: actions-rs/grcov@v0.1.5
+
+    - name: Run tests
+      run: cargo test --verbose --no-default-features
+
+    - name: Run tests with updater
+      run: cargo test --verbose --no-default-features --features updater
+      env:
+        CARGO_INCREMENTAL: '0'
+        RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+        RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
