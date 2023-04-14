@@ -26,11 +26,17 @@ impl Settings {
     pub fn print_default_filename(&self) -> Option<String> {
         match &self.default_filename {
             Some(value) => {
-                println!("default_filename = {value}  (default: {DEFAULT_DEFAULT_FILENAME})");
+                println!(
+                    "{} = {value}  (default: {DEFAULT_DEFAULT_FILENAME})",
+                    style("default_filename").blue().bold()
+                );
                 Some(value.clone())
             }
             None => {
-                println!("default_filename is not set (default: {DEFAULT_DEFAULT_FILENAME})");
+                println!(
+                    "{} is not set (default: {DEFAULT_DEFAULT_FILENAME})",
+                    style("default_filename").blue().bold()
+                );
                 None
             }
         }
@@ -39,12 +45,13 @@ impl Settings {
     pub fn print_tex_filename(&self) -> Option<String> {
         match &self.tex_filename {
             Some(value) => {
-                println!("tex_filename = {value}  (default: No default)");
+                println!("{} = {value}  (default: No default)", style("tex_filename").blue().bold());
                 Some(value.clone())
             }
             None => {
                 println!(
-                    "tex_filename is not set, value is inherited from default_filename: {}.tex",
+                    "{} is not set, value is inherited from default_filename: {}.tex",
+                    style("tex_filename").blue().bold(),
                     self.default_filename.clone().unwrap_or("main".to_string())
                 );
                 None
@@ -107,8 +114,6 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
 
     let build_settings_str: Result<String, toml::ser::Error> = toml::to_string_pretty(&build_settings);
     let build_settings_str: String = build_settings_str.unwrap();
-
-    println!("{}", build_settings_str);
 
     let mut path = path;
     path.push("itex-build.toml");
