@@ -27,6 +27,10 @@ pub enum Commands {
     List(ListOptions),
     /// Set a setting
     Set(SetOptions),
+
+    #[cfg(feature = "updater")]
+    /// Update installed templates
+    Update(UpdaterOptions),
 }
 
 #[derive(Args, Debug)]
@@ -74,6 +78,10 @@ pub struct ListOptions {
     #[arg(long)]
     pub disable_os_search: bool,
 }
+
+#[cfg(feature = "updater")]
+#[derive(Args, Debug)]
+pub struct UpdaterOptions {}
 
 #[derive(Args, Debug)]
 pub struct SetOptions {

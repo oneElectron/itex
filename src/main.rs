@@ -53,5 +53,10 @@ fn main() {
         settings::get(options.name, std::env::current_dir().unwrap()).expect("An impossible error has just occured");
     } else if let cli::Commands::Set(options) = args.command {
         settings::set(options.name, options.value, std::env::current_dir().unwrap());
+    } else {
+        #[cfg(feature = "updater")]
+        if let cli::Commands::Update(_options) = args.command {
+            updater::download_templates(false);
+        }
     }
 }

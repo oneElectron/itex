@@ -95,7 +95,7 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     let setting = setting.as_str();
     let value = value.unwrap();
 
-    println!("{:?}", path.clone());
+    println!("{:?}", path);
 
     let mut build_settings = find_and_parse_toml(path.clone());
 
@@ -110,7 +110,7 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
 
     println!("{}", build_settings_str);
 
-    let mut path = path.clone();
+    let mut path = path;
     path.push("itex-build.toml");
 
     let mut path_with_dot = path.clone();

@@ -23,7 +23,7 @@ dev-install:
     cargo install --path . --no-default-features
 
 dev-install-updater:
-    cargo install --path . --no-default-features --features
+    cargo install --path . --no-default-features --features updater
 
 bereit: test build fmt
 
