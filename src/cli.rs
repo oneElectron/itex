@@ -3,7 +3,7 @@ pub use clap::{Args, Parser, Subcommand};
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 #[command(propagate_version = true)]
-pub struct CLI {
+pub struct Cli {
     // Command Line Options structure
     #[command(subcommand)]
     pub command: Commands,
@@ -31,6 +31,7 @@ pub enum Commands {
 
 #[derive(Args, Debug)]
 pub struct BuildOptions {
+    /// Do not remove auxiliary build files (for debugging)
     #[arg(short, long)]
     pub debug: bool,
 }
@@ -44,26 +45,32 @@ pub struct GetOptions {
 pub struct InitOptions {
     pub name: Option<String>,
 
-    #[arg(long, help = "Disable looking in the os for itex-templates, only looks in . and ..")]
+    /// Disable looking in the os for itex-templates, only looks in . and ..
+    #[arg(long)]
     pub disable_os_search: bool,
 
-    #[arg(long, help = "The path to output to")]
+    /// The path to output to
+    #[arg(long)]
     pub output_path: Option<String>,
 
-    #[arg(long, help = "The path to itex-templates")]
+    /// The path to itex-templates
+    #[arg(long)]
     pub search_path: Option<String>,
 }
 
 #[derive(Args, Debug)]
 pub struct InfoOptions {
+    /// The name of the template
     pub name: Option<String>,
 
+    /// Disable searching the OS for the itex-templates folder
     #[arg(long)]
     pub disable_os_search: bool,
 }
 
 #[derive(Args, Debug)]
 pub struct ListOptions {
+    /// Disable searching the OS for the itex-templates folder
     #[arg(long)]
     pub disable_os_search: bool,
 }

@@ -10,7 +10,7 @@ use template_path::find_templates_folder;
 #[cfg(feature = "updater")]
 use super::updater::download_templates;
 
-const ITEX_BUILD_FILE: &str = r#"default_name = "main"
+const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
 
 "#;
 
@@ -43,8 +43,8 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
         );
     }
     if !path_to_templates.is_dir() {
-        println!("could not find a template with the name provided");
-        println!("use itex --list to get a list of available templates");
+        println!("Could not find a template with the name provided");
+        println!("Use itex list to get a list of available templates");
         exit!(0);
     }
 

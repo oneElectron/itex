@@ -7,3 +7,5 @@ github_auth.token
 *.zip
 *.pyc
 *~
+/codecov
+*.profraw

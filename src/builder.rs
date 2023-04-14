@@ -1,20 +1,16 @@
 use super::exit;
+use super::settings;
 use console::style;
-use serde::Deserialize;
 use std::path::PathBuf;
 use std::process::Command;
 use std::str;
 
-#[derive(Deserialize, Debug)]
-struct BuildOptions {
-    default_name: String,
-    tex_file: Option<String>,
-}
+pub fn build(debug: bool, project_path: PathBuf) {
+    let build_options = settings::find_and_parse_toml(project_path);
 
-pub fn build(debug: bool) {
-    let build_options = find_and_parse_toml();
-
-    let tex_file = build_options.tex_file.unwrap_or_else(|| build_options.default_name + ".tex");
+    let tex_file = build_options
+        .tex_filename
+        .unwrap_or_else(|| build_options.default_filename.unwrap_or("main".to_string()) + ".tex");
 
     let args = vec!["-output-directory", "./out/", tex_file.as_str()];
 
@@ -72,27 +68,6 @@ fn ignore_file(filename: &str) -> bool {
         return true;
     }
     false
-}
-
-fn find_and_parse_toml() -> BuildOptions {
-    let toml_file: PathBuf = if PathBuf::from("./itex-build.toml").is_file() {
-        PathBuf::from("./itex-build.toml")
-    } else if PathBuf::from("./.itex-build.toml").is_file() {
-        PathBuf::from("./.itex-build.toml")
-    } else {
-        println!("{}", style("No itex build file found, please create one.").red().bold());
-        exit!(0);
-    };
-
-    let build_file = std::fs::read_to_string(toml_file);
-    if build_file.is_err() {
-        println!("{}", style("failed to read itex build file").red().bold());
-    }
-    let build_file = build_file.unwrap();
-
-    let build_toml: BuildOptions = toml::from_str(build_file.as_str()).unwrap();
-
-    build_toml
 }
 
 #[cfg(test)]

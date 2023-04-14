@@ -5,14 +5,14 @@ mod macros;
 mod settings;
 mod updater;
 
-use cli::{Parser, CLI};
+use cli::{Cli, Parser};
 use console::style;
 use init::copy_template;
 use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    let args = CLI::parse();
+    let args = Cli::parse();
 
     if let cli::Commands::Init(options) = args.command {
         let output_path = match options.output_path {
@@ -22,6 +22,7 @@ fn main() {
 
         if options.name.is_none() {
             println!("{}", style("No template name has been given").red().bold());
+            exit!(0);
         }
         copy_template(options.name.unwrap().replace('\n', ""), output_path, options.disable_os_search);
 
@@ -43,14 +44,14 @@ fn main() {
         }
         init::get_template_info(options.name.unwrap(), options.disable_os_search);
     } else if let cli::Commands::Build(options) = args.command {
-        builder::build(options.debug);
+        builder::build(options.debug, std::env::current_dir().unwrap());
     } else if let cli::Commands::Count = args.command {
         builder::count();
     } else if let cli::Commands::Clean = args.command {
         builder::remove_files();
     } else if let cli::Commands::Get(options) = args.command {
-        settings::get(options.name);
+        settings::get(options.name, std::env::current_dir().unwrap()).expect("An impossible error has just occured");
     } else if let cli::Commands::Set(options) = args.command {
-        settings::set(options.name, options.value);
+        settings::set(options.name, options.value, std::env::current_dir().unwrap());
     }
 }
