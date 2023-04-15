@@ -25,6 +25,9 @@ pub enum Commands {
     Get(GetOptions),
     /// List installed templates
     List(ListOptions),
+    /// Create a new itex build file
+    #[allow(non_camel_case_types)]
+    New_Buildfile,
     /// Set a setting
     Set(SetOptions),
 

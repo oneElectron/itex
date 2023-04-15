@@ -15,6 +15,7 @@ const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
 "#;
 
 pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool) {
+    create_build_file(output_path.clone());
     let path_to_templates = find_templates_folder(disable_os_search);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
@@ -75,7 +76,6 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
         _ => {}
     }
 
-    create_build_file();
     // copy template to current directory
     if files::copy_files(path_to_templates, pwd, false).is_err() {
         println!("Unexpected error")
@@ -130,8 +130,10 @@ pub fn get_template_info(name: String, disable_os_search: bool) -> String {
     info.description
 }
 
-fn create_build_file() {
-    if !PathBuf::from("./itex-build.toml").is_file() {
+pub fn create_build_file(path: PathBuf) {
+    let mut path = path.clone();
+    path.push("itex-build.toml");
+    if !path.is_file() {
         let output = std::fs::write(PathBuf::from("./itex-build.toml"), ITEX_BUILD_FILE);
         if output.is_err() {
             println!("{}", style("Could not create itex-build.toml file").red().bold())
