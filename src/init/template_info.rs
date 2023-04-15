@@ -36,7 +36,7 @@ mod test {
 
     #[test]
     fn toml_file() {
-        let output = get_template_info(PathBuf::from("./test_resources/default"));
+        let output = get_template_info(PathBuf::from("test_resources/default"));
 
         assert_eq!(output.name, "Default".to_string());
         assert_eq!(output.description, "The default template.".to_string());

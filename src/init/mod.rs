@@ -143,40 +143,26 @@ pub fn create_build_file(path: PathBuf) {
 
 #[cfg(test)]
 mod tests {
-    fn setup_out_folder() -> std::path::PathBuf {
-        let output_folder = std::path::PathBuf::from("./out");
-        if output_folder.exists() && !output_folder.is_dir() {
-            panic!("[TESTS]: Tests use the out folder as an output directory. Please remove the file called out");
-        }
-        if !output_folder.is_dir() {
-            std::fs::create_dir(output_folder.clone()).expect("Could not create out folder");
-        }
+    use std::path::PathBuf;
 
-        output_folder
-    }
-
-    fn cleanup() {
-        let clean_dir = std::path::PathBuf::from("./out");
-
-        if clean_dir.is_dir() {
-            std::fs::remove_dir_all(clean_dir.clone()).expect("Could not cleanup out dir");
+    fn cleanup_folder(path: PathBuf) {
+        let dir = std::fs::read_dir(path).unwrap();
+        for file in dir {
+            std::fs::remove_file(file.unwrap().path()).unwrap();
         }
-        std::fs::create_dir(clean_dir).expect("could not create dir for testing");
     }
 
     #[test]
     fn default_config() {
-        cleanup();
-        let out_dir = setup_out_folder();
-        let mut files = out_dir.clone();
-        files.push("itex-build.toml");
+        let mut out_dir = PathBuf::from("test_resources/test_cases/init/default_config/");
+        assert!(!PathBuf::from("./test_resources/test_cases/init/default_config/main.tex").exists());
 
-        super::copy_template("default".to_string(), out_dir, true);
+        super::copy_template("default".to_string(), out_dir.clone(), true);
 
-        assert!(files.with_file_name("main.tex").is_file());
-        assert!(!files.with_file_name("itex-info.json").is_file());
-
-        cleanup();
+        out_dir.push("itex-build.toml");
+        assert!(out_dir.with_file_name("main.tex").is_file());
+        assert!(!out_dir.with_file_name("itex-info.toml").is_file());
+        cleanup_folder(out_dir.parent().unwrap().to_path_buf());
     }
 
     #[test]

@@ -153,101 +153,69 @@ pub fn get(setting: Option<String>, path: PathBuf) -> std::result::Result<Option
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs;
-
-    const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
-tex_filename = "tex"
-
-"#;
-
-    fn setup_out_folder() {
-        std::thread::sleep(std::time::Duration::from_millis(100)); // Leave this
-        if !PathBuf::from("./out").exists() {
-            fs::create_dir("./out").unwrap();
-        }
-        fs::write(PathBuf::from("./out/itex-build.toml"), ITEX_BUILD_FILE).unwrap();
-
-        if PathBuf::from("./out/.itex-build.toml").is_file() {
-            fs::remove_file(PathBuf::from("./out/.itex-build.toml")).unwrap();
-        }
-    }
-
-    fn setup_out_folder_with_dotfile() {
-        std::thread::sleep(std::time::Duration::from_millis(1000)); // Leave this
-        if PathBuf::from("out").is_dir() {
-            fs::remove_dir_all("out").expect("could not remove out folder");
-        }
-        fs::create_dir("out").expect("failed to create out folder");
-        fs::write("out/.itex-build.toml", ITEX_BUILD_FILE).expect("Could not write to dotfile");
-
-        if PathBuf::from("./out/itex-build.toml").is_file() {
-            fs::remove_file(PathBuf::from("./out/itex-build.toml")).unwrap();
-        }
-    }
 
     #[test]
-    fn test_get() {
-        std::thread::sleep(std::time::Duration::from_millis(10));
-        setup_out_folder();
-        let output = get(Some("default_filename".to_string()), PathBuf::from("./out")).unwrap();
+    fn settings_get() {
+        let output = get(Some("default_filename".to_string()), PathBuf::from("./test_resources/test_cases/settings/get/")).unwrap();
 
         assert_eq!(output.unwrap(), "main");
     }
 
     #[test]
-    fn test_set() {
-        setup_out_folder();
+    fn settings_set() {
+        let path = PathBuf::from("test_resources/test_cases/settings/set");
+        assert!(path.is_dir());
+
         set(
             Some("default_filename".to_string()),
             Some("Hello".to_string()),
-            PathBuf::from("./out"),
+            path.clone(),
         );
 
-        let build = get(Some("default_filename".to_string()), PathBuf::from("./out"));
+        let build = get(Some("default_filename".to_string()), path.clone());
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
         set(
             Some("default_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
-            PathBuf::from("./out"),
+            path.clone(),
         );
 
-        let build = get(Some("default_filename".to_string()), PathBuf::from("./out"));
+        let build = get(Some("default_filename".to_string()), path);
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
 
     #[test]
     fn test_set_with_dotfile() {
-        setup_out_folder_with_dotfile();
-
-        assert!(PathBuf::from("out/.itex-build.toml").is_file());
+        let path = PathBuf::from("test_resources/test_cases/settings/set_with_dotfile");
+        assert!(path.is_dir());
         set(
             Some("default_filename".to_string()),
             Some("Hello".to_string()),
-            PathBuf::from("./out"),
+            path.clone(),
         );
 
-        let build = get(Some("default_filename".to_string()), PathBuf::from("./out"));
+        let build = get(Some("default_filename".to_string()), path.clone());
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
         set(
             Some("default_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
-            PathBuf::from("./out"),
+            path.clone(),
         );
 
-        let build = get(Some("default_filename".to_string()), PathBuf::from("./out"));
+        let build = get(Some("default_filename".to_string()), path);
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
 
     #[test]
     #[should_panic]
-    fn test_set_without_value() {
-        set(Some("default_filename".to_string()), None, PathBuf::from("./out"))
+    fn settings_set_without_value() {
+        set(Some("default_filename".to_string()), None, PathBuf::from("test_resources/test_cases/settings_set_without_value"));
     }
 
     #[test]
