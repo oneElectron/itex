@@ -102,8 +102,6 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     let setting = setting.as_str();
     let value = value.unwrap();
 
-    println!("{:?}", path);
-
     let mut build_settings = find_and_parse_toml(path.clone());
 
     match setting {
