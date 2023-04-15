@@ -25,8 +25,19 @@ pub fn build(debug: bool, project_path: PathBuf) {
     }
 }
 
-pub fn count() {
-    let output = Command::new("texcount").arg("main.tex").output();
+pub fn count(project_path: PathBuf) {
+    let build_options = settings::find_and_parse_toml(project_path);
+
+    let tex_file = build_options
+        .tex_filename
+        .unwrap_or_else(|| build_options.default_filename.unwrap_or("main".to_string()) + ".tex");
+
+    let args = vec!["-output-directory", "./out/", tex_file.as_str()];
+
+
+    let output = Command::new("texcount")
+        .args(args)
+        .output();
 
     if output.is_err() {
         println!("{}", style("Error running Texcount. Do you have texcount installed?").red().bold());

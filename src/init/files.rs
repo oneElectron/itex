@@ -33,7 +33,7 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
                     .unwrap()
             );
         }
-        if file.clone().file_name().unwrap().to_str().unwrap() != "itex-info.json"
+        if file.clone().file_name().unwrap().to_str().unwrap() != "itex-info.toml"
             && !dry_run
             && fs::copy(&file, pwd.with_file_name(file.file_name().unwrap().to_str().unwrap())).is_err()
         {

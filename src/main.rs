@@ -46,7 +46,7 @@ fn main() {
     } else if let cli::Commands::Build(options) = args.command {
         builder::build(options.debug, std::env::current_dir().unwrap());
     } else if let cli::Commands::Count = args.command {
-        builder::count();
+        builder::count(std::env::current_dir().unwrap());
     } else if let cli::Commands::Clean = args.command {
         builder::remove_files();
     } else if let cli::Commands::Get(options) = args.command {
