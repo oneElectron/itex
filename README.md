@@ -46,50 +46,22 @@ itex --update
 ## Making new templates
 To make a new template make a folder where the name of the folder is the template name as this is what ITex uses.
 
-A itex-info.json is also required with a name, id, and description:
-```json
-{
-    "name": "Name here",
-    "description": "Description here",
-    "files": [
-        "Place all file names here except for itex-info.json like so:",
-        "main.tex", 
-        "Makefile"
-    ],
-    "id": 0 // This will be filled in by a maintainer
-}
+An itex-info.toml is also required with a name and description:
+```toml
+name = "Default"
+description = "The default template."
 ```
 
-On top of this a Makefile is required. The standard Makefile looks like this:
-```Makefile
-NAME = main
-
-pdf:
-	@pdflatex -no-shell-escape -output-directory ./out/ $(NAME).tex
-	@if [ -a ./out/main.aux ]; then rm ./out/$(NAME).aux; fi;
-	@if [ -a ./out/main.out ]; then rm ./out/$(NAME).out; fi;
-	@if [ -a ./out/main.log ]; then rm ./out/$(NAME).log; fi;
-	@if [ -a ./out/main.bcf ]; then rm ./out/$(NAME).bcf; fi;
-	@if [ -a ./out/main.toc ]; then rm ./out/$(NAME).toc; fi;
-	@if [ -a ./out/texput.log ]; then rm ./out/texput.log; fi;
-	@if [ -a ./out/main.run.xml ]; then rm ./out/main.run.xml; fi;
-	
-count:
-	@texcount $(NAME).tex
-
-clean: 
-	@if [ -a ./out/main.aux ]; then rm ./out/$(NAME).aux; fi;
-	@if [ -a ./out/main.out ]; then rm ./out/$(NAME).out; fi;
-	@if [ -a ./out/main.log ]; then rm ./out/$(NAME).log; fi;
-	@if [ -a ./out/main.bcf ]; then rm ./out/$(NAME).bcf; fi;
-	@if [ -a ./out/main.toc ]; then rm ./out/$(NAME).toc; fi;
-	@if [ -a ./out/texput.log ]; then rm ./out/texput.log; fi;
-	@if [ -a ./out/main.run.xml ]; then rm ./out/main.run.xml; fi;
-	
-debug:
-	pdflatex -no-shell-escape -output-directory ./out/ main.tex
+# ITex build system
+Users can run itex build in order to build their LaTex project.
+Doing this requires the ITex to know which file to compile, this is specified in the itex-build.toml which looks something like this:
+```toml
+default_filename = "main"
+tex_filename = "example.tex"
 
 ```
+- default_filename specifies the base name for any files
+- tex_filename specifies the name of the main tex file. If this option is not specified itex will assume the default_filename + .tex. In this example main.tex
 
 ## Development
 To setup the development environment:
