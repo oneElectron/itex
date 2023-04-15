@@ -34,10 +34,7 @@ pub fn count(project_path: PathBuf) {
 
     let args = vec!["-output-directory", "./out/", tex_file.as_str()];
 
-
-    let output = Command::new("texcount")
-        .args(args)
-        .output();
+    let output = Command::new("texcount").args(args).output();
 
     if output.is_err() {
         println!("{}", style("Error running Texcount. Do you have texcount installed?").red().bold());
