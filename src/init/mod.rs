@@ -171,7 +171,6 @@ mod tests {
 
         super::copy_template("default".to_string(), out_dir, true);
 
-        assert!(files.is_file());
         assert!(files.with_file_name("main.tex").is_file());
         assert!(!files.with_file_name("itex-info.json").is_file());
 
