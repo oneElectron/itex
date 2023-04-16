@@ -20,3 +20,6 @@ clap = { version = "4.2.1", features = ["derive"] }
 [features]
 default = ["updater"]
 updater = ["dep:reqwest", "dep:url", "dep:zip"]
+
+[profile.codecov]
+inherits = "dev"
