@@ -107,7 +107,10 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     match setting {
         "default_filename" => build_settings.default_filename = Some(value),
         "tex_filename" => build_settings.tex_filename = Some(value),
-        _ => { println!("{}", style("Invalid setting name").red().bold()); exit!(0); },
+        _ => {
+            println!("{}", style("Invalid setting name").red().bold());
+            exit!(0);
+        }
     }
 
     let build_settings_str: Result<String, toml::ser::Error> = toml::to_string_pretty(&build_settings);
