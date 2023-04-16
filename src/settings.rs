@@ -107,7 +107,7 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     match setting {
         "default_filename" => build_settings.default_filename = Some(value),
         "tex_filename" => build_settings.tex_filename = Some(value),
-        _ => println!("{}", style("Invalid setting name").red().bold()),
+        _ => { println!("{}", style("Invalid setting name").red().bold()); exit!(0); },
     }
 
     let build_settings_str: Result<String, toml::ser::Error> = toml::to_string_pretty(&build_settings);
@@ -153,7 +153,6 @@ pub fn get(setting: Option<String>, path: PathBuf) -> std::result::Result<Option
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
     fn settings_get() {
         let output = get(
@@ -164,7 +163,6 @@ mod tests {
 
         assert_eq!(output.unwrap(), "main");
     }
-
     #[test]
     fn settings_set() {
         let path = PathBuf::from("test_resources/test_cases/settings/set");
@@ -186,9 +184,29 @@ mod tests {
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
-
     #[test]
-    fn test_set_with_dotfile() {
+    fn settings_set_tex_filename() {
+        let path = PathBuf::from("test_resources/test_cases/settings/set_tex_filename");
+        assert!(path.is_dir());
+
+        set(Some("tex_filename".to_string()), Some("Hello".to_string()), path.clone());
+
+        let build = get(Some("tex_filename".to_string()), path.clone());
+
+        assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
+
+        set(
+            Some("tex_filename".to_string()), // Set it back just in case
+            Some("main".to_string()),
+            path.clone(),
+        );
+
+        let build = get(Some("tex_filename".to_string()), path);
+
+        assert_eq!(build.unwrap().unwrap(), "main".to_string());
+    }
+    #[test]
+    fn settings_set_with_dotfile() {
         let path = PathBuf::from("test_resources/test_cases/settings/set_with_dotfile");
         assert!(path.is_dir());
         set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
@@ -207,7 +225,15 @@ mod tests {
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
-
+    #[test]
+    #[should_panic]
+    fn settings_set_invalid_setting() {
+        let output = set(
+            Some("Hello, This is a bad setting".to_string()),
+            Some("main".to_string()),
+            PathBuf::from("test_resources/test_cases/settings/set_invalid_setting"),
+        );
+    }
     #[test]
     #[should_panic]
     fn settings_set_without_value() {
@@ -217,7 +243,6 @@ mod tests {
             PathBuf::from("test_resources/test_cases/settings_set_without_value"),
         );
     }
-
     #[test]
     #[should_panic]
     fn test_set_without_setting() {

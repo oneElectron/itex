@@ -32,6 +32,7 @@ dev-install-updater:
 bereit: test build fmt
 
 codecov:
+    rm -rf codecov
     RUSTFLAGS="-Cinstrument-coverage" cargo build 
     LLVM_PROFILE_FILE="your_name-%p-%m.profraw" RUSTFLAGS="-Cinstrument-coverage" cargo test -j 1 --all-features
     grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./codecov
