@@ -2,10 +2,12 @@
 default: test
 
 test:
-    @echo This justfile is only for development
-    cargo test --no-default-features -j 1
     cargo test --no-default-features --features updater -j 1
-    cargo fmt
+
+test-without-features:
+    cargo test --no-default-features -j 1
+
+test-all: test test-without-features
 
 build:
     cargo build --no-default-features
