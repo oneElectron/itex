@@ -156,7 +156,11 @@ mod tests {
 
     #[test]
     fn settings_get() {
-        let output = get(Some("default_filename".to_string()), PathBuf::from("./test_resources/test_cases/settings/get/")).unwrap();
+        let output = get(
+            Some("default_filename".to_string()),
+            PathBuf::from("./test_resources/test_cases/settings/get/"),
+        )
+        .unwrap();
 
         assert_eq!(output.unwrap(), "main");
     }
@@ -166,11 +170,7 @@ mod tests {
         let path = PathBuf::from("test_resources/test_cases/settings/set");
         assert!(path.is_dir());
 
-        set(
-            Some("default_filename".to_string()),
-            Some("Hello".to_string()),
-            path.clone(),
-        );
+        set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
 
         let build = get(Some("default_filename".to_string()), path.clone());
 
@@ -191,11 +191,7 @@ mod tests {
     fn test_set_with_dotfile() {
         let path = PathBuf::from("test_resources/test_cases/settings/set_with_dotfile");
         assert!(path.is_dir());
-        set(
-            Some("default_filename".to_string()),
-            Some("Hello".to_string()),
-            path.clone(),
-        );
+        set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
 
         let build = get(Some("default_filename".to_string()), path.clone());
 
@@ -215,7 +211,11 @@ mod tests {
     #[test]
     #[should_panic]
     fn settings_set_without_value() {
-        set(Some("default_filename".to_string()), None, PathBuf::from("test_resources/test_cases/settings_set_without_value"));
+        set(
+            Some("default_filename".to_string()),
+            None,
+            PathBuf::from("test_resources/test_cases/settings_set_without_value"),
+        );
     }
 
     #[test]

@@ -131,7 +131,7 @@ pub fn get_template_info(name: String, disable_os_search: bool) -> String {
 }
 
 pub fn create_build_file(path: PathBuf) {
-    let mut path = path.clone();
+    let mut path = path;
     path.push("itex-build.toml");
     if !path.is_file() {
         let output = std::fs::write(PathBuf::from("./itex-build.toml"), ITEX_BUILD_FILE);
