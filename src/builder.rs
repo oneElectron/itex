@@ -32,7 +32,7 @@ pub fn count(project_path: PathBuf) {
         .tex_filename
         .unwrap_or_else(|| build_options.default_filename.unwrap_or("main".to_string()) + ".tex");
 
-    let args = vec!["-output-directory", "./out/", tex_file.as_str()];
+    let args = vec![tex_file.as_str()];
 
     let output = Command::new("texcount").args(args).output();
 
