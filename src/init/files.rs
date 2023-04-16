@@ -34,6 +34,7 @@ pub fn copy_files(from: PathBuf, to: PathBuf, dry_run: bool) -> Result<isize, Co
             );
         }
         if file.clone().file_name().unwrap().to_str().unwrap() != "itex-info.toml"
+            && file.clone().file_name().unwrap().to_str().unwrap() != "Makefile"
             && !dry_run
             && fs::copy(&file, pwd.with_file_name(file.file_name().unwrap().to_str().unwrap())).is_err()
         {

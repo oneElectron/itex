@@ -39,7 +39,12 @@ pub fn download_templates(ask: bool) {
 
     let mut archive = zip::ZipArchive::new(std::io::Cursor::new(file_in_vec)).expect("could not parse downloaded data");
 
-    archive
-        .extract(target_location::install_location())
-        .expect("could not extract to app data folder");
+    let output_folder = target_location::install_location();
+    if output_folder.exists() {
+        std::fs::remove_dir_all(output_folder.clone()).unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+    std::fs::create_dir(output_folder.clone()).unwrap();
+
+    archive.extract(output_folder).expect("could not extract to app data folder");
 }
