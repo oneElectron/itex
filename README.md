@@ -14,12 +14,24 @@ Initialize a latex project in the current folder
 
 Usage:
 ```
-itex <options> template
-  -i --info                 get template info
-  -l --list                 output a list of templates
-  -s --disable-os-search    prevent itex from searching the os for the templates folder
-  -o --output <path>        output template to given folder <path>
-  -u --update               update the itex-templates folder
+Usage: itex <COMMAND>
+
+Commands:
+  build          Build ITex project (requires an itex-build.toml file, and pdflatex to be installed)
+  count          Count the number of words in the current ITex project (requires texcount to be installed)
+  clean          Clean auxillary build files
+  init           Initialize LaTex project
+  info           Get info about a template
+  get            Get current value of a setting
+  list           List installed templates
+  new-buildfile  Create a new itex build file
+  set            Set a setting
+  update         Update installed templates
+  help           Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
 ```
 
 available templates:
@@ -28,28 +40,19 @@ available templates:
 - apa
 - Electron (My own template)
 
-## Install on MacOS
+# Install on MacOS
 ITex isn't on homebrew's default taps so you need to add my tap then install ITex:
 ```
 brew tap oneelectron/oneelectron
 brew install itex -s
 ```
 
-## Install on Windows
+# Install on Windows
 ITex doesn't have a windows installer yet, so the recommended way is to use cargo to install itex, then use itex to install it's template folder.
 Install rust then:
 ```
 cargo install itex
 itex --update
-```
-
-## Making new templates
-To make a new template make a folder where the name of the folder is the template name as this is what ITex uses.
-
-An itex-info.toml is also required with a name and description:
-```toml
-name = "Default"
-description = "The default template."
 ```
 
 # ITex build system
@@ -61,9 +64,20 @@ tex_filename = "example.tex"
 
 ```
 - default_filename specifies the base name for any files
-- tex_filename specifies the name of the main tex file. If this option is not specified itex will assume the default_filename + .tex. In this example main.tex
+- tex_filename specifies the name of the main tex file. If this option is not specified itex will assume the default_filename + .tex. In this example main.tex, if tex_filename were not specified
 
-## Development
+
+# Making new templates
+To make a new template make a folder where the name of the folder is the template name as this is what ITex uses.
+
+An itex-info.toml is also required with a name and description:
+```toml
+name = "Default"
+description = "The default template."
+```
+
+
+# Development
 To setup the development environment:
 - Clone the repo
 - Run cargo build in order to install dependencies
