@@ -231,7 +231,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn settings_set_invalid_setting() {
-        let output = set(
+        set(
             Some("Hello, This is a bad setting".to_string()),
             Some("main".to_string()),
             PathBuf::from("test_resources/test_cases/settings/set_invalid_setting"),
