@@ -148,6 +148,9 @@ mod tests {
     fn cleanup_folder(path: PathBuf) {
         let dir = std::fs::read_dir(path).unwrap();
         for file in dir {
+            if file.as_ref().unwrap().path().file_name().unwrap() == ".gitignore" {
+                continue
+            }
             std::fs::remove_file(file.unwrap().path()).unwrap();
         }
     }
