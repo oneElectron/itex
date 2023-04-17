@@ -10,8 +10,6 @@ pub fn build(debug: bool, project_path: PathBuf) {
     let tex_filename = build_settings.tex_filename();
     let args = vec!["-output-directory", "./out/", tex_filename.as_str()];
 
-
-
     let output = Command::new("pdflatex").args(args.clone()).output();
 
     if output.is_err() {
@@ -19,7 +17,7 @@ pub fn build(debug: bool, project_path: PathBuf) {
     }
 
     if true {
-        let _ = Command::new("biblatex").args(args.clone()).output().unwrap();
+        let _ = Command::new("bibtex").args(args.clone()).output().unwrap();
 
         let _ = Command::new("pdflatex").args(args.clone()).output().unwrap();
 
