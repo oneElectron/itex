@@ -6,13 +6,9 @@ use std::process::Command;
 use std::str;
 
 pub fn build(debug: bool, project_path: PathBuf) {
-    let build_options = settings::find_and_parse_toml(project_path);
-
-    let tex_file = build_options
-        .tex_filename
-        .unwrap_or_else(|| build_options.default_filename.unwrap_or("main".to_string()) + ".tex");
-
-    let args = vec!["-output-directory", "./out/", tex_file.as_str()];
+    let build_settings = settings::find_and_parse_toml(project_path);
+    let tex_filename = build_settings.tex_filename();
+    let args = vec!["-output-directory", "./out/", tex_filename.as_str()];
 
     let output = Command::new("pdflatex").args(args).output();
 
@@ -26,11 +22,9 @@ pub fn build(debug: bool, project_path: PathBuf) {
 }
 
 pub fn count(project_path: PathBuf) {
-    let build_options = settings::find_and_parse_toml(project_path);
+    let build_settings = settings::find_and_parse_toml(project_path);
 
-    let tex_file = build_options
-        .tex_filename
-        .unwrap_or_else(|| build_options.default_filename.unwrap_or("main".to_string()) + ".tex");
+    let tex_file = build_settings.tex_filename();
 
     let args = vec![tex_file.as_str()];
 

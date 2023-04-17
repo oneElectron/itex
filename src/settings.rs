@@ -10,7 +10,7 @@ const DEFAULT_DEFAULT_FILENAME: &str = "main";
 #[derive(Deserialize, Serialize)]
 pub struct Settings {
     pub default_filename: Option<String>,
-    pub tex_filename: Option<String>,
+    tex_filename: Option<String>,
 }
 
 impl fmt::Display for Settings {
@@ -57,6 +57,14 @@ impl Settings {
                 None
             }
         }
+    }
+}
+
+impl Settings {
+    pub fn tex_filename(&self) -> String {
+        self.tex_filename
+            .clone()
+            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
     }
 }
 
