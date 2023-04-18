@@ -304,11 +304,11 @@ mod tests {
     #[test]
     fn settings_folder_doesnt_contain_extension() {
         let path = PathBuf::from("test_resources/test_cases/settings/folder_doesnt_contain_extension");
-        
+
         let output = contains_file_with_extension(path, "bib");
 
         assert!(output == false);
-    } 
+    }
 
     #[test]
     #[should_panic]
