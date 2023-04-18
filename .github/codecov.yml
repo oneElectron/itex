@@ -5,3 +5,9 @@ codecov:
 
 coverage:
   range: "0...0"
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 100%
