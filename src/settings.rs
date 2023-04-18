@@ -293,6 +293,24 @@ mod tests {
     }
 
     #[test]
+    fn settings_folder_contains_extension() {
+        let path = PathBuf::from("test_resources/test_cases/settings/folder_contains_extension");
+
+        let output = contains_file_with_extension(path, "bib");
+
+        assert!(output == true);
+    }
+
+    #[test]
+    fn settings_folder_doesnt_contain_extension() {
+        let path = PathBuf::from("test_resources/test_cases/settings/folder_doesnt_contain_extension");
+        
+        let output = contains_file_with_extension(path, "bib");
+
+        assert!(output == false);
+    } 
+
+    #[test]
     #[should_panic]
     fn settings_set_invalid_setting() {
         set(
