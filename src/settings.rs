@@ -62,10 +62,10 @@ impl Settings {
     }
 
     pub fn print_compile_bib(&self) -> Option<bool> {
-        match &self.compile_bib {
+        match self.compile_bib {
             Some(value) => {
                 println!("{} = {value}  (default: false)", style("compile_bib").blue().bold());
-                Some(value.clone())
+                Some(value)
             }
             None => {
                 println!("{} is not set (default: false)", style("compile_bib").blue().bold());
@@ -86,7 +86,7 @@ impl Settings {
         if path.is_none() && self.compile_bib.is_none() {
             return false;
         } else if path.is_some() && self.compile_bib.is_none() {
-            return false; // TODO: search for bib file
+            return contains_file_with_extension(path.unwrap(), "bib");
         }
 
         self.compile_bib.unwrap()
@@ -193,6 +193,23 @@ pub fn get(setting: Option<String>, path: PathBuf) -> std::result::Result<Option
     };
 
     Ok(output)
+}
+
+fn contains_file_with_extension(path: PathBuf, extension: &str) -> bool {
+    let contents_of_dir = std::fs::read_dir(path).unwrap();
+    for file in contents_of_dir {
+        let file = file.unwrap().path();
+        let file = file.extension();
+        if file.is_none() {
+            continue;
+        }
+
+        if file.unwrap().to_str().unwrap() == extension {
+            return true;
+        }
+    }
+
+    false
 }
 
 #[cfg(test)]
