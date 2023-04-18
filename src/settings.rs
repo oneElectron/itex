@@ -11,12 +11,14 @@ const DEFAULT_DEFAULT_FILENAME: &str = "main";
 pub struct Settings {
     pub default_filename: Option<String>,
     tex_filename: Option<String>,
+    compile_bib: Option<bool>,
 }
 
 impl fmt::Display for Settings {
     fn fmt(&self, _f: &mut fmt::Formatter) -> fmt::Result {
         self.print_default_filename();
         self.print_tex_filename();
+        self.print_compile_bib();
 
         fmt::Result::Ok(())
     }
@@ -58,6 +60,19 @@ impl Settings {
             }
         }
     }
+
+    pub fn print_compile_bib(&self) -> Option<bool> {
+        match &self.compile_bib {
+            Some(value) => {
+                println!("{} = {value}  (default: false)", style("compile_bib").blue().bold());
+                Some(value.clone())
+            }
+            None => {
+                println!("{} is not set (default: false)", style("compile_bib").blue().bold());
+                None
+            }
+        }
+    }
 }
 
 impl Settings {
@@ -65,6 +80,16 @@ impl Settings {
         self.tex_filename
             .clone()
             .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
+    }
+
+    pub fn compile_bib(&self, path: Option<PathBuf>) -> bool {
+        if path.is_none() && self.compile_bib.is_none() {
+            return false;
+        } else if path.is_some() && self.compile_bib.is_none() {
+            return false; // TODO: search for bib file
+        }
+
+        self.compile_bib.unwrap()
     }
 }
 
@@ -107,14 +132,23 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     }
 
     let setting = setting.unwrap();
-    let setting = setting.as_str();
     let value = value.unwrap();
 
     let mut build_settings = find_and_parse_toml(path.clone());
 
-    match setting {
+    match setting.as_str() {
         "default_filename" => build_settings.default_filename = Some(value),
         "tex_filename" => build_settings.tex_filename = Some(value),
+        "compile_bib" => {
+            build_settings.compile_bib = match value.as_str() {
+                "true" => Some(true),
+                "false" => Some(false),
+                _ => {
+                    println!("Invalid value");
+                    exit!(0);
+                }
+            }
+        }
         _ => {
             println!("{}", style("Invalid setting name").red().bold());
             exit!(0);
@@ -164,6 +198,7 @@ pub fn get(setting: Option<String>, path: PathBuf) -> std::result::Result<Option
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn settings_get() {
         let output = get(
@@ -174,6 +209,7 @@ mod tests {
 
         assert_eq!(output.unwrap(), "main");
     }
+
     #[test]
     fn settings_set() {
         let path = PathBuf::from("test_resources/test_cases/settings/set");
@@ -195,6 +231,7 @@ mod tests {
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
+
     #[test]
     fn settings_set_tex_filename() {
         let path = PathBuf::from("test_resources/test_cases/settings/set_tex_filename");
@@ -216,6 +253,7 @@ mod tests {
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
+
     #[test]
     fn settings_set_with_dotfile() {
         let path = PathBuf::from("test_resources/test_cases/settings/set_with_dotfile");
@@ -236,6 +274,7 @@ mod tests {
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
+
     #[test]
     #[should_panic]
     fn settings_set_invalid_setting() {
@@ -245,6 +284,7 @@ mod tests {
             PathBuf::from("test_resources/test_cases/settings/set_invalid_setting"),
         );
     }
+
     #[test]
     #[should_panic]
     fn settings_set_without_value() {
@@ -254,6 +294,7 @@ mod tests {
             PathBuf::from("test_resources/test_cases/settings_set_without_value"),
         );
     }
+
     #[test]
     #[should_panic]
     fn test_set_without_setting() {

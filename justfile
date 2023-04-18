@@ -31,6 +31,9 @@ dev-install-updater:
 
 bereit: test build fmt
 
+scan:
+    trufflehog git https://github.com/oneelectron/itex
+
 codecov:
     rm -rf codecov
     RUSTFLAGS="-Cinstrument-coverage" cargo build --profile codecov

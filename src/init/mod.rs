@@ -45,7 +45,7 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     }
     if !path_to_templates.is_dir() {
         println!("{}", style("Could not find a template with the name provided").red().bold());
-        println!("{}", style("Use itex list to get a list of available templates").bold());
+        println!("{}", style("Use itex list to get a list of available templates"));
         exit!(0);
     }
 

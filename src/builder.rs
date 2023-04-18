@@ -16,12 +16,22 @@ pub fn build(debug: bool, project_path: PathBuf) {
         println!("{}", style("Error building pdf. Do you have pdflatex installed?").red().bold());
     }
 
-    if true {
-        let _ = Command::new("bibtex").args(args.clone()).output().unwrap();
+    let output = output.unwrap();
+
+    if build_settings.compile_bib(None) {
+        let output = Command::new("bibtex").args(args.clone()).output();
+        if output.is_err() {
+            println!("{}", style("Error building pdf. Do you have bibtex installed?").red().bold());
+        }
 
         let _ = Command::new("pdflatex").args(args.clone()).output().unwrap();
 
         let _ = Command::new("pdflatex").args(args).output().unwrap();
+    }
+
+    if debug {
+        let output = std::str::from_utf8(&output.stdout).unwrap();
+        print!("{}", output)
     }
 
     if !debug {
@@ -46,7 +56,7 @@ pub fn count(project_path: PathBuf) {
 
     let output = String::from_utf8(output).unwrap();
 
-    println!("{}", output);
+    print!("{}", output);
 }
 
 pub fn remove_files() {
