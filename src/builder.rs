@@ -47,7 +47,7 @@ pub fn build(debug: bool, project_path: PathBuf) {
             let output = output.unwrap();
             let output_stderr = output.clone().stderr;
             print!("{}", std::str::from_utf8(output_stderr.as_slice()).unwrap());
-            
+
             let output_stdout = output.stdout;
             print!("{}", std::str::from_utf8(output_stdout.as_slice()).unwrap());
         }
