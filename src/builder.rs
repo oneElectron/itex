@@ -1,16 +1,36 @@
 use super::exit;
 use super::settings;
 use console::style;
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
 use std::str;
 
 pub fn build(debug: bool, project_path: PathBuf) {
-    let build_settings = settings::find_and_parse_toml(project_path);
-    let tex_filename = build_settings.tex_filename();
-    let args = vec!["-output-directory", "./out/", tex_filename.as_str()];
+    let build_settings = settings::find_and_parse_toml(project_path.clone());
+    let mut tex_filename = project_path.clone();
+    tex_filename.push(build_settings.tex_filename());
+    let tex_filename = tex_filename.as_os_str().to_str().unwrap();
+    let output_directory = pdflatex_output_dir(project_path.clone());
 
-    let output = Command::new("pdflatex").args(args.clone()).output();
+    let mut aux_path = project_path.clone();
+    aux_path.push("out/main.aux");
+    if project_path.is_absolute() {
+        let aux_path_without_prefix = aux_path.strip_prefix(std::env::current_dir().unwrap()); // This must be here in order for bibtex to work
+        if aux_path_without_prefix.is_err() {
+            println!(
+                "{}",
+                style("The project directory must be a child of the current directory").red().bold()
+            );
+            exit!(0);
+        }
+        aux_path = aux_path_without_prefix.unwrap().to_path_buf();
+    }
+
+    let pdflatex_args = vec![output_directory.as_str(), tex_filename];
+    let bibtex_args = vec![aux_path.to_str().unwrap()];
+
+    let output = Command::new("pdflatex").args(pdflatex_args.clone()).output();
 
     if output.is_err() {
         println!("{}", style("Error building pdf. Do you have pdflatex installed?").red().bold());
@@ -18,24 +38,26 @@ pub fn build(debug: bool, project_path: PathBuf) {
 
     let output = output.unwrap();
 
-    if build_settings.compile_bib(None) {
-        let output = Command::new("bibtex").args(args.clone()).output();
+    if build_settings.compile_bib(Some(project_path.clone())) {
+        let output = Command::new("bibtex").args(bibtex_args.clone()).output();
         if output.is_err() {
             println!("{}", style("Error building pdf. Do you have bibtex installed?").red().bold());
         }
+        if debug {
+            let output = output.unwrap().stderr;
+            print!("{}", std::str::from_utf8(output.as_slice()).unwrap());
+        }
 
-        let _ = Command::new("pdflatex").args(args.clone()).output().unwrap();
+        let _ = Command::new("pdflatex").args(pdflatex_args.clone()).output().unwrap();
 
-        let _ = Command::new("pdflatex").args(args).output().unwrap();
+        let _ = Command::new("pdflatex").args(pdflatex_args).output().unwrap();
     }
 
     if debug {
         let output = std::str::from_utf8(&output.stdout).unwrap();
-        print!("{}", output)
-    }
-
-    if !debug {
-        remove_files();
+        print!("{}", output);
+    } else {
+        remove_files(project_path);
     }
 }
 
@@ -59,8 +81,9 @@ pub fn count(project_path: PathBuf) {
     print!("{}", output);
 }
 
-pub fn remove_files() {
-    let out_folder_path = PathBuf::from("./out");
+pub fn remove_files(project_path: PathBuf) {
+    let mut out_folder_path = project_path;
+    out_folder_path.push("out");
     if !out_folder_path.is_dir() {
         println!("{}", style("could not find out dir").red().bold());
         exit!(1);
@@ -90,11 +113,37 @@ fn ignore_file(filename: &str) -> bool {
     false
 }
 
+fn pdflatex_output_dir(path: PathBuf) -> String {
+    let mut path = path;
+    path.push("out");
+
+    let mut output = Vec::new();
+    write!(&mut output, "-output-directory={}", path.to_str().unwrap()).unwrap();
+
+    std::str::from_utf8(&output).unwrap().to_string()
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn test_ignore_file() {
         assert_eq!(super::ignore_file("main.pdf"), true);
         assert_eq!(super::ignore_file("main.log"), false);
+    }
+
+    #[test]
+    #[ignore = "texlive"]
+    fn build_with_bibfile() {
+        let mut project_path = PathBuf::from("test_resources/test_cases/builder/build_with_bibfile");
+        build(false, project_path.clone());
+
+        project_path.push("out/texput.log");
+        assert!(!project_path.is_file());
+        assert!(project_path.with_file_name("main.pdf").is_file());
+        assert!(!project_path.with_file_name("main.log").is_file());
+
+        std::fs::remove_file(project_path.with_file_name("main.pdf")).expect("could not remove main.pdf");
     }
 }

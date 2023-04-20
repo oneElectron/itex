@@ -48,7 +48,7 @@ fn main() {
     } else if let cli::Commands::Count = args.command {
         builder::count(std::env::current_dir().unwrap());
     } else if let cli::Commands::Clean = args.command {
-        builder::remove_files();
+        builder::remove_files(std::env::current_dir().unwrap());
     } else if let cli::Commands::Get(options) = args.command {
         settings::get(options.name, std::env::current_dir().unwrap()).expect("An impossible error has just occurred");
     } else if let cli::Commands::Set(options) = args.command {

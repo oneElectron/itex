@@ -3,6 +3,7 @@
 mod target_location;
 mod template_url;
 
+use super::exit;
 use console::style;
 use std::io::Write;
 
@@ -22,7 +23,7 @@ pub fn download_templates(ask: bool) {
 
         if input != "y" && input != "Y" && input != "yes" && input != "Yes" {
             println!("{}", style("Aborting").red());
-            std::process::exit(0);
+            exit!(0);
         };
     }
 

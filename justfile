@@ -11,6 +11,13 @@ test-without-features:
 
 test-all: test test-without-features
 
+test-ignored:
+    echo This tests all ignored tests
+    echo Tests are usually ignored because they require dependacies 
+    echo deps: texlive
+    cargo test --no-default-features -j 1 -- --include-ignored
+    cargo test --no-default-features --features updater -j 1 -- --include-ignored
+
 build:
     cargo build --no-default-features
     cargo build --no-default-features --features updater

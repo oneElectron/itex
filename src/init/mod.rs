@@ -177,7 +177,6 @@ mod tests {
 
     #[test]
     fn list_templates() {
-        // without os_search
         super::list_template_names(true);
     }
 }
