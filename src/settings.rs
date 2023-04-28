@@ -82,6 +82,16 @@ impl Settings {
             .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
     }
 
+    pub fn tex_filename_without_extension(&self) -> String {
+        self.tex_filename
+            .clone()
+            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
+            .split('.')
+            .next()
+            .unwrap()
+            .to_string()
+    }
+
     pub fn compile_bib(&self, path: Option<PathBuf>) -> bool {
         if path.is_none() && self.compile_bib.is_none() {
             return false;
