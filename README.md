@@ -40,6 +40,40 @@ available templates:
 - apa
 - Electron (My own template)
 
+# Getting started
+The first step is to install itex, see install on windows or macos to install on your platform of choice.  
+To copy a template use: 
+```
+itex init <template name>
+```
+To get a list of template names use:
+```
+itex list
+```
+after copying a template use:
+```
+itex build
+```
+to build the project.  
+If there is an error in your project use:
+```
+itex build --debug
+```
+to get debug output.
+
+## Options
+ITex gives you some options to control how the project is built.
+Use:
+```
+itex get
+```
+To get the full list of options.  
+By default only the default_filename is set.
+If you changed your tex filename from main.tex to something else, you are also going to want to change this to the new name of the file. 
+```
+itex set default_filename <Insert filename here (without the .tex)>
+```
+
 # Install on MacOS
 ITex isn't on homebrew's default taps so you need to add my tap then install ITex:
 ```
@@ -54,6 +88,14 @@ Install rust then:
 cargo install itex
 itex --update
 ```
+
+# Install on Linux
+Installing on linux is the same as on windows because there no package managers that have ITex on their lists. With more users and support this could change, but for now:
+```
+cargo install itex
+itex --update
+```
+
 
 # ITex build system
 Users can run itex build in order to build their LaTex project.
