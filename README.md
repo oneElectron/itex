@@ -74,6 +74,8 @@ If you changed your tex filename from main.tex to something else, you are also g
 itex set default_filename <Insert filename here (without the .tex)>
 ```
 
+A description of all the options can be found in the wiki here: https://github.com/oneelectron/itex/wiki/ITex-settings
+
 # Install on MacOS
 ITex isn't on homebrew's default taps so you need to add my tap then install ITex:
 ```
