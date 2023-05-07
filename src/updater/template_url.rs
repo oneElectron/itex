@@ -1,5 +1,5 @@
-use serde::Deserialize;
 use reqwest::Url;
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 struct VersionData {
@@ -23,6 +23,6 @@ pub fn get_template_url() -> Url {
     let mut base_url = "https://github.com/oneElectron/itex/releases/download/".to_string();
     base_url.push_str(version_data.name.as_str());
     base_url.push_str("/itex-templates.zip");
-    
+
     Url::parse(base_url.as_str()).unwrap()
 }
