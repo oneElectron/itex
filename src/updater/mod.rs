@@ -53,7 +53,6 @@ pub fn download_templates(ask: bool) {
 pub fn remove_templates() {
     let target = target_location::install_location();
     if target.exists() {
-        std::fs::remove_dir_all(target)
-            .expect("failed to remove itex-templates folder");
+        std::fs::remove_dir_all(target).expect("failed to remove itex-templates folder");
     }
 }
