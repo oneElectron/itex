@@ -49,3 +49,11 @@ pub fn download_templates(ask: bool) {
 
     archive.extract(output_folder).expect("could not extract to app data folder");
 }
+
+pub fn remove_templates() {
+    let target = target_location::install_location();
+    if target.exists() {
+        std::fs::remove_dir_all(target)
+            .expect("failed to remove itex-templates folder");
+    }
+}

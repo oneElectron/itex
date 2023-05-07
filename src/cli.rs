@@ -84,7 +84,11 @@ pub struct ListOptions {
 
 #[cfg(feature = "updater")]
 #[derive(Args, Debug)]
-pub struct UpdaterOptions {}
+pub struct UpdaterOptions {
+    /// remove itex-templates folder
+    #[arg(long, short)]
+    pub remove: bool,
+}
 
 #[derive(Args, Debug)]
 pub struct SetOptions {

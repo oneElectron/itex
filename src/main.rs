@@ -57,8 +57,12 @@ fn main() {
         init::create_build_file(std::env::current_dir().unwrap());
     } else {
         #[cfg(feature = "updater")]
-        if let cli::Commands::Update(_options) = args.command {
-            updater::download_templates(false);
+        if let cli::Commands::Update(options) = args.command {
+            if options.remove {
+                updater::remove_templates();
+            } else {
+                updater::download_templates(false);
+            }
         }
     }
 }
