@@ -43,7 +43,7 @@ pub fn build(debug: bool, project_path: PathBuf) {
         if output.is_err() {
             println!("{}", style("Error building pdf. Do you have bibtex installed?").red().bold());
         }
-        if debug {
+        if debug || build_settings.debug() {
             let output = output.unwrap();
             let output_stderr = output.clone().stderr;
             print!("{}", std::str::from_utf8(output_stderr.as_slice()).unwrap());
@@ -57,7 +57,7 @@ pub fn build(debug: bool, project_path: PathBuf) {
         let _ = Command::new("pdflatex").args(pdflatex_args).output().unwrap();
     }
 
-    if debug {
+    if debug || build_settings.debug() {
         let output = std::str::from_utf8(&output.stdout).unwrap();
         print!("\n{}", output);
     } else {

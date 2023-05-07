@@ -12,6 +12,7 @@ pub struct Settings {
     pub default_filename: Option<String>,
     tex_filename: Option<String>,
     compile_bib: Option<bool>,
+    debug: Option<bool>,
 }
 
 impl fmt::Display for Settings {
@@ -19,6 +20,7 @@ impl fmt::Display for Settings {
         self.print_default_filename();
         self.print_tex_filename();
         self.print_compile_bib();
+        self.print_debug();
 
         fmt::Result::Ok(())
     }
@@ -73,6 +75,19 @@ impl Settings {
             }
         }
     }
+
+    pub fn print_debug(&self) -> Option<bool> {
+        match self.debug {
+            Some(value) => {
+                println!("{} = {value}  (default: false)", style("debug").blue().bold());
+                Some(value)
+            }
+            None => {
+                println!("{} is not set (default: false)", style("debug").blue().bold());
+                None
+            }
+        }
+    }
 }
 
 impl Settings {
@@ -100,6 +115,10 @@ impl Settings {
         }
 
         self.compile_bib.unwrap()
+    }
+
+    pub fn debug(&self) -> bool {
+        self.debug.unwrap_or(false)
     }
 }
 
