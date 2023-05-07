@@ -12,86 +12,59 @@ pub struct Cli {
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Build ITex project (requires an itex-build.toml file, and pdflatex to be installed)
-    Build(BuildOptions),
+    Build {
+        /// Do not remove auxiliary build files (for debugging)
+        #[arg(short, long)]
+        debug: bool,
+    },
     /// Count the number of words in the current ITex project (requires texcount to be installed)
     Count,
     /// Clean auxillary build files
     Clean,
     /// Initialize LaTex project
-    Init(InitOptions),
+    Init {
+        name: String,
+
+        /// Disable looking in the os for itex-templates, only looks in . and ..
+        #[arg(long)]
+        disable_os_search: bool,
+
+        /// The path to output to
+        #[arg(long)]
+        output_path: Option<String>,
+
+        /// The path to itex-templates
+        #[arg(long)]
+        search_path: Option<String>,
+    },
     /// Get info about a template
-    Info(InfoOptions),
+    Info {
+        /// The name of the template
+        name: String,
+
+        /// Disable searching the OS for the itex-templates folder
+        #[arg(long)]
+        disable_os_search: bool,
+    },
     /// Get current value of a setting
-    Get(GetOptions),
+    Get { name: Option<String> },
     /// List installed templates
-    List(ListOptions),
+    List {
+        /// Disable searching the OS for the itex-templates folder
+        #[arg(long)]
+        disable_os_search: bool,
+    },
     /// Create a new itex build file
     #[allow(non_camel_case_types)]
     New_Buildfile,
     /// Set a setting
-    Set(SetOptions),
+    Set { name: String, value: String },
 
     #[cfg(feature = "updater")]
     /// Update installed templates
-    Update(UpdaterOptions),
-}
-
-#[derive(Args, Debug)]
-pub struct BuildOptions {
-    /// Do not remove auxiliary build files (for debugging)
-    #[arg(short, long)]
-    pub debug: bool,
-}
-
-#[derive(Args, Debug)]
-pub struct GetOptions {
-    pub name: Option<String>,
-}
-
-#[derive(Args, Debug)]
-pub struct InitOptions {
-    pub name: Option<String>,
-
-    /// Disable looking in the os for itex-templates, only looks in . and ..
-    #[arg(long)]
-    pub disable_os_search: bool,
-
-    /// The path to output to
-    #[arg(long)]
-    pub output_path: Option<String>,
-
-    /// The path to itex-templates
-    #[arg(long)]
-    pub search_path: Option<String>,
-}
-
-#[derive(Args, Debug)]
-pub struct InfoOptions {
-    /// The name of the template
-    pub name: Option<String>,
-
-    /// Disable searching the OS for the itex-templates folder
-    #[arg(long)]
-    pub disable_os_search: bool,
-}
-
-#[derive(Args, Debug)]
-pub struct ListOptions {
-    /// Disable searching the OS for the itex-templates folder
-    #[arg(long)]
-    pub disable_os_search: bool,
-}
-
-#[cfg(feature = "updater")]
-#[derive(Args, Debug)]
-pub struct UpdaterOptions {
-    /// remove itex-templates folder
-    #[arg(long, short)]
-    pub remove: bool,
-}
-
-#[derive(Args, Debug)]
-pub struct SetOptions {
-    pub name: Option<String>,
-    pub value: Option<String>,
+    Update {
+        /// remove itex-templates folder
+        #[arg(long, short)]
+        remove: bool,
+    },
 }
