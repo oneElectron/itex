@@ -118,6 +118,10 @@ impl Settings {
     }
 
     pub fn debug(&self) -> bool {
+        if std::env::var("ITEX_DEBUG").unwrap_or("FALSE".to_string()) == *"TRUE" {
+            return true;
+        }
+
         self.debug.unwrap_or(false)
     }
 }
