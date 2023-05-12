@@ -88,14 +88,14 @@ ITex doesn't have a windows installer yet, so the recommended way is to use carg
 Install rust then:
 ```
 cargo install itex
-itex --update
+itex update
 ```
 
 # Install on Linux
 Installing on linux is the same as on windows because there no package managers that have ITex on their lists. With more users and support this could change, but for now:
 ```
 cargo install itex
-itex --update
+itex update
 ```
 
 
