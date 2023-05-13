@@ -45,8 +45,8 @@ pub fn build(debug: bool, project_path: PathBuf) {
         }
         if debug || build_settings.debug() {
             let output = output.unwrap();
-            let output_stderr = output.clone().stderr;
-            print!("{}", std::str::from_utf8(output_stderr.as_slice()).unwrap());
+            std::io::stdout().write_all(&output.stdout).unwrap();
+            std::io::stderr().write_all(&output.stderr).unwrap();
 
             let output_stdout = output.stdout;
             print!("{}", std::str::from_utf8(output_stdout.as_slice()).unwrap());
@@ -58,8 +58,8 @@ pub fn build(debug: bool, project_path: PathBuf) {
     }
 
     if debug || build_settings.debug() {
-        let output = std::str::from_utf8(&output.stdout).unwrap();
-        print!("\n{}", output);
+        std::io::stdout().write_all(&output.stdout).unwrap();
+        std::io::stderr().write_all(&output.stderr).unwrap();
     } else {
         remove_files(project_path);
     }
@@ -78,11 +78,9 @@ pub fn count(project_path: PathBuf) {
         println!("{}", style("Error running Texcount. Do you have texcount installed?").red().bold());
     }
 
-    let output = output.expect("Could not run texcount").stdout;
+    let output = output.unwrap();
 
-    let output = String::from_utf8(output).unwrap();
-
-    print!("{}", output);
+    std::io::stdout().write_all(&output.stdout).unwrap();
 }
 
 pub fn remove_files(project_path: PathBuf) {
