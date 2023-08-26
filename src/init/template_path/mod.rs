@@ -1,9 +1,14 @@
 mod os_search;
 
 use os_search::{search_in_homebrew, search_in_unix, search_in_windows};
-use std::{env, result::Result};
+use std::{env, path::PathBuf, result::Result};
 
-pub fn find_templates_folder(disable_os_search: bool) -> Result<std::path::PathBuf, i32> {
+pub fn find_templates_folder(disable_os_search: bool, search_path: &Option<PathBuf>) -> Result<std::path::PathBuf, i32> {
+    // Search in search_path
+    if let Some(search_path) = search_path {
+        return Ok(search_path.clone());
+    }
+
     if !disable_os_search {
         if !cfg!(windows) {
             // if OS is UNIX

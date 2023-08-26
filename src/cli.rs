@@ -1,4 +1,5 @@
 pub use clap::{Args, Parser, Subcommand};
+use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -31,11 +32,11 @@ pub enum Commands {
 
         /// The path to output to
         #[arg(long)]
-        output_path: Option<String>,
+        output_path: Option<PathBuf>,
 
         /// The path to itex-templates
         #[arg(long)]
-        search_path: Option<String>,
+        search_path: Option<PathBuf>,
     },
     /// Get info about a template
     Info {
@@ -45,6 +46,10 @@ pub enum Commands {
         /// Disable searching the OS for the itex-templates folder
         #[arg(long)]
         disable_os_search: bool,
+
+        /// The path to itex-templates
+        #[arg(long)]
+        search_path: Option<PathBuf>,
     },
     /// Get current value of a setting
     Get { name: Option<String> },
@@ -53,6 +58,10 @@ pub enum Commands {
         /// Disable searching the OS for the itex-templates folder
         #[arg(long)]
         disable_os_search: bool,
+
+        /// The path to itex-templates
+        #[arg(long)]
+        search_path: Option<PathBuf>,
     },
     /// Create a new itex build file
     #[allow(non_camel_case_types)]

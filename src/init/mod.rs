@@ -4,6 +4,7 @@ mod template_path;
 
 use super::exit;
 use console::style;
+use log::trace;
 use std::{fs, path::PathBuf, string::String};
 use template_path::find_templates_folder;
 
@@ -14,15 +15,15 @@ const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
 
 "#;
 
-pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool) {
+pub fn copy_template(name: String, output_path: PathBuf, search_path: Option<PathBuf>, disable_os_search: bool) {
     create_build_file(output_path.clone());
-    let path_to_templates = find_templates_folder(disable_os_search);
+    let path_to_templates = find_templates_folder(disable_os_search, &search_path);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
         #[cfg(feature = "updater")]
         Err(1) => {
             download_templates(true);
-            match find_templates_folder(disable_os_search) {
+            match find_templates_folder(disable_os_search, &search_path) {
                 Ok(p) => p,
                 _ => {
                     exit!(0);
@@ -36,13 +37,8 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
 
     path_to_templates.push(name);
 
-    if cfg!(debug_assertions) {
-        println!(
-            "{} template path: {}",
-            style("[DEBUG - copy_template]:").green(),
-            path_to_templates.to_str().unwrap()
-        );
-    }
+    trace!("template path = {}", path_to_templates.to_str().unwrap());
+
     if !path_to_templates.is_dir() {
         println!("{}", style("Could not find a template with the name provided").red().bold());
         println!("{}", style("Use itex list to get a list of available templates"));
@@ -51,20 +47,14 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
 
     let path_to_templates = PathBuf::from(path_to_templates.to_str().unwrap().trim());
 
-    let mut pwd = output_path;
+    let mut pwd = output_path.clone();
 
     pwd.push("file.txt");
 
-    if cfg!(debug_assertions) {
-        println!(
-            "{} output dir = {}",
-            style("[DEBUG - copy_template]:").green(),
-            pwd.clone().to_str().unwrap()
-        );
-    }
+    trace!("output dir = {}", pwd.clone().to_str().unwrap());
 
     // dry run: find any files in the current folder that will conflict with the template files
-    match files::copy_files(path_to_templates.clone(), pwd.clone(), true) {
+    match files::copy_files(path_to_templates.clone(), &pwd, true) {
         Err(files::CopyFilesExitCode::SomeFilesExist) => {
             println!("Remove these files before running itex");
             exit!(0);
@@ -77,14 +67,14 @@ pub fn copy_template(name: String, output_path: PathBuf, disable_os_search: bool
     }
 
     // copy template to current directory
-    if files::copy_files(path_to_templates, pwd, false).is_err() {
+    if files::copy_files(path_to_templates, &pwd, false).is_err() {
         println!("Unexpected error")
     }
 }
 
-pub fn list_template_names(disable_os_search: bool) {
+pub fn list_template_names(search_path: Option<PathBuf>, disable_os_search: bool) {
     println!("available template names:");
-    let template_folder = find_templates_folder(disable_os_search);
+    let template_folder = find_templates_folder(disable_os_search, &search_path);
     let template_folder = match template_folder {
         Ok(p) => p,
         #[cfg(feature = "updater")]
@@ -102,14 +92,14 @@ pub fn list_template_names(disable_os_search: bool) {
     }
 }
 
-pub fn get_template_info(name: String, disable_os_search: bool) -> String {
-    let path_to_templates = find_templates_folder(disable_os_search);
+pub fn get_template_info(name: String, search_path: Option<PathBuf>, disable_os_search: bool) -> String {
+    let path_to_templates = find_templates_folder(disable_os_search, &search_path);
     let mut path_to_templates = match path_to_templates {
         Ok(p) => p,
         #[cfg(feature = "updater")]
         Err(1) => {
             download_templates(true);
-            match find_templates_folder(disable_os_search) {
+            match find_templates_folder(disable_os_search, &search_path) {
                 Ok(p) => p,
                 _ => {
                     exit!(0);
@@ -134,7 +124,7 @@ pub fn create_build_file(path: PathBuf) {
     let mut path = path;
     path.push("itex-build.toml");
     if !path.is_file() {
-        let output = std::fs::write(PathBuf::from("./itex-build.toml"), ITEX_BUILD_FILE);
+        let output = std::fs::write(path, ITEX_BUILD_FILE);
         if output.is_err() {
             println!("{}", style("Could not create itex-build.toml file").red().bold())
         }
@@ -151,7 +141,7 @@ mod tests {
             if file.as_ref().unwrap().path().file_name().unwrap() == ".gitignore" {
                 continue;
             }
-            std::fs::remove_file(file.unwrap().path()).unwrap();
+            std::fs::remove_file(file.unwrap().path()).unwrap_or_else(|_| {});
         }
     }
 
@@ -159,10 +149,12 @@ mod tests {
     fn default_config() {
         let mut out_dir = PathBuf::from("test_resources/test_cases/init/default_config/");
         assert!(!PathBuf::from("./test_resources/test_cases/init/default_config/main.tex").exists());
+        cleanup_folder(out_dir.parent().unwrap().to_path_buf());
 
-        super::copy_template("default".to_string(), out_dir.clone(), true);
+        super::copy_template("default".to_string(), out_dir.clone(), None, true);
 
         out_dir.push("itex-build.toml");
+        assert!(out_dir.is_file());
         assert!(out_dir.with_file_name("main.tex").is_file());
         assert!(!out_dir.with_file_name("itex-info.toml").is_file());
         cleanup_folder(out_dir.parent().unwrap().to_path_buf());
@@ -170,13 +162,13 @@ mod tests {
 
     #[test]
     fn template_info() {
-        let out = super::get_template_info("default".to_string(), true);
+        let out = super::get_template_info("default".to_string(), None, true);
 
         assert_eq!(out, "The default template.".to_string());
     }
 
     #[test]
     fn list_templates() {
-        super::list_template_names(true);
+        super::list_template_names(None, true);
     }
 }
