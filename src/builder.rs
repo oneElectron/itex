@@ -16,7 +16,7 @@ pub fn build(debug: bool, project_path: PathBuf) {
     let mut aux_path = project_path.clone();
     aux_path.push(format!("./out/{}.aux", build_settings.tex_filename_without_extension()));
     if project_path.is_absolute() {
-        let aux_path_without_prefix = aux_path.strip_prefix(std::env::current_dir().unwrap()); // This must be here in order for bibtex to work
+        let aux_path_without_prefix = aux_path.strip_prefix(project_path.clone()); // This must be here in order for bibtex to work
         if aux_path_without_prefix.is_err() {
             println!(
                 "{}",

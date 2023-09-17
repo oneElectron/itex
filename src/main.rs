@@ -2,6 +2,7 @@ mod builder;
 mod cli;
 mod init;
 mod macros;
+mod path;
 mod settings;
 mod updater;
 
@@ -35,6 +36,7 @@ fn main() {
                 println!("{}", style("failed to create out folder").red().bold());
             }
         }
+
         cli::Commands::List {
             disable_os_search,
             search_path,
@@ -48,7 +50,18 @@ fn main() {
             init::get_template_info(name, search_path, disable_os_search);
         }
 
-        cli::Commands::Build { debug } => builder::build(debug, std::env::current_dir().unwrap()),
+        cli::Commands::Build { debug, path } => {
+            let og_path = std::env::current_dir().unwrap();
+            std::env::set_current_dir(match path {
+                Some(p) => p,
+                None => path::find_itex_path().unwrap(),
+            })
+            .unwrap();
+
+            builder::build(debug, std::env::current_dir().unwrap());
+
+            std::env::set_current_dir(og_path).unwrap();
+        }
 
         cli::Commands::Count => builder::count(std::env::current_dir().unwrap()),
 

@@ -17,6 +17,9 @@ pub enum Commands {
         /// Do not remove auxiliary build files (for debugging)
         #[arg(short, long)]
         debug: bool,
+
+        #[arg(short, long)]
+        path: Option<PathBuf>,
     },
     /// Count the number of words in the current ITex project (requires texcount to be installed)
     Count,
