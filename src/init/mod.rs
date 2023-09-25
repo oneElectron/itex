@@ -15,7 +15,7 @@ const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
 
 "#;
 
-pub fn copy_template(name: String, output_path: PathBuf, search_path: Option<PathBuf>, disable_os_search: bool) {
+pub fn init(name: String, output_path: PathBuf, search_path: Option<PathBuf>, disable_os_search: bool) {
     create_build_file(output_path.clone());
     let path_to_templates = find_templates_folder(disable_os_search, &search_path);
     let mut path_to_templates = match path_to_templates {
@@ -151,7 +151,7 @@ mod tests {
         assert!(!PathBuf::from("./test_resources/test_cases/init/default_config/main.tex").exists());
         cleanup_folder(out_dir.parent().unwrap().to_path_buf());
 
-        super::copy_template("default".to_string(), out_dir.clone(), None, true);
+        super::init("default".to_string(), out_dir.clone(), None, true);
 
         out_dir.push("itex-build.toml");
         assert!(out_dir.is_file());

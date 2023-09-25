@@ -22,7 +22,11 @@ pub enum Commands {
         path: Option<PathBuf>,
     },
     /// Count the number of words in the current ITex project (requires texcount to be installed)
-    Count,
+    Count {
+        /// Path to folder
+        #[arg(short, long)]
+        path: Option<PathBuf>,
+    },
     /// Clean auxillary build files
     Clean,
     /// Initialize LaTex project

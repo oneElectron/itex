@@ -1,18 +1,120 @@
+#![allow(dead_code)]
 use super::exit;
 use console::style;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use std::option::Option;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const DEFAULT_DEFAULT_FILENAME: &str = "main";
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct Settings {
-    pub default_filename: Option<String>,
+    default_filename: Option<String>,
     tex_filename: Option<String>,
     compile_bib: Option<bool>,
     debug: Option<bool>,
+    output_dir: Option<PathBuf>,
+}
+
+impl Settings {
+    pub fn tex_filename(&self) -> String {
+        self.tex_filename
+            .clone()
+            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
+    }
+
+    pub fn tex_filename_without_extension(&self) -> String {
+        self.tex_filename
+            .clone()
+            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
+            .split('.')
+            .next()
+            .unwrap()
+            .to_string()
+    }
+
+    pub fn compile_bib(&self, path: Option<PathBuf>) -> bool {
+        if path.is_none() && self.compile_bib.is_none() {
+            return false;
+        } else if path.is_some() && self.compile_bib.is_none() {
+            return contains_file_with_extension(path.unwrap(), "bib");
+        }
+
+        self.compile_bib.unwrap()
+    }
+
+    pub fn debug(&self) -> bool {
+        if std::env::var("ITEX_DEBUG").unwrap_or("FALSE".to_string()) == *"TRUE" {
+            return true;
+        }
+
+        self.debug.unwrap_or(false)
+    }
+}
+
+impl Settings {
+    pub fn set_default_filename(&mut self, filename: String) {
+        self.default_filename = Some(filename);
+    }
+
+    pub fn set_tex_filename(&mut self, filename: String) {
+        self.tex_filename = Some(filename);
+    }
+
+    pub fn set_compile_bib(&mut self, compile_bib: bool) {
+        self.compile_bib = Some(compile_bib);
+    }
+
+    pub fn set_debug(&mut self, debug: bool) {
+        self.debug = Some(debug);
+    }
+}
+
+impl Settings {
+    pub fn find_and_parse_toml(path: &Path) -> Self {
+        let mut path = path.to_owned();
+        path.push("itex-build.toml");
+
+        let toml_file: PathBuf = if path.is_file() {
+            path.to_owned()
+        } else if path.with_file_name(".itex-build.toml").is_file() {
+            path.to_owned().with_file_name(".itex-build.toml")
+        } else {
+            println!("{}", style("No itex build file found, please create one.").red().bold());
+            exit!(0);
+        };
+
+        #[cfg(debug_assertions)]
+        println!("Path inside find_and_parse_toml: {:?}", toml_file);
+
+        let build_file = std::fs::read_to_string(toml_file);
+        if build_file.is_err() {
+            println!("{}", style("Failed to read itex build file").red().bold());
+            exit!(0);
+        }
+        let build_file = build_file.unwrap();
+
+        let build_toml: Settings = toml::from_str(build_file.as_str()).unwrap();
+
+        build_toml
+    }
+}
+
+fn contains_file_with_extension(path: PathBuf, extension: &str) -> bool {
+    let contents_of_dir = std::fs::read_dir(path).unwrap();
+    for file in contents_of_dir {
+        let file = file.unwrap().path();
+        let file = file.extension();
+        if file.is_none() {
+            continue;
+        }
+
+        if file.unwrap().to_str().unwrap() == extension {
+            return true;
+        }
+    }
+
+    false
 }
 
 impl fmt::Display for Settings {
@@ -90,168 +192,13 @@ impl Settings {
     }
 }
 
-impl Settings {
-    pub fn tex_filename(&self) -> String {
-        self.tex_filename
-            .clone()
-            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
-    }
-
-    pub fn tex_filename_without_extension(&self) -> String {
-        self.tex_filename
-            .clone()
-            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
-            .split('.')
-            .next()
-            .unwrap()
-            .to_string()
-    }
-
-    pub fn compile_bib(&self, path: Option<PathBuf>) -> bool {
-        if path.is_none() && self.compile_bib.is_none() {
-            return false;
-        } else if path.is_some() && self.compile_bib.is_none() {
-            return contains_file_with_extension(path.unwrap(), "bib");
-        }
-
-        self.compile_bib.unwrap()
-    }
-
-    pub fn debug(&self) -> bool {
-        if std::env::var("ITEX_DEBUG").unwrap_or("FALSE".to_string()) == *"TRUE" {
-            return true;
-        }
-
-        self.debug.unwrap_or(false)
-    }
-}
-
-pub fn find_and_parse_toml(path: PathBuf) -> Settings {
-    let mut path = path;
-    path.push("itex-build.toml");
-
-    let toml_file: PathBuf = if path.is_file() {
-        path.clone()
-    } else if path.with_file_name(".itex-build.toml").is_file() {
-        path.clone().with_file_name(".itex-build.toml")
-    } else {
-        println!("{}", style("No itex build file found, please create one.").red().bold());
-        exit!(0);
-    };
-
-    #[cfg(debug_assertions)]
-    println!("Path inside find_and_parse_toml: {:?}", toml_file);
-
-    let build_file = std::fs::read_to_string(toml_file);
-    if build_file.is_err() {
-        println!("{}", style("Failed to read itex build file").red().bold());
-        exit!(0);
-    }
-    let build_file = build_file.unwrap();
-
-    let build_toml: Settings = toml::from_str(build_file.as_str()).unwrap();
-
-    build_toml
-}
-
-pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
-    if setting.is_none() {
-        println!("{}", style("No value given for setting").red().bold());
-        exit!(0);
-    }
-    if value.is_none() {
-        println!("{}", style("No value given for setting").red().bold());
-        exit!(0);
-    }
-
-    let setting = setting.unwrap();
-    let value = value.unwrap();
-
-    let mut build_settings = find_and_parse_toml(path.clone());
-
-    match setting.as_str() {
-        "default_filename" => build_settings.default_filename = Some(value),
-        "tex_filename" => build_settings.tex_filename = Some(value),
-        "compile_bib" => {
-            build_settings.compile_bib = match value.as_str() {
-                "true" => Some(true),
-                "false" => Some(false),
-                _ => {
-                    println!("Invalid value");
-                    exit!(0);
-                }
-            }
-        }
-        _ => {
-            println!("{}", style("Invalid setting name").red().bold());
-            exit!(0);
-        }
-    }
-
-    let build_settings_str: Result<String, toml::ser::Error> = toml::to_string_pretty(&build_settings);
-    let build_settings_str: String = build_settings_str.unwrap();
-
-    let mut path = path;
-    path.push("itex-build.toml");
-
-    let mut path_with_dot = path.clone();
-    path_with_dot.push("/.itex-build.toml");
-
-    if path_with_dot.is_file() {
-        if std::fs::write(path_with_dot, build_settings_str).is_err() {
-            println!("{}", style("Failed to write to .itex-build.toml").red().bold());
-        }
-    } else if std::fs::write(path, build_settings_str).is_err() {
-        println!("{}", style("Failed to write to .itex-build.toml").red().bold());
-    }
-}
-
-pub fn get(setting: Option<String>, path: PathBuf) -> std::result::Result<Option<String>, u32> {
-    let itex_build_toml = find_and_parse_toml(path);
-
-    if setting.is_none() {
-        println!("{}", itex_build_toml);
-        return Ok(None);
-    }
-    let setting = setting.unwrap();
-    let setting = setting.as_str();
-
-    let output = match setting {
-        "default_filename" => itex_build_toml.print_default_filename(),
-        "tex_filename" => itex_build_toml.print_tex_filename(),
-        _ => {
-            println!("{}", style("Invalid setting name").red().bold());
-            exit!(0);
-        }
-    };
-
-    Ok(output)
-}
-
-fn contains_file_with_extension(path: PathBuf, extension: &str) -> bool {
-    let contents_of_dir = std::fs::read_dir(path).unwrap();
-    for file in contents_of_dir {
-        let file = file.unwrap().path();
-        let file = file.extension();
-        if file.is_none() {
-            continue;
-        }
-
-        if file.unwrap().to_str().unwrap() == extension {
-            return true;
-        }
-    }
-
-    false
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn settings_get() {
-        let output = get(
+        let output = crate::get(
             Some("default_filename".to_string()),
             PathBuf::from("./test_resources/test_cases/settings/get/"),
         )
@@ -265,19 +212,19 @@ mod tests {
         let path = PathBuf::from("test_resources/test_cases/settings/set");
         assert!(path.is_dir());
 
-        set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
+        crate::set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
 
-        let build = get(Some("default_filename".to_string()), path.clone());
+        let build = crate::get(Some("default_filename".to_string()), path.clone());
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
-        set(
+        crate::set(
             Some("default_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
             path.clone(),
         );
 
-        let build = get(Some("default_filename".to_string()), path);
+        let build = crate::get(Some("default_filename".to_string()), path);
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
@@ -287,19 +234,19 @@ mod tests {
         let path = PathBuf::from("test_resources/test_cases/settings/set_tex_filename");
         assert!(path.is_dir());
 
-        set(Some("tex_filename".to_string()), Some("Hello".to_string()), path.clone());
+        crate::set(Some("tex_filename".to_string()), Some("Hello".to_string()), path.clone());
 
-        let build = get(Some("tex_filename".to_string()), path.clone());
+        let build = crate::get(Some("tex_filename".to_string()), path.clone());
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
-        set(
+        crate::set(
             Some("tex_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
             path.clone(),
         );
 
-        let build = get(Some("tex_filename".to_string()), path);
+        let build = crate::get(Some("tex_filename".to_string()), path);
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
@@ -308,19 +255,19 @@ mod tests {
     fn settings_set_with_dotfile() {
         let path = PathBuf::from("test_resources/test_cases/settings/set_with_dotfile");
         assert!(path.is_dir());
-        set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
+        crate::set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
 
-        let build = get(Some("default_filename".to_string()), path.clone());
+        let build = crate::get(Some("default_filename".to_string()), path.clone());
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
-        set(
+        crate::set(
             Some("default_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
             path.clone(),
         );
 
-        let build = get(Some("default_filename".to_string()), path);
+        let build = crate::get(Some("default_filename".to_string()), path);
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
@@ -346,7 +293,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn settings_set_invalid_setting() {
-        set(
+        crate::set(
             Some("Hello, This is a bad setting".to_string()),
             Some("main".to_string()),
             PathBuf::from("test_resources/test_cases/settings/set_invalid_setting"),
@@ -356,7 +303,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn settings_set_without_value() {
-        set(
+        crate::set(
             Some("default_filename".to_string()),
             None,
             PathBuf::from("test_resources/test_cases/settings_set_without_value"),
@@ -366,6 +313,6 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_set_without_setting() {
-        set(None, None, PathBuf::from("./out"))
+        crate::set(None, None, PathBuf::from("./out"))
     }
 }
