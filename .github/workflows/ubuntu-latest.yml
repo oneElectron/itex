@@ -19,10 +19,10 @@ jobs:
       run: cargo fmt --all -- --check
 
     - name: Run tests
-      run: cargo test --verbose --no-default-features
+      run: cargo test --verbose --no-default-features -- --test-threads=1
 
     - name: Run tests with updater
-      run: cargo test --verbose --no-default-features --features updater
+      run: cargo test --verbose --no-default-features --features updater -- --test-threads=1
 
   lint:
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --all-features --no-fail-fast
+          args: --all-features --no-fail-fast -- --test-threads=1
         env:
           CARGO_INCREMENTAL: '0'
           RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
