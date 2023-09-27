@@ -1,9 +1,8 @@
 use crate::prelude::*;
 use console::style;
-use std::path::PathBuf;
 
-pub fn get(setting: Option<String>, path: PathBuf) -> std::result::Result<Option<String>, u32> {
-    let itex_build_toml = Settings::find_and_parse_toml(&path);
+pub fn get(setting: Option<String>) -> std::result::Result<Option<String>, u32> {
+    let itex_build_toml = Settings::find_and_parse_toml();
 
     if setting.is_none() {
         println!("{}", itex_build_toml);

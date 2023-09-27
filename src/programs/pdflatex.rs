@@ -27,9 +27,12 @@ impl Executable for PDFLatex {
         if output.is_err() {
             println!(
                 "{}",
-                style("Error running pdflatex. Do you have pdflatex installed and in your PATH?")
-                    .red()
-                    .bold()
+                style(
+                    "Error running pdflatex. Do you have pdflatex installed and in your PATH?\n
+                       If not you can install TexLive from: <Insert URL here>"
+                )
+                .red()
+                .bold()
             );
         }
 

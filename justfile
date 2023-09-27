@@ -4,10 +4,10 @@ set windows-shell := ["powershell.exe"]
 default: test
 
 test:
-    cargo test --no-default-features --features updater -j 1
+    cargo test --no-default-features --features updater -- --test-threads=1
 
 test-without-features:
-    cargo test --no-default-features -j 1
+    cargo test --no-default-features -- --test-threads=1
 
 test-all: test test-without-features
 

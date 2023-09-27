@@ -3,9 +3,11 @@ use std::io::{stdout, Write};
 use std::path::PathBuf;
 
 pub fn build(debug: bool, project_path: PathBuf) {
-    let settings = Settings::find_and_parse_toml(project_path.as_path());
+    let settings = Settings::find_and_parse_toml();
     let pdflatex = PDFLatex::from_settings(settings.clone());
     let bibtex = Bibtex::from_settings(settings.clone());
+
+    settings.check_tex_file_exists();
 
     let pdflatex_output = pdflatex.run();
     if debug {
@@ -16,9 +18,11 @@ pub fn build(debug: bool, project_path: PathBuf) {
         pdflatex.run();
         pdflatex.run();
         if debug {
-            stdout().write_all(&bibtex_output.stderr).unwrap();
+            stdout().write_all(&bibtex_output.stdout).unwrap();
         }
     }
 
-    clean(project_path);
+    if !debug {
+        clean(project_path);
+    }
 }

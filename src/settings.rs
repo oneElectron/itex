@@ -3,7 +3,7 @@ use super::exit;
 use console::style;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 const DEFAULT_DEFAULT_FILENAME: &str = "main";
 
@@ -50,6 +50,20 @@ impl Settings {
 
         self.debug.unwrap_or(false)
     }
+
+    pub fn check_tex_file_exists(&self) {
+        if !PathBuf::from(self.tex_filename()).is_file() {
+            println!(
+                "{}{}",
+                style(self.tex_filename()).red().bold(),
+                style(" not found, you must either create it, or change the tex_filename option in your itex-build.toml")
+                    .red()
+                    .bold()
+            );
+
+            exit!(1);
+        }
+    }
 }
 
 impl Settings {
@@ -71,8 +85,8 @@ impl Settings {
 }
 
 impl Settings {
-    pub fn find_and_parse_toml(path: &Path) -> Self {
-        let mut path = path.to_owned();
+    pub fn find_and_parse_toml() -> Self {
+        let mut path = std::env::current_dir().unwrap();
         path.push("itex-build.toml");
 
         let toml_file: PathBuf = if path.is_file() {
@@ -194,98 +208,117 @@ impl Settings {
 
 #[cfg(test)]
 mod tests {
+    #![allow(unused_variables)]
+
+    struct DirectoryChange {
+        og_path: PathBuf,
+    }
+
+    impl DirectoryChange {
+        pub fn new(path: &str) -> Self {
+            let og_path = std::env::current_dir().unwrap();
+            std::env::set_current_dir(path).unwrap();
+            println!("path: {:?}", std::env::current_dir().unwrap());
+
+            Self { og_path }
+        }
+
+        pub fn back(&self) {
+            std::env::set_current_dir(self.og_path.to_owned()).unwrap();
+        }
+    }
+
+    impl Drop for DirectoryChange {
+        fn drop(&mut self) {
+            std::env::set_current_dir(self.og_path.to_owned()).unwrap();
+        }
+    }
+
     use super::*;
 
     #[test]
     fn settings_get() {
-        let output = crate::get(
-            Some("default_filename".to_string()),
-            PathBuf::from("./test_resources/test_cases/settings/get/"),
-        )
-        .unwrap();
+        let dir = DirectoryChange::new("./test_resources/test_cases/settings/get/");
+
+        let output = crate::get(Some("default_filename".to_string())).unwrap();
 
         assert_eq!(output.unwrap(), "main");
     }
 
     #[test]
     fn settings_set() {
-        let path = PathBuf::from("test_resources/test_cases/settings/set");
-        assert!(path.is_dir());
+        let dir = DirectoryChange::new("./test_resources/test_cases/settings/set/");
 
-        crate::set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
+        crate::set(Some("default_filename".to_string()), Some("Hello".to_string()));
 
-        let build = crate::get(Some("default_filename".to_string()), path.clone());
+        let build = crate::get(Some("default_filename".to_string()));
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
         crate::set(
             Some("default_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
-            path.clone(),
         );
 
-        let build = crate::get(Some("default_filename".to_string()), path);
+        let build = crate::get(Some("default_filename".to_string()));
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
 
     #[test]
     fn settings_set_tex_filename() {
-        let path = PathBuf::from("test_resources/test_cases/settings/set_tex_filename");
-        assert!(path.is_dir());
+        let dir = DirectoryChange::new("./test_resources/test_cases/settings/set_tex_filename/");
 
-        crate::set(Some("tex_filename".to_string()), Some("Hello".to_string()), path.clone());
+        crate::set(Some("tex_filename".to_string()), Some("Hello".to_string()));
 
-        let build = crate::get(Some("tex_filename".to_string()), path.clone());
+        let build = crate::get(Some("tex_filename".to_string()));
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
         crate::set(
             Some("tex_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
-            path.clone(),
         );
 
-        let build = crate::get(Some("tex_filename".to_string()), path);
+        let build = crate::get(Some("tex_filename".to_string()));
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
 
     #[test]
     fn settings_set_with_dotfile() {
-        let path = PathBuf::from("test_resources/test_cases/settings/set_with_dotfile");
-        assert!(path.is_dir());
-        crate::set(Some("default_filename".to_string()), Some("Hello".to_string()), path.clone());
+        let dir = DirectoryChange::new("test_resources/test_cases/settings/set_with_dotfile");
 
-        let build = crate::get(Some("default_filename".to_string()), path.clone());
+        crate::set(Some("default_filename".to_string()), Some("Hello".to_string()));
+
+        let build = crate::get(Some("default_filename".to_string()));
 
         assert_eq!(build.unwrap().unwrap(), "Hello".to_string());
 
         crate::set(
             Some("default_filename".to_string()), // Set it back just in case
             Some("main".to_string()),
-            path.clone(),
         );
 
-        let build = crate::get(Some("default_filename".to_string()), path);
+        let build = crate::get(Some("default_filename".to_string()));
 
         assert_eq!(build.unwrap().unwrap(), "main".to_string());
     }
 
     #[test]
     fn settings_folder_contains_extension() {
-        let path = PathBuf::from("test_resources/test_cases/settings/folder_contains_extension");
+        let dir = DirectoryChange::new("test_resources/test_cases/settings/folder_contains_extension");
 
-        let output = contains_file_with_extension(path, "bib");
+        let output = contains_file_with_extension(std::env::current_dir().unwrap(), "bib");
 
         assert!(output == true);
     }
 
     #[test]
     fn settings_folder_doesnt_contain_extension() {
-        let path = PathBuf::from("test_resources/test_cases/settings/folder_doesnt_contain_extension");
+        let dir = DirectoryChange::new("test_resources/test_cases/settings/folder_doesnt_contain_extension");
 
-        let output = contains_file_with_extension(path, "bib");
+        let output = contains_file_with_extension(std::env::current_dir().unwrap(), "bib");
 
         assert!(output == false);
     }
@@ -293,26 +326,22 @@ mod tests {
     #[test]
     #[should_panic]
     fn settings_set_invalid_setting() {
-        crate::set(
-            Some("Hello, This is a bad setting".to_string()),
-            Some("main".to_string()),
-            PathBuf::from("test_resources/test_cases/settings/set_invalid_setting"),
-        );
+        let dir = DirectoryChange::new("test_resources/test_cases/settings/set_invalid_setting");
+
+        crate::set(Some("Hello, This is a bad setting".to_string()), Some("main".to_string()));
     }
 
     #[test]
     #[should_panic]
     fn settings_set_without_value() {
-        crate::set(
-            Some("default_filename".to_string()),
-            None,
-            PathBuf::from("test_resources/test_cases/settings_set_without_value"),
-        );
+        let dir = DirectoryChange::new("test_resources/test_cases/settings/settings_set_without_value");
+
+        crate::set(Some("default_filename".to_string()), None);
     }
 
     #[test]
     #[should_panic]
     fn test_set_without_setting() {
-        crate::set(None, None, PathBuf::from("./out"))
+        crate::set(None, None);
     }
 }

@@ -8,11 +8,9 @@ pub struct Bibtex {
 }
 
 impl Executable for Bibtex {
-    #[allow(unused_variables)]
     fn from_settings(settings: crate::Settings) -> Self {
         let exe_path = PathBuf::find_in_path(PathBuf::from("bibtex"));
-        // let aux_path = format!("./out/{}.aux", settings.tex_filename().split(".")[0..-1]); fixme
-        let aux_path = "./out/main.aux".to_string();
+        let aux_path = format!("./out/{}.aux", settings.tex_filename_without_extension());
 
         Self {
             exe_path: exe_path.unwrap(),

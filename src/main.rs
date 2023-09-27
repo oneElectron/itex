@@ -58,23 +58,7 @@ fn main() {
         }
 
         cli::Commands::Build { debug, path } => {
-            let og_path = std::env::current_dir().unwrap();
-            std::env::set_current_dir(match path {
-                Some(p) => p,
-                None => {
-                    let p = path::find_itex_path();
-                    if p.is_err() {
-                        println!(
-                            "{}",
-                            style("Cannot find itex-build.toml in this or any parent directories").red().bold()
-                        );
-                        exit!(0);
-                    }
-
-                    p.unwrap()
-                }
-            })
-            .unwrap();
+            let og_path = path::change_to_itex_path(path);
 
             build(debug, std::env::current_dir().unwrap());
 
@@ -82,37 +66,35 @@ fn main() {
         }
 
         cli::Commands::Count { path } => {
-            let og_path = std::env::current_dir().unwrap();
-            std::env::set_current_dir(match path {
-                Some(p) => p,
-                None => {
-                    let p = path::find_itex_path();
-                    if p.is_err() {
-                        println!(
-                            "{}",
-                            style("Cannot find itex-build.toml in this or any parent directories").red().bold()
-                        );
-                        exit!(0);
-                    }
+            let og_path = path::change_to_itex_path(path);
 
-                    p.unwrap()
-                }
-            })
-            .unwrap();
-
-            count(std::env::current_dir().unwrap());
+            count();
 
             std::env::set_current_dir(og_path).unwrap();
         }
 
-        cli::Commands::Clean => clean(std::env::current_dir().unwrap()),
+        cli::Commands::Clean { path } => {
+            let og_path = path::change_to_itex_path(path);
 
-        cli::Commands::Get { name } => {
-            get(name, std::env::current_dir().unwrap()).expect("An impossible error has just occurred");
+            clean(std::env::current_dir().unwrap());
+
+            std::env::set_current_dir(og_path).unwrap();
         }
 
-        cli::Commands::Set { name, value } => {
-            set(Some(name), Some(value), std::env::current_dir().unwrap());
+        cli::Commands::Get { name, path } => {
+            let og_path = path::change_to_itex_path(path);
+
+            get(name).expect("An impossible error has just occurred");
+
+            std::env::set_current_dir(og_path).unwrap();
+        }
+
+        cli::Commands::Set { name, value, path } => {
+            let og_path = path::change_to_itex_path(path);
+
+            set(Some(name), Some(value));
+
+            std::env::set_current_dir(og_path).unwrap();
         }
 
         cli::Commands::New_Buildfile => init::create_build_file(std::env::current_dir().unwrap()),

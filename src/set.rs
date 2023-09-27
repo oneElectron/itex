@@ -1,8 +1,7 @@
 use crate::prelude::*;
 use console::style;
-use std::path::PathBuf;
 
-pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
+pub fn set(setting: Option<String>, value: Option<String>) {
     if setting.is_none() {
         println!("{}", style("No value given for setting").red().bold());
         exit!(0);
@@ -15,7 +14,7 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     let setting = setting.unwrap();
     let value = value.unwrap();
 
-    let mut build_settings = Settings::find_and_parse_toml(path.as_path());
+    let mut build_settings = Settings::find_and_parse_toml();
 
     match setting.as_str() {
         "default_filename" => build_settings.set_default_filename(value),
@@ -45,7 +44,7 @@ pub fn set(setting: Option<String>, value: Option<String>, path: PathBuf) {
     let build_settings_str: Result<String, toml::ser::Error> = toml::to_string_pretty(&build_settings);
     let build_settings_str: String = build_settings_str.unwrap();
 
-    let mut path = path;
+    let mut path = std::env::current_dir().unwrap();
     path.push("itex-build.toml");
 
     let mut path_with_dot = path.clone();

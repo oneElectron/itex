@@ -1,6 +1,31 @@
 //! Contains utilities for working with paths
 
+use crate::prelude::*;
+use console::style;
 use std::path::{Path, PathBuf};
+
+/// Takes an optional path to change to, otherwise change to the closest parent directory with an itex-build.toml
+pub fn change_to_itex_path(path: Option<PathBuf>) -> PathBuf {
+    let og_path = std::env::current_dir().unwrap();
+    std::env::set_current_dir(match path {
+        Some(p) => p,
+        None => {
+            let p = find_itex_path();
+            if p.is_err() {
+                println!(
+                    "{}",
+                    style("Cannot find itex-build.toml in this or any parent directories").red().bold()
+                );
+                exit!(0);
+            }
+
+            p.unwrap()
+        }
+    })
+    .unwrap();
+
+    og_path
+}
 
 /// This function searches for the closest parent folder with an itex-build.toml (including the current folder)
 /// # Limitations
@@ -54,7 +79,7 @@ impl FindInPath<String> for PathBuf {
 
         std::env::var("PATH")
             .unwrap()
-            .split(":")
+            .split(':')
             // register whether to look in the current directory, but first check the other PATH segments
             .filter(|&path| {
                 if path.is_empty() || path == "." {

@@ -28,7 +28,11 @@ pub enum Commands {
         path: Option<PathBuf>,
     },
     /// Clean auxillary build files
-    Clean,
+    Clean {
+        /// Path to folder
+        #[arg(short, long)]
+        path: Option<PathBuf>,
+    },
     /// Initialize LaTex project
     Init {
         name: String,
@@ -59,7 +63,14 @@ pub enum Commands {
         search_path: Option<PathBuf>,
     },
     /// Get current value of a setting
-    Get { name: Option<String> },
+    Get {
+        /// Path to folder
+        #[arg(short, long)]
+        path: Option<PathBuf>,
+
+        /// The name of the option to get
+        name: Option<String>,
+    },
     /// List installed templates
     List {
         /// Disable searching the OS for the itex-templates folder
@@ -74,7 +85,14 @@ pub enum Commands {
     #[allow(non_camel_case_types)]
     New_Buildfile,
     /// Set a setting
-    Set { name: String, value: String },
+    Set {
+        /// Path to folder
+        #[arg(short, long)]
+        path: Option<PathBuf>,
+
+        name: String,
+        value: String,
+    },
 
     #[cfg(feature = "updater")]
     /// Update installed templates
