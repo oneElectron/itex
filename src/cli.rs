@@ -18,8 +18,13 @@ pub enum Commands {
         #[arg(short, long)]
         debug: bool,
 
+        /// Path to build from
         #[arg(short, long)]
         path: Option<PathBuf>,
+
+        /// Whether to build with draft mode enabled
+        #[arg(long)]
+        draft: bool,
     },
     /// Count the number of words in the current ITex project (requires texcount to be installed)
     Count {

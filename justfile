@@ -31,10 +31,10 @@ fmt:
     cargo clippy
 
 dev-install:
-    cargo install --path . --no-default-features
+    cargo install --path . --no-default-features --profile dev
 
 dev-install-updater:
-    cargo install --path . --no-default-features --features updater
+    cargo install --path . --no-default-features --features updater --profile dev
 
 bereit: test build fmt
 

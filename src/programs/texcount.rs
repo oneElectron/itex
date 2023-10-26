@@ -10,7 +10,7 @@ pub struct Texcount {
 impl Executable for Texcount {
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
-        let exe_path = PathBuf::find_in_path(PathBuf::from("texcount"));
+        let exe_path = "texcount".find_in_path();
 
         Self {
             exe_path: exe_path.unwrap(),
@@ -37,7 +37,16 @@ impl Executable for Texcount {
         if path.is_file() {
             self.exe_path = path;
         } else {
-            self.exe_path = PathBuf::find_in_path(path.as_path()).unwrap();
+            self.exe_path = path.find_in_path().unwrap_or_else(|| {
+                println!(
+                    "{}",
+                    style("Error running texcount. Do you have texcount installed and in your PATH?")
+                        .red()
+                        .bold()
+                );
+
+                exit!(1);
+            });
         }
     }
 }

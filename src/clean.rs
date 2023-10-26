@@ -2,9 +2,9 @@ use crate::prelude::*;
 use console::style;
 use std::path::PathBuf;
 
-pub fn clean(project_path: PathBuf) {
+pub fn clean(project_path: PathBuf, settings: Settings) {
     let mut out_folder_path = project_path;
-    out_folder_path.push("out");
+    out_folder_path.push(settings.output_dir());
     if !out_folder_path.is_dir() {
         println!("{}", style("could not find out dir").red().bold());
         exit!(1);

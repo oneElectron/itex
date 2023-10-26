@@ -11,13 +11,18 @@ pub struct PDFLatex {
 impl Executable for PDFLatex {
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
-        let exe_path = PathBuf::find_in_path(PathBuf::from("pdflatex"));
+        let exe_path = "pdflatex".find_in_path();
 
-        let output_dir = "-output-directory=./out/".to_string();
+        let output_dir = format!("-output-directory=./{}/", settings.output_dir().to_string_lossy());
+
+        let mut args: Vec<String> = vec![output_dir, tex_filename];
+        if settings.draft_mode() {
+            args.insert(0, "-draftmode".to_string());
+        }
 
         Self {
             exe_path: exe_path.unwrap(),
-            args: vec![output_dir, tex_filename],
+            args,
         }
     }
 
@@ -27,10 +32,7 @@ impl Executable for PDFLatex {
         if output.is_err() {
             println!(
                 "{}",
-                style(
-                    "Error running pdflatex. Do you have pdflatex installed and in your PATH?\n
-                       If not you can install TexLive from: <Insert URL here>"
-                )
+                style("Error running pdflatex. Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: <Insert URL here>")
                 .red()
                 .bold()
             );
@@ -43,9 +45,16 @@ impl Executable for PDFLatex {
         if path.is_file() {
             self.exe_path = path;
         } else {
-            self.exe_path = PathBuf::find_in_path(path.as_path()).unwrap();
+            self.exe_path = path.find_in_path().unwrap_or_else(||{
+                println!(
+                    "{}",
+                    style("Error running pdflatex. Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: <Insert URL here>")
+                    .red()
+                    .bold()
+                );
+
+                exit!(1);
+            });
         }
     }
 }
-
-impl PDFLatex {}

@@ -10,7 +10,8 @@
 
 </div>
 
-Initialize a latex project in the current folder
+Initialize a latex project in the current folder.
+This is a hobby project I started in order to learn rust. Hope you like it :\).
 
 Usage:
 ```

@@ -9,8 +9,12 @@ pub struct Bibtex {
 
 impl Executable for Bibtex {
     fn from_settings(settings: crate::Settings) -> Self {
-        let exe_path = PathBuf::find_in_path(PathBuf::from("bibtex"));
-        let aux_path = format!("./out/{}.aux", settings.tex_filename_without_extension());
+        let exe_path = "bibtex".find_in_path();
+        let aux_path = format!(
+            "./{}/{}.aux",
+            settings.output_dir().to_string_lossy(),
+            settings.tex_filename_without_extension()
+        );
 
         Self {
             exe_path: exe_path.unwrap(),
@@ -37,9 +41,16 @@ impl Executable for Bibtex {
         if path.is_file() {
             self.exe_path = path;
         } else {
-            self.exe_path = PathBuf::find_in_path(path.as_path()).unwrap();
+            self.exe_path = path.find_in_path().unwrap_or_else(|| {
+                println!(
+                    "{}",
+                    style("Error running bibtex. Do you have bibtex installed and in your PATH?")
+                        .red()
+                        .bold()
+                );
+
+                exit!(1);
+            });
         }
     }
 }
-
-impl PDFLatex {}
