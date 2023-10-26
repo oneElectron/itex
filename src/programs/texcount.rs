@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use console::style;
+use std::io::Write;
 use std::path::PathBuf;
 
 pub struct Texcount {
@@ -11,6 +12,13 @@ impl Executable for Texcount {
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
         let exe_path = "texcount".find_in_path();
+        if exe_path.is_none() {
+            println!(
+                "{} Do you have texcount installed and in your PATH?",
+                style("Error running texcount.").red().bold()
+            );
+            exit!(1);
+        }
 
         Self {
             exe_path: exe_path.unwrap(),
@@ -23,14 +31,22 @@ impl Executable for Texcount {
 
         if output.is_err() {
             println!(
-                "{}",
-                style("Error running texcount. Do you have texcount installed and in your PATH?")
-                    .red()
-                    .bold()
+                "{} Do you have texcount installed and in your PATH?",
+                style("Error running texcount.").red().bold()
             );
         }
 
-        output.unwrap()
+        let output = output.unwrap();
+
+        if !output.status.success() {
+            println!("{}", style("Undefined error running texcount"));
+
+            std::io::stdout().write_all(&output.stderr).unwrap();
+
+            exit!(1);
+        }
+
+        output
     }
 
     fn set_executable_path(&mut self, path: PathBuf) {
@@ -39,10 +55,8 @@ impl Executable for Texcount {
         } else {
             self.exe_path = path.find_in_path().unwrap_or_else(|| {
                 println!(
-                    "{}",
-                    style("Error running texcount. Do you have texcount installed and in your PATH?")
-                        .red()
-                        .bold()
+                    "{}  Do you have texcount installed and in your PATH?",
+                    style("Error running texcount.").red().bold()
                 );
 
                 exit!(1);

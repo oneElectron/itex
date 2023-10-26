@@ -12,6 +12,13 @@ impl Executable for PDFLatex {
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
         let exe_path = "pdflatex".find_in_path();
+        if exe_path.is_none() {
+            println!(
+                "{} Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: https://miktex.org",
+                style("Error running pdflatex.").red().bold()
+            );
+            exit!(1);
+        }
 
         let output_dir = format!("-output-directory=./{}/", settings.output_dir().to_string_lossy());
 
@@ -31,10 +38,8 @@ impl Executable for PDFLatex {
 
         if output.is_err() {
             println!(
-                "{}",
-                style("Error running pdflatex. Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: <Insert URL here>")
-                .red()
-                .bold()
+                "{} Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: https://miktex.org",
+                style("Error running pdflatex.").red().bold()
             );
         }
 
@@ -45,12 +50,10 @@ impl Executable for PDFLatex {
         if path.is_file() {
             self.exe_path = path;
         } else {
-            self.exe_path = path.find_in_path().unwrap_or_else(||{
+            self.exe_path = path.find_in_path().unwrap_or_else(|| {
                 println!(
-                    "{}",
-                    style("Error running pdflatex. Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: <Insert URL here>")
-                    .red()
-                    .bold()
+                    "{} Do you have pdflatex installed and in your PATH?\nIf not you can install TexLive from: https://miktex.org",
+                    style("Error running pdflatex.").red().bold()
                 );
 
                 exit!(1);

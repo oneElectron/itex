@@ -10,6 +10,14 @@ pub struct Bibtex {
 impl Executable for Bibtex {
     fn from_settings(settings: crate::Settings) -> Self {
         let exe_path = "bibtex".find_in_path();
+        if exe_path.is_none() {
+            println!(
+                "{} Do you have bib installed and in your PATH?\nIf not you can install TexLive from: https://miktex.org",
+                style("Error running bibtex.").red().bold()
+            );
+            exit!(1);
+        }
+
         let aux_path = format!(
             "./{}/{}.aux",
             settings.output_dir().to_string_lossy(),
@@ -27,10 +35,8 @@ impl Executable for Bibtex {
 
         if output.is_err() {
             println!(
-                "{}",
-                style("Error running bibtex. Do you have bibtex installed and in your PATH?")
-                    .red()
-                    .bold()
+                "{} Do you have bibtex installed and in your PATH?",
+                style("Error running bibtex.").red().bold()
             );
         }
 
@@ -43,10 +49,8 @@ impl Executable for Bibtex {
         } else {
             self.exe_path = path.find_in_path().unwrap_or_else(|| {
                 println!(
-                    "{}",
-                    style("Error running bibtex. Do you have bibtex installed and in your PATH?")
-                        .red()
-                        .bold()
+                    "{}  Do you have bibtex installed and in your PATH?",
+                    style("Error running bibtex.").red().bold()
                 );
 
                 exit!(1);

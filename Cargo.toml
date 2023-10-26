@@ -22,7 +22,7 @@ tokio = { version = "1.32.0", default-features = false, features = [] }
 log = { version = "0.4.20", features = ["std"] }
 env_logger = "0.10.0"
 find-in-path = { version = "1.0.0", features = ["add_exe_ext"] }
-itex-derive = { path = "./itex-derive" }
+itex-derive = { version = "1.3.5", path = "./itex-derive" }
 
 [features]
 default = ["updater"]
