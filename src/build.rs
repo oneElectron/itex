@@ -14,9 +14,9 @@ pub fn build(debug: bool, draft_mode: bool, project_path: PathBuf) {
     settings.check_tex_file_exists();
 
     pdflatex.run();
-    let bibtex_output = bibtex.run();
+    let (bibtex_output, _) = bibtex.run();
     pdflatex.run();
-    let pdflatex_output = pdflatex.run();
+    let (pdflatex_output, _) = pdflatex.run();
 
     if debug || !pdflatex_output.status.success() {
         stdout().write_all(&bibtex_output.stdout).unwrap();

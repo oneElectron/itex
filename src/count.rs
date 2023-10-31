@@ -7,7 +7,7 @@ pub fn count() {
 
     let texcount = Texcount::from_settings(build_settings);
 
-    let output = texcount.run();
+    let (output, _) = texcount.run();
 
     std::io::stdout().write_all(&output.stdout).unwrap();
 }
