@@ -8,6 +8,8 @@ use console::style;
 use std::io::Write;
 
 pub fn download_templates(ask: bool) {
+    println!("This updater can only update the templates itex uses.");
+    println!("To update ITex itself please go to: https://github.com/oneElectron/itex/releases/latest/");
     let mut input = std::string::String::new();
 
     if ask {

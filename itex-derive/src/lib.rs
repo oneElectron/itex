@@ -1,4 +1,6 @@
 //! Internal only library to create the settings for itex
+//! DO NOT USE.
+//! The API can and will change, things will break without warning
 
 mod get;
 mod print_functions;

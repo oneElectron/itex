@@ -13,9 +13,9 @@ pub(super) fn generate_global_set_function(fields: Vec<SettingsField>) -> TokenS
         match field.ty {
             Type::Bool => {
                 match_statement.extend(quote! {
-                    #field_name_string => build_settings.#field_name(match value.as_str() {
-                        "true" => Some(true),
-                        "false" => Some(false),
+                    #field_name_string => build_settings.#field_name(match value.to_ascii_lowercase().as_str() {
+                        "true" | "t" | "yes" | "y" => Some(true),
+                        "false" | "f" | "no" | "n" => Some(false),
                         _ => {
                             println!("Invalid value");
                             exit!(0);
