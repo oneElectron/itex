@@ -19,7 +19,9 @@ pub fn build(debug: bool, draft_mode: bool, project_path: PathBuf) {
     let (pdflatex_output, _) = pdflatex.run();
 
     if debug || !pdflatex_output.status.success() {
+        println!("{}", console::style("--- Bibtex Output ---").blue().bold());
         stdout().write_all(&bibtex_output.stdout).unwrap();
+        println!("{}", console::style("--- PDFLatex Output ---").blue().bold());
         stdout().write_all(&pdflatex_output.stdout).unwrap();
     }
 
