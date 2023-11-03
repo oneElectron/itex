@@ -83,6 +83,14 @@ impl PDFLatex {
         }
         let stdout = stdout.unwrap();
 
+        for line in stdout.lines() {
+            if line.contains("warning") {
+                println!("{}", style(line).yellow().bold());
+            } else if line.contains("error") {
+                println!("{}", style(line).red().bold());
+            }
+        }
+
         let stderr = std::str::from_utf8(&output.stderr);
         if stderr.is_err() {
             return PDFLatexError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stderr");
