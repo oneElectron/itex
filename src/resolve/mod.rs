@@ -25,7 +25,7 @@ pub fn resolve_template(template_name: &str, disable_os_search: bool, search_pat
         #[cfg(feature = "updater")]
         Err(Error::NotDownloaded) => {
             println!("{}", style("Templates could not be found.").red().bold());
-            crate::updater::download_templates(true);
+            crate::updater::download_templates(true, true);
             exit!(0);
         }
         Err(Error::Undefined) => {
@@ -82,10 +82,11 @@ fn internal_resolve_templates_folder(disable_os_search: bool, search_path: &Opti
         #[cfg(unix)]
         {
             // if OS is UNIX
-            if let Ok(path_to_templates) = search_in_homebrew() {
+            #[cfg(feature = "updater")]
+            if let Ok(path_to_templates) = search_in_unix() {
                 return Ok(path_to_templates);
             }
-            if let Ok(path_to_templates) = search_in_unix() {
+            if let Ok(path_to_templates) = search_in_homebrew() {
                 return Ok(path_to_templates);
             }
 

@@ -8,13 +8,15 @@ use console::style;
 use std::io::Write;
 use std::path::Path;
 
-pub fn download_templates(ask: bool) {
-    println!("This updater can only update the templates itex uses.");
-    println!("To update ITex itself please go to: https://github.com/oneElectron/itex/releases/latest/");
+pub fn download_templates(ask: bool, extra_info: bool) {
+    if extra_info {
+        println!("This updater can only update the templates itex uses.");
+        println!("To update ITex itself please go to: https://github.com/oneElectron/itex/releases/latest/");
+    }
     let mut input = std::string::String::new();
 
     if ask {
-        println!("It looks like the itex-templates folder is not installed, would you like to install it?");
+        println!("It looks like the itex-templates folder is not installed or outdated, would you like to install it?");
         println!("ITex will install into your AppData folder on Windows");
 
         print!("{} ", style("(Y/n):").green());
@@ -67,17 +69,17 @@ pub fn version_check(templates_path: &Path) {
             panic!("templates version info exists but is not a file");
         }
 
-        let itex_version_info = format!("last-updated = {}", clap::crate_version!());
+        let itex_version_info = format!("last-updated = \"{}\"\n", clap::crate_version!());
         std::fs::write(&templates_path, itex_version_info).unwrap();
     }
 
     let c = std::fs::read_to_string(templates_path).unwrap();
 
     let value: TemplatesVersion = toml::from_str(&c).unwrap();
-
-    if value.last_updated == clap::crate_version!() {
+    
+    if value.last_updated.trim() != clap::crate_version!() {
         println!("Templates are out of date");
-        download_templates(true);
+        download_templates(true, false);
     }
 }
 
