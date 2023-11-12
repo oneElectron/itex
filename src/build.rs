@@ -25,7 +25,7 @@ pub fn build(debug: bool, draft_mode: bool, project_path: PathBuf) {
         stdout().write_all(&pdflatex_output.stdout).unwrap();
     }
 
-    if !debug && pdflatex_output.status.success() {
+    if settings.clean() && !debug && pdflatex_output.status.success() {
         clean(project_path, settings);
     }
 }
