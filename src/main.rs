@@ -2,11 +2,13 @@ mod build;
 mod clean;
 mod cli;
 mod count;
+mod info;
 mod init;
 mod macros;
 mod path;
 mod prelude;
 mod programs;
+mod resolve;
 mod settings;
 mod updater;
 
@@ -52,7 +54,9 @@ fn main() {
             disable_os_search,
             search_path,
         } => {
-            init::get_template_info(name, search_path, disable_os_search);
+            let info = template_info(name, search_path, disable_os_search);
+
+            println!("{}", info);
         }
 
         cli::Commands::Build { debug, draft, path } => {
