@@ -17,6 +17,7 @@ pub struct Settings {
     debug: Option<bool>,
     output_dir: Option<PathBuf>,
     draft_mode: Option<bool>,
+    clean: Option<bool>,
 }
 
 impl Settings {
@@ -48,6 +49,10 @@ impl Settings {
 
     pub fn draft_mode(&self) -> bool {
         self.draft_mode.unwrap_or(false)
+    }
+
+    pub fn clean(&self) -> bool {
+        self.clean.unwrap_or(true)
     }
 
     pub fn tex_filename_without_extension(&self) -> String {
