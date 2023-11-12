@@ -1,41 +1,19 @@
 mod files;
-mod template_info;
-mod template_path;
 
-use super::exit;
+use crate::prelude::*;
 use console::style;
 use log::trace;
 use std::{fs, path::PathBuf, string::String};
-use template_path::find_templates_folder;
-
-#[cfg(feature = "updater")]
-use super::updater::download_templates;
 
 const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
-
+draft_mode = false
+debug = false
+output_dir = "./out"
+compile_bib = true
 "#;
 
 pub fn init(name: String, output_path: PathBuf, search_path: Option<PathBuf>, disable_os_search: bool) {
-    create_build_file(output_path.clone());
-    let path_to_templates = find_templates_folder(disable_os_search, &search_path);
-    let mut path_to_templates = match path_to_templates {
-        Ok(p) => p,
-        #[cfg(feature = "updater")]
-        Err(1) => {
-            download_templates(true);
-            match find_templates_folder(disable_os_search, &search_path) {
-                Ok(p) => p,
-                _ => {
-                    exit!(0);
-                }
-            }
-        }
-        Err(_) => {
-            exit!(0);
-        }
-    };
-
-    path_to_templates.push(name);
+    let path_to_templates = resolve_template(&name, disable_os_search, &search_path);
 
     trace!("template path = {}", path_to_templates.to_str().unwrap());
 
@@ -70,54 +48,17 @@ pub fn init(name: String, output_path: PathBuf, search_path: Option<PathBuf>, di
     if files::copy_files(path_to_templates, &pwd, false).is_err() {
         println!("Unexpected error")
     }
+
+    create_build_file(output_path.clone());
 }
 
 pub fn list_template_names(search_path: Option<PathBuf>, disable_os_search: bool) {
     println!("available template names:");
-    let template_folder = find_templates_folder(disable_os_search, &search_path);
-    let template_folder = match template_folder {
-        Ok(p) => p,
-        #[cfg(feature = "updater")]
-        Err(1) => {
-            download_templates(true);
-            exit!(0);
-        }
-        Err(_) => {
-            exit!(0);
-        }
-    };
+    let template_folder = resolve_templates_folder(disable_os_search, &search_path);
 
     for folder in fs::read_dir(template_folder).unwrap() {
         println!("    {}", folder.unwrap().file_name().to_str().unwrap());
     }
-}
-
-pub fn get_template_info(name: String, search_path: Option<PathBuf>, disable_os_search: bool) -> String {
-    let path_to_templates = find_templates_folder(disable_os_search, &search_path);
-    let mut path_to_templates = match path_to_templates {
-        Ok(p) => p,
-        #[cfg(feature = "updater")]
-        Err(1) => {
-            download_templates(true);
-            match find_templates_folder(disable_os_search, &search_path) {
-                Ok(p) => p,
-                _ => {
-                    exit!(0);
-                }
-            }
-        }
-        Err(_) => {
-            exit!(0);
-        }
-    };
-
-    path_to_templates.push(name);
-
-    let info = template_info::get_template_info(path_to_templates);
-
-    println!("{}: {}", info.name, info.description);
-
-    info.description
 }
 
 pub fn create_build_file(path: PathBuf) {
@@ -158,13 +99,6 @@ mod tests {
         assert!(out_dir.with_file_name("main.tex").is_file());
         assert!(!out_dir.with_file_name("itex-info.toml").is_file());
         cleanup_folder(out_dir.parent().unwrap().to_path_buf());
-    }
-
-    #[test]
-    fn template_info() {
-        let out = super::get_template_info("default".to_string(), None, true);
-
-        assert_eq!(out, "The default template.".to_string());
     }
 
     #[test]
