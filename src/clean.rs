@@ -26,9 +26,9 @@ pub fn clean(project_path: PathBuf, settings: Settings) {
 
 pub fn include_file(filename: &str) -> bool {
     let binding = PathBuf::from(filename);
-    let extension = binding.extension().unwrap().to_str().unwrap();
+    let extension = binding.extension().unwrap().to_str();
 
-    if extension == "pdf" {
+    if extension.is_none() || extension.unwrap() == "pdf" {
         return true;
     }
 
