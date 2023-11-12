@@ -76,7 +76,7 @@ pub fn version_check(templates_path: &Path) {
     let c = std::fs::read_to_string(templates_path).unwrap();
 
     let value: TemplatesVersion = toml::from_str(&c).unwrap();
-    
+
     if value.last_updated.trim() != clap::crate_version!() {
         println!("Templates are out of date");
         download_templates(true, false);
