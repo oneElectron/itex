@@ -57,7 +57,13 @@ pub fn list_template_names(search_path: Option<PathBuf>, disable_os_search: bool
 
     println!("available template names:");
     for folder in fs::read_dir(template_folder).unwrap() {
-        println!("    {}", folder.unwrap().file_name().to_str().unwrap());
+        let filename = folder.unwrap().file_name();
+        let filename = filename.to_string_lossy();
+
+        if filename.ends_with(".toml") {
+            continue;
+        }
+        println!("    {}", filename);
     }
 }
 
