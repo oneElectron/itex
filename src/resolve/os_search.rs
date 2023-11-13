@@ -30,10 +30,12 @@ pub(super) fn search_in_unix() -> Result<PathBuf, Error> {
 
     let path = PathBuf::from(home + "/.local/share/itex/itex-templates");
     if path.is_dir() {
-        return Ok(path);
+        #[cfg(feature = "updater")]
+        crate::updater::version_check(&path);
+        Ok(path)
+    } else {
+        Err(Error::NotFound)
     }
-
-    Err(Error::NotFound)
 }
 
 #[cfg(windows)]
@@ -43,6 +45,8 @@ pub(super) fn search_in_windows() -> Result<PathBuf, Error> {
     app_data_dir.push("itex");
     app_data_dir.push("itex-templates");
     if app_data_dir.is_dir() {
+        #[cfg(feature = "updater")]
+        crate::updater::version_check(&path);
         Ok(app_data_dir)
     } else {
         Err(Error::NotFound)

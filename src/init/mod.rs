@@ -53,11 +53,17 @@ pub fn init(name: String, output_path: PathBuf, search_path: Option<PathBuf>, di
 }
 
 pub fn list_template_names(search_path: Option<PathBuf>, disable_os_search: bool) {
-    println!("available template names:");
     let template_folder = resolve_templates_folder(disable_os_search, &search_path);
 
+    println!("available template names:");
     for folder in fs::read_dir(template_folder).unwrap() {
-        println!("    {}", folder.unwrap().file_name().to_str().unwrap());
+        let filename = folder.unwrap().file_name();
+        let filename = filename.to_string_lossy();
+
+        if filename.ends_with(".toml") {
+            continue;
+        }
+        println!("    {}", filename);
     }
 }
 
