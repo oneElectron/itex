@@ -106,7 +106,7 @@ fn main() {
             if remove {
                 updater::remove_templates();
             } else {
-                updater::download_templates(false);
+                updater::download_templates(false, false);
             }
         }
     }

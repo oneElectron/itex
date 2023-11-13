@@ -17,7 +17,7 @@ serde_json = { version = "1.0.*", optional = true }
 zip = { version = "0.6.*", default-features = false, features = ["deflate"], optional = true }
 console = { version = "0.15.*", default-features = false, features = ["windows-console-colors", "ansi-parsing"] }
 toml = "0.8.*"
-clap = { version = "4.*", features = ["derive"] }
+clap = { version = "4.*", features = ["derive", "cargo"] }
 tokio = { version = "1.32.0", default-features = false, features = [] }
 log = { version = "0.4.20", features = ["std"] }
 env_logger = "0.10.0"
