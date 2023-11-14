@@ -4,14 +4,14 @@ use std::path::PathBuf;
 
 pub fn build(debug: bool, draft_mode: bool, project_path: PathBuf) {
     let mut settings = Settings::find_and_parse_toml();
+    settings.check_tex_filename_is_set();
+
     if draft_mode {
         settings.set_draft_mode(Some(true));
     }
 
     let pdflatex = PDFLatex::from_settings(settings.clone());
     let bibtex = Bibtex::from_settings(settings.clone());
-
-    settings.check_tex_file_exists();
 
     pdflatex.run();
     let (bibtex_output, _) = bibtex.run();
