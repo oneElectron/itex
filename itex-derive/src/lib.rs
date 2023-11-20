@@ -2,7 +2,9 @@
 //! DO NOT USE.
 //! The API can and will change, things will break without warning
 
+mod empty_struct;
 mod get;
+mod merge_global_local;
 mod print_functions;
 mod set;
 mod set_functions;
@@ -60,7 +62,11 @@ pub fn itex_settings(_args: TokenStream, input: TokenStream) -> TokenStream {
 
     output.extend(get::generate_global_get_function(fields.clone()));
 
+    output.extend(empty_struct::generate_empty_function(fields.clone()));
+
     output.extend(set::generate_global_set_function(fields.clone()));
+
+    output.extend(merge_global_local::generate_merge_global_and_local(fields.clone()));
 
     for field in fields {
         output.extend(print_functions::generate_display_function(field.clone()));
