@@ -43,7 +43,7 @@ fn clean_out_folder(settings: &Settings) {
 }
 
 pub fn safe_build() {
-    let mut settings = Settings::find_and_parse_toml();
+    let mut settings = Settings::from_global();
     settings.set_clean(Some(false));
     settings.set_compile_bib(Some(true));
     settings.set_draft_mode(Some(false));
