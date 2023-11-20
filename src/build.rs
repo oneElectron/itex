@@ -1,7 +1,7 @@
+use crate::clean::clean_build_artifacts_folder;
 use crate::prelude::*;
 
 use std::io::{stdout, Write};
-use crate::clean::clean_build_artifacts_folder;
 
 pub fn build(debug: bool, draft_mode: bool, settings: Option<Settings>) {
     let mut settings = settings.unwrap_or(Settings::from_global());
