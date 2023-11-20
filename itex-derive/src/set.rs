@@ -52,7 +52,7 @@ pub(super) fn generate_global_set_function(fields: Vec<SettingsField>) -> TokenS
             let setting = setting.unwrap();
             let value = value.unwrap();
 
-            let mut build_settings = Settings::find_and_parse_toml();
+            let mut build_settings = Settings::from_global();
 
             match setting.as_str() {
                 #match_statement

@@ -88,7 +88,7 @@ fn main() {
         cli::Commands::Clean { path } => {
             let og_path = path::change_to_itex_path(path);
 
-            clean(std::env::current_dir().unwrap(), &Settings::find_and_parse_toml());
+            clean(std::env::current_dir().unwrap(), &Settings::from_global());
 
             let e = std::env::set_current_dir(og_path);
             unwrap_result!(e, "Failed to set current directory back");

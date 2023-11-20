@@ -88,7 +88,9 @@ impl Settings {
         }
     }
 
-    pub fn find_and_parse_toml() -> Self {
+    #[allow(unused)]
+    pub fn from_local() -> Self {
+        Self::check_not_in_config_folder();
         let mut path = std::env::current_dir().unwrap();
         path.push("itex-build.toml");
 
@@ -111,5 +113,87 @@ impl Settings {
         let build_toml: Settings = toml::from_str(build_file.as_str()).unwrap();
 
         build_toml
+    }
+
+    pub fn from_global() -> Self {
+        Self::check_not_in_config_folder();
+
+        let mut global_build_toml: Option<Self> = None;
+
+        if Self::global_settings_path().is_file() {
+            let path = Self::global_settings_path();
+            let global_build_toml_str = std::fs::read_to_string(path).unwrap();
+            let global_build_toml_err: Result<Settings, toml::de::Error> = toml::from_str(&global_build_toml_str);
+            if let Ok(global_build_toml_err) = global_build_toml_err {
+                global_build_toml = Some(global_build_toml_err);
+            }
+        }
+        let mut path = std::env::current_dir().unwrap();
+        path.push("itex-build.toml");
+
+        let toml_file: PathBuf = if path.is_file() {
+            path.to_owned()
+        } else if path.with_file_name(".itex-build.toml").is_file() {
+            path.to_owned().with_file_name(".itex-build.toml")
+        } else {
+            println!("{}", style("No itex build file found, please create one.").red().bold());
+            exit!(0);
+        };
+
+        let build_file = std::fs::read_to_string(toml_file);
+        if build_file.is_err() {
+            println!("{}", style("Failed to read itex build file").red().bold());
+            exit!(0);
+        }
+        let build_file = build_file.unwrap();
+
+        let build_toml: Settings = toml::from_str(build_file.as_str()).unwrap();
+
+        Self::merge_global_and_local(global_build_toml, build_toml)
+    }
+
+    fn check_not_in_config_folder() {
+        if Self::global_settings_path().parent().unwrap() == std::env::current_dir().unwrap() {
+            println!(
+                "{}",
+                style("Current dir and global config dir are the same.\nPlease do not build in itex config folder")
+                    .red()
+                    .bold()
+            );
+            exit!(0);
+        }
+    }
+
+    fn global_settings_path() -> PathBuf {
+        #[cfg(unix)]
+        {
+            let home = std::env::var("HOME").unwrap();
+            PathBuf::from(home).join("/.config/itex/itex-build.toml")
+        }
+
+        #[cfg(windows)]
+        {
+            let home = std::env::var("HOME").unwrap();
+            PathBuf::from(home).join("/AppData/Local/ITex/itex-build.toml")
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn check_settings_merge() {
+        let mut local = super::Settings::empty();
+        local.build_artifacts_folder = Some("local_build".to_string());
+        local.compile_bib = Some(false);
+        let mut global = super::Settings::empty();
+        global.build_artifacts_folder = Some("global_build".to_string());
+        global.clean = Some(true);
+
+        let output = super::Settings::merge_global_and_local(Some(global), local);
+
+        assert_eq!(output.build_artifacts_folder, Some("local_build".to_string()));
+        assert_eq!(output.compile_bib, Some(false));
+        assert_eq!(output.clean, Some(true));
     }
 }
