@@ -1,34 +1,29 @@
 #![allow(dead_code)]
 use crate::prelude::*;
+
 use console::style;
 use itex_derive::itex_settings;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::path::PathBuf;
 
-const DEFAULT_DEFAULT_FILENAME: &str = "main";
+const DEFAULT_TEX_FILENAME: &str = "main.tex";
 
 #[itex_settings]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct Settings {
-    default_filename: Option<String>,
     tex_filename: Option<String>,
     compile_bib: Option<bool>,
     debug: Option<bool>,
     output_dir: Option<PathBuf>,
+    build_artifacts_folder: Option<String>,
     draft_mode: Option<bool>,
     clean: Option<bool>,
 }
 
 impl Settings {
-    pub fn default_filename(&self) -> String {
-        self.default_filename.clone().unwrap_or(DEFAULT_DEFAULT_FILENAME.to_owned())
-    }
-
     pub fn tex_filename(&self) -> String {
-        self.tex_filename
-            .clone()
-            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
+        self.tex_filename.clone().unwrap_or(DEFAULT_TEX_FILENAME.to_string())
     }
 
     pub fn compile_bib(&self) -> bool {
@@ -47,40 +42,52 @@ impl Settings {
         self.output_dir.clone().unwrap_or(PathBuf::from("./out"))
     }
 
+    pub fn build_artifacts_folder(&self) -> String {
+        self.build_artifacts_folder.clone().unwrap_or("itex-build".to_string())
+    }
+
+    pub fn build_artifacts_path(&self) -> PathBuf {
+        let mut output: PathBuf = self.output_dir();
+        output.push(self.build_artifacts_folder());
+
+        output
+    }
+
+    pub fn ensure_build_artifacts_path_exists(&self) {
+        let build_artifacts_path = self.build_artifacts_path();
+        if build_artifacts_path.is_dir() {
+            return;
+        }
+        if !self.output_dir().is_dir() {
+            std::fs::create_dir(self.output_dir()).unwrap();
+        }
+
+        std::fs::create_dir(build_artifacts_path).unwrap();
+    }
+
     pub fn draft_mode(&self) -> bool {
         self.draft_mode.unwrap_or(false)
     }
 
     pub fn clean(&self) -> bool {
-        self.clean.unwrap_or(true)
+        self.clean.unwrap_or(false)
     }
 
     pub fn tex_filename_without_extension(&self) -> String {
-        self.tex_filename
-            .clone()
-            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
-            .split('.')
-            .next()
-            .unwrap()
-            .to_string()
+        self.tex_filename().split('.').next().unwrap().to_string()
     }
 
-    pub fn check_tex_file_exists(&self) {
-        if !PathBuf::from(self.tex_filename()).is_file() {
-            println!(
-                "{}{}",
-                style(self.tex_filename()).red().bold(),
-                style(" not found, you must either create it, or change the tex_filename option in your itex-build.toml")
-                    .red()
-                    .bold()
-            );
+    pub fn check_tex_filename_is_set(&self) {
+        if self.tex_filename.is_none() {
+            println!("{}", style("itex_filename is not set").red().bold());
+            println!("{}", style("\titex set tex_filename <name of your .tex file>"));
 
-            exit!(1);
+            if !PathBuf::from(DEFAULT_TEX_FILENAME).is_file() {
+                exit!(1);
+            }
         }
     }
-}
 
-impl Settings {
     pub fn find_and_parse_toml() -> Self {
         let mut path = std::env::current_dir().unwrap();
         path.push("itex-build.toml");
@@ -105,21 +112,4 @@ impl Settings {
 
         build_toml
     }
-}
-
-fn contains_file_with_extension(path: PathBuf, extension: &str) -> bool {
-    let contents_of_dir = std::fs::read_dir(path).unwrap();
-    for file in contents_of_dir {
-        let file = file.unwrap().path();
-        let file = file.extension();
-        if file.is_none() {
-            continue;
-        }
-
-        if file.unwrap().to_str().unwrap() == extension {
-            return true;
-        }
-    }
-
-    false
 }

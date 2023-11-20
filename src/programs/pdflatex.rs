@@ -29,7 +29,7 @@ impl Executable for PDFLatex {
             exit!(1);
         }
 
-        let output_dir = format!("-output-directory=./{}/", settings.output_dir().to_string_lossy());
+        let output_dir = format!("-output-directory=./{}/", settings.build_artifacts_path().to_string_lossy());
 
         let mut args: Vec<String> = vec![output_dir, tex_filename];
         if settings.draft_mode() {
