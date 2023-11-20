@@ -88,7 +88,7 @@ pub enum Commands {
     },
     /// Create a new itex build file
     #[allow(non_camel_case_types)]
-    New_Buildfile,
+    New_Buildfile { path: Option<PathBuf> },
     /// Set a setting
     Set {
         /// Path to folder
@@ -96,6 +96,7 @@ pub enum Commands {
         path: Option<PathBuf>,
 
         name: String,
+
         value: String,
     },
 
