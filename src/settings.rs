@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 use super::exit;
 use console::style;
 use itex_derive::itex_settings;
@@ -6,12 +5,11 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::path::PathBuf;
 
-const DEFAULT_DEFAULT_FILENAME: &str = "main";
+const DEFAULT_TEX_FILENAME: &str = "main.tex";
 
 #[itex_settings]
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct Settings {
-    default_filename: Option<String>,
     tex_filename: Option<String>,
     compile_bib: Option<bool>,
     debug: Option<bool>,
@@ -22,14 +20,8 @@ pub struct Settings {
 }
 
 impl Settings {
-    pub fn default_filename(&self) -> String {
-        self.default_filename.clone().unwrap_or(DEFAULT_DEFAULT_FILENAME.to_owned())
-    }
-
     pub fn tex_filename(&self) -> String {
-        self.tex_filename
-            .clone()
-            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
+        self.tex_filename.clone().unwrap_or(DEFAULT_TEX_FILENAME.to_string())
     }
 
     pub fn compile_bib(&self) -> bool {
@@ -80,31 +72,20 @@ impl Settings {
     }
 
     pub fn tex_filename_without_extension(&self) -> String {
-        self.tex_filename
-            .clone()
-            .unwrap_or(self.default_filename.clone().unwrap_or("main".to_string()) + ".tex")
-            .split('.')
-            .next()
-            .unwrap()
-            .to_string()
+        self.tex_filename().split('.').next().unwrap().to_string()
     }
 
-    pub fn check_tex_file_exists(&self) {
-        if !PathBuf::from(self.tex_filename()).is_file() {
-            println!(
-                "{}{}",
-                style(self.tex_filename()).red().bold(),
-                style(" not found, you must either create it, or change the tex_filename option in your itex-build.toml")
-                    .red()
-                    .bold()
-            );
+    pub fn check_tex_filename_is_set(&self) {
+        if self.tex_filename.is_none() {
+            println!("{}", style("itex_filename is not set").red().bold());
+            println!("{}", style("\titex set tex_filename <name of your .tex file>"));
 
-            exit!(1);
+            if !PathBuf::from(DEFAULT_TEX_FILENAME).is_file() {
+                exit!(1);
+            }
         }
     }
-}
 
-impl Settings {
     pub fn find_and_parse_toml() -> Self {
         let mut path = std::env::current_dir().unwrap();
         path.push("itex-build.toml");
@@ -129,21 +110,4 @@ impl Settings {
 
         build_toml
     }
-}
-
-fn contains_file_with_extension(path: PathBuf, extension: &str) -> bool {
-    let contents_of_dir = std::fs::read_dir(path).unwrap();
-    for file in contents_of_dir {
-        let file = file.unwrap().path();
-        let file = file.extension();
-        if file.is_none() {
-            continue;
-        }
-
-        if file.unwrap().to_str().unwrap() == extension {
-            return true;
-        }
-    }
-
-    false
 }

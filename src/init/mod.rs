@@ -5,11 +5,10 @@ use console::style;
 use log::trace;
 use std::{fs, path::PathBuf, string::String};
 
-const ITEX_BUILD_FILE: &str = r#"default_filename = "main"
+const ITEX_BUILD_FILE: &str = r#"tex_filename = "main.tex"
 draft_mode = false
 debug = false
 output_dir = "./out"
-compile_bib = true
 "#;
 
 pub fn init(name: String, output_path: PathBuf, search_path: Option<PathBuf>, disable_os_search: bool) {
