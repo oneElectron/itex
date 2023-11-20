@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use std::io::{stdout, Write};
+use crate::clean::clean_build_artifacts_folder;
 
 pub fn build(debug: bool, draft_mode: bool, settings: Option<Settings>) {
     let mut settings = settings.unwrap_or(Settings::from_global());
@@ -27,18 +28,11 @@ pub fn build(debug: bool, draft_mode: bool, settings: Option<Settings>) {
     }
 
     if settings.clean() {
-        clean_out_folder(&settings);
+        clean_build_artifacts_folder(&settings);
     }
 
     if pdflatex_output.status.success() {
         copy_pdf_to_out_dir(&settings);
-    }
-}
-
-fn clean_out_folder(settings: &Settings) {
-    let build_artifacts_path = settings.build_artifacts_path();
-    if build_artifacts_path.is_dir() {
-        std::fs::remove_dir_all(settings.build_artifacts_path()).unwrap();
     }
 }
 
@@ -48,7 +42,7 @@ pub fn safe_build() {
     settings.set_compile_bib(Some(true));
     settings.set_draft_mode(Some(false));
 
-    clean_out_folder(&settings);
+    clean_build_artifacts_folder(&settings);
 
     build(true, false, Some(settings.clone()));
 

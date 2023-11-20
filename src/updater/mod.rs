@@ -69,7 +69,7 @@ pub fn version_check(templates_path: &Path) {
             panic!("templates version info exists but is not a file");
         }
 
-        let itex_version_info = format!("last-updated = \"{}\"\n", clap::crate_version!());
+        let itex_version_info = format!("last_updated = \"{}\"\n", clap::crate_version!());
         std::fs::write(&templates_path, itex_version_info).unwrap();
     }
 
