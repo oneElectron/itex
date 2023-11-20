@@ -52,7 +52,7 @@ impl Executable for PDFLatex {
             );
         }
 
-        let output = output.unwrap();
+        let output = unwrap_result!(output, "Failed to read output of pdflatex");
 
         let error = Self::check_error(&output);
 

@@ -43,7 +43,7 @@ impl Executable for Texcount {
             );
         }
 
-        let output = output.unwrap();
+        let output = unwrap_result!(output, "Failed to read output of pdflatex");
 
         if !output.status.success() {
             println!("{}", style("Undefined error running texcount"));

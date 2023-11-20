@@ -1,4 +1,6 @@
-use super::exit;
+#![allow(dead_code)]
+use crate::prelude::*;
+
 use console::style;
 use itex_derive::itex_settings;
 use serde::{Deserialize, Serialize};

@@ -18,3 +18,63 @@ macro_rules! exit {
         std::process::exit(0);
     };
 }
+
+#[macro_export]
+macro_rules! unwrap_option {
+    ($input: expr, $error_message: expr, $($log_message: expr),+) => {
+        {
+            if $input.is_none() {
+                let log_message = format!($($log_message),+);
+                let log_message = format!("{} | {}:{}", log_message, file!(), line!());
+                log::error!("{}", log_message);
+                println!("{}", style($error_message).red().bold());
+                exit!(1);
+            }
+
+            $input.unwrap()
+        }
+    };
+
+    ($input: expr, $error_message: expr) => {
+        {
+            if $input.is_none() {
+                let log_message = format!("{} | {}:{}", $error_message.clone(), file!(), line!());
+                log::error!("{}", log_message.clone());
+                println!("{}", style($error_message).red().bold());
+                exit!(1);
+            }
+
+            $input.unwrap()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! unwrap_result {
+    ($input: expr, $error_message: expr, $($log_message: expr),+) => {
+        {
+            if $input.is_err() {
+                let log_message = format!($($log_message),+);
+                let log_message = format!("{} | {}:{}", log_message.clone(), file!(), line!());
+                log::error!("{}", log_message);
+                println!("{}", style($error_message).red().bold());
+                exit!(1);
+            }
+
+            $input.unwrap()
+        }
+    };
+
+    ($input: expr, $error_message: expr) => {
+        {
+            if $input.is_err() {
+                let log_message = format!("{} | {}:{}", $error_message, file!(), line!());
+                log::error!("{}", log_message);
+                println!("{}", style($error_message).red().bold());
+                exit!(1);
+            }
+
+            $input.unwrap()
+        }
+    };
+}

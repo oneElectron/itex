@@ -6,23 +6,15 @@ use std::path::{Path, PathBuf};
 
 /// Takes an optional path to change to, otherwise change to the closest parent directory with an itex-build.toml
 pub fn change_to_itex_path(path: Option<PathBuf>) -> PathBuf {
-    let og_path = std::env::current_dir().unwrap();
-    std::env::set_current_dir(match path {
+    let og_path = unwrap_result!(std::env::current_dir(), "Failed to get current working directory");
+
+    let e = std::env::set_current_dir(match path {
         Some(p) => p,
         None => {
-            let p = find_itex_path();
-            if p.is_err() {
-                println!(
-                    "{}",
-                    style("Cannot find itex-build.toml in this or any parent directories").red().bold()
-                );
-                exit!(0);
-            }
-
-            p.unwrap()
+            unwrap_result!(find_itex_path(), "Cannot find itex-build.toml in this or any parent directories")
         }
-    })
-    .unwrap();
+    });
+    unwrap_result!(e, "Failed to change directory");
 
     og_path
 }
@@ -42,17 +34,34 @@ pub fn find_itex_path() -> Result<PathBuf, ()> {
             return Ok(PathBuf::from(current_folder));
         }
 
-        current_folder = current_folder.parent().unwrap();
+        let e = current_folder.parent();
+
+        current_folder = unwrap_option!(
+            e,
+            "Failed to find parent folder",
+            "Failed to find parent folder of: {}",
+            current_folder.display()
+        );
     }
 
     Result::Err(())
 }
 
 fn folder_contains(filename: &std::ffi::OsStr, folder: &Path) -> bool {
-    let read_dir = std::fs::read_dir(folder).unwrap();
+    let read_dir = unwrap_result!(
+        std::fs::read_dir(folder),
+        "Failed to read directory",
+        "Failed to read directory: {}",
+        folder.display()
+    );
 
     for object in read_dir {
-        let object = object.unwrap();
+        let object = unwrap_result!(
+            object,
+            "Failed to read object in directory",
+            "Failed to read object in directory: {}",
+            folder.display()
+        );
         if object.file_name() == filename {
             return true;
         }
