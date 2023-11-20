@@ -17,10 +17,12 @@ use console::style;
 
 use prelude::*;
 
-use log::trace;
-
 fn main() {
-    env_logger::init();
+    if std::env::var_os("ITEX_DEBUG").is_some() {
+        env_logger::init();
+    }
+    log::info!("Logging enabled");
+
     let args = Cli::parse();
 
     match args.command {
@@ -34,9 +36,15 @@ fn main() {
                 None => std::env::current_dir().expect("could not find pwd"),
                 Some(p) => p,
             };
-            trace!("output_path = {:?}", output_path);
 
-            init(name.replace('\n', ""), output_path.clone(), search_path, disable_os_search);
+            let name = name.replace('\n', "").trim().to_owned();
+
+            log::trace!("name = {}", name);
+            log::trace!("output_path = {:?}", output_path);
+            log::trace!("search_path = {:?}", search_path);
+            log::trace!("disable_os_search = {}", disable_os_search);
+
+            init(name, output_path.clone(), search_path, disable_os_search);
 
             output_path.push("out");
             if !output_path.is_dir() && std::fs::create_dir(output_path).is_err() {
@@ -72,7 +80,8 @@ fn main() {
 
             build::safe_build();
 
-            std::env::set_current_dir(og_path).unwrap();
+            let e = std::env::set_current_dir(og_path);
+            unwrap_result!(e, "Failed to set current directory back");
         }
 
         cli::Commands::Count { path } => {
@@ -80,15 +89,17 @@ fn main() {
 
             count();
 
-            std::env::set_current_dir(og_path).unwrap();
+            let e = std::env::set_current_dir(og_path);
+            unwrap_result!(e, "Failed to set current directory back");
         }
 
         cli::Commands::Clean { path } => {
             let og_path = path::change_to_itex_path(path);
 
-            clean(std::env::current_dir().unwrap(), &Settings::find_and_parse_toml());
+            clean(std::env::current_dir().unwrap(), &Settings::from_global());
 
-            std::env::set_current_dir(og_path).unwrap();
+            let e = std::env::set_current_dir(og_path);
+            unwrap_result!(e, "Failed to set current directory back");
         }
 
         cli::Commands::Get { name, path } => {
@@ -96,7 +107,8 @@ fn main() {
 
             get(name).expect("An impossible error has just occurred");
 
-            std::env::set_current_dir(og_path).unwrap();
+            let e = std::env::set_current_dir(og_path);
+            unwrap_result!(e, "Failed to set current directory back");
         }
 
         cli::Commands::Set { name, value, path } => {
@@ -104,10 +116,23 @@ fn main() {
 
             set(Some(name), Some(value));
 
-            std::env::set_current_dir(og_path).unwrap();
+            let e = std::env::set_current_dir(og_path);
+            unwrap_result!(e, "Failed to set current directory back");
         }
 
-        cli::Commands::New_Buildfile => init::create_build_file(std::env::current_dir().unwrap()),
+        cli::Commands::New_Buildfile { path } => {
+            let og_path = unwrap_result!(std::env::current_dir(), "Failed to get current directory");
+            if path.is_some() {
+                let e = std::env::set_current_dir(path.as_ref().unwrap());
+                unwrap_result!(e, "Failed to change directory");
+            }
+
+            init::create_build_file(std::env::current_dir().unwrap());
+
+            if path.is_some() {
+                unwrap_result!(std::env::set_current_dir(&og_path), "Failed to change directory back");
+            }
+        }
 
         #[cfg(feature = "updater")]
         cli::Commands::Update { remove } => {

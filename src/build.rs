@@ -2,7 +2,7 @@ use crate::prelude::*;
 use std::io::{stdout, Write};
 
 pub fn build(debug: bool, draft_mode: bool, settings: Option<Settings>) {
-    let mut settings = settings.unwrap_or(Settings::find_and_parse_toml());
+    let mut settings = settings.unwrap_or(Settings::from_global());
 
     settings.check_tex_filename_is_set();
     settings.ensure_build_artifacts_path_exists();

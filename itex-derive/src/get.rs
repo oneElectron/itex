@@ -17,7 +17,7 @@ pub(super) fn generate_global_get_function(fields: Vec<SettingsField>) -> TokenS
 
     quote! {
         pub fn get(setting: Option<String>) -> std::result::Result<(), u32> {
-            let itex_build_toml = Settings::find_and_parse_toml();
+            let itex_build_toml = Settings::from_global();
 
             if setting.is_none() {
                 println!("{}", itex_build_toml);
