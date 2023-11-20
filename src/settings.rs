@@ -41,7 +41,7 @@ impl Settings {
     }
 
     pub fn build_artifacts_folder(&self) -> String {
-        self.build_artifacts_folder.clone().unwrap_or("build_artifacts".to_string())
+        self.build_artifacts_folder.clone().unwrap_or("itex-build".to_string())
     }
 
     pub fn build_artifacts_path(&self) -> PathBuf {
