@@ -16,6 +16,7 @@ pub struct Settings {
     compile_bib: Option<bool>,
     debug: Option<bool>,
     output_dir: Option<PathBuf>,
+    build_artifacts_folder: Option<String>,
     draft_mode: Option<bool>,
     clean: Option<bool>,
 }
@@ -47,12 +48,35 @@ impl Settings {
         self.output_dir.clone().unwrap_or(PathBuf::from("./out"))
     }
 
+    pub fn build_artifacts_folder(&self) -> String {
+        self.build_artifacts_folder.clone().unwrap_or("build_artifacts".to_string())
+    }
+
+    pub fn build_artifacts_path(&self) -> PathBuf {
+        let mut output: PathBuf = self.output_dir();
+        output.push(self.build_artifacts_folder());
+
+        output
+    }
+
+    pub fn ensure_build_artifacts_path_exists(&self) {
+        let build_artifacts_path = self.build_artifacts_path();
+        if build_artifacts_path.is_dir() {
+            return;
+        }
+        if !self.output_dir().is_dir() {
+            std::fs::create_dir(self.output_dir()).unwrap();
+        }
+
+        std::fs::create_dir(build_artifacts_path).unwrap();
+    }
+
     pub fn draft_mode(&self) -> bool {
         self.draft_mode.unwrap_or(false)
     }
 
     pub fn clean(&self) -> bool {
-        self.clean.unwrap_or(true)
+        self.clean.unwrap_or(false)
     }
 
     pub fn tex_filename_without_extension(&self) -> String {
