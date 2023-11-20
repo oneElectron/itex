@@ -10,6 +10,7 @@ pub struct TemplateInfo {
     pub id: Option<i64>,
     pub website: Option<String>,
     pub author: Option<String>,
+    pub excluded_files: Option<Vec<String>>,
 }
 
 impl std::fmt::Display for TemplateInfo {
