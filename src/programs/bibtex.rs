@@ -27,7 +27,7 @@ impl Executable for Bibtex {
 
         let aux_path = format!(
             "./{}/{}.aux",
-            settings.output_dir().to_string_lossy(),
+            settings.build_artifacts_path().to_string_lossy(),
             settings.tex_filename_without_extension()
         );
 
