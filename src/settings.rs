@@ -128,6 +128,7 @@ impl Settings {
                 global_build_toml = Some(global_build_toml_err);
             }
         }
+
         let mut path = std::env::current_dir().unwrap();
         path.push("itex-build.toml");
 
@@ -168,13 +169,13 @@ impl Settings {
         #[cfg(unix)]
         {
             let home = std::env::var("HOME").unwrap();
-            PathBuf::from(home).join("/.config/itex/itex-build.toml")
+            PathBuf::from(home).join(".config/itex/itex-build.toml")
         }
 
         #[cfg(windows)]
         {
             let home = std::env::var("HOME").unwrap();
-            PathBuf::from(home).join("/AppData/Local/ITex/itex-build.toml")
+            PathBuf::from(home).join("AppData/Local/ITex/itex-build.toml")
         }
     }
 }
