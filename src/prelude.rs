@@ -2,6 +2,8 @@ pub use crate::programs::Executable;
 pub use find_in_path::FindInPath;
 
 pub use crate::exit;
+pub use crate::unwrap_option;
+pub use crate::unwrap_result;
 
 pub use crate::build::build;
 pub use crate::clean::clean;

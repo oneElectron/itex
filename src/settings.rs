@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use super::exit;
+use crate::prelude::*;
 use console::style;
 use itex_derive::itex_settings;
 use serde::{Deserialize, Serialize};
