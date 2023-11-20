@@ -70,7 +70,15 @@ fn main() {
         cli::Commands::Build { debug, draft, path } => {
             let og_path = path::change_to_itex_path(path);
 
-            build(debug, draft);
+            build(debug, draft, None);
+
+            std::env::set_current_dir(og_path).unwrap();
+        }
+
+        cli::Commands::Safe_Build { path } => {
+            let og_path = path::change_to_itex_path(path);
+
+            build::safe_build();
 
             let e = std::env::set_current_dir(og_path);
             unwrap_result!(e, "Failed to set current directory back");
