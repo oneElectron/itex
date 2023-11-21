@@ -16,9 +16,9 @@ pub fn build(debug: bool, draft_mode: bool, settings: Option<Settings>) {
     let bibtex = Bibtex::from_settings(settings.clone());
 
     pdflatex.run();
-    let (bibtex_output, _) = bibtex.run();
+    let bibtex_output = bibtex.run();
     pdflatex.run();
-    let (pdflatex_output, _) = pdflatex.run();
+    let pdflatex_output = pdflatex.run();
 
     if debug || settings.debug() || !pdflatex_output.status.success() {
         println!("{}", console::style("--- PDFLatex Output ---").blue().bold());

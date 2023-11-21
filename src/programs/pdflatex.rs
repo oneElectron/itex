@@ -8,16 +8,7 @@ pub struct PDFLatex {
     args: Vec<String>,
 }
 
-#[allow(dead_code)]
-pub enum PDFLatexError {
-    Success,
-    Unknown,
-    UnableToParseUTF8(&'static str),
-}
-
 impl Executable for PDFLatex {
-    type Error = PDFLatexError;
-
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
         let exe_path = "pdflatex".find_in_path();
@@ -42,7 +33,7 @@ impl Executable for PDFLatex {
         }
     }
 
-    fn run(&self) -> (std::process::Output, PDFLatexError) {
+    fn run(&self) -> std::process::Output {
         let output = std::process::Command::new(self.exe_path.clone()).args(self.args.clone()).output();
 
         if output.is_err() {
@@ -54,9 +45,7 @@ impl Executable for PDFLatex {
 
         let output = unwrap_result!(output, "Failed to read output of pdflatex");
 
-        let error = Self::check_error(&output);
-
-        (output, error)
+        output
     }
 
     fn set_executable_path(&mut self, path: PathBuf) {
@@ -72,23 +61,5 @@ impl Executable for PDFLatex {
                 exit!(1);
             });
         }
-    }
-}
-
-impl PDFLatex {
-    fn check_error(output: &std::process::Output) -> PDFLatexError {
-        let stdout = std::str::from_utf8(&output.stdout);
-        if stdout.is_err() {
-            return PDFLatexError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stdout");
-        }
-        let stdout = stdout.unwrap();
-
-        let stderr = std::str::from_utf8(&output.stderr);
-        if stderr.is_err() {
-            return PDFLatexError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stderr");
-        }
-        let stderr = stderr.unwrap();
-
-        PDFLatexError::Success
     }
 }
