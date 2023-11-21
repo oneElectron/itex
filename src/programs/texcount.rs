@@ -8,14 +8,7 @@ pub struct Texcount {
     args: Vec<String>,
 }
 
-pub enum TexcountError {
-    Success,
-    UnableToParseUTF8(&'static str),
-}
-
 impl Executable for Texcount {
-    type Error = TexcountError;
-
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
         let exe_path = "texcount".find_in_path();
@@ -33,7 +26,7 @@ impl Executable for Texcount {
         }
     }
 
-    fn run(&self) -> (std::process::Output, TexcountError) {
+    fn run(&self) -> std::process::Output {
         let output = std::process::Command::new(self.exe_path.clone()).args(self.args.clone()).output();
 
         if output.is_err() {
@@ -53,9 +46,7 @@ impl Executable for Texcount {
             exit!(1);
         }
 
-        let error = Self::check_error(&output);
-
-        (output, error)
+        output
     }
 
     fn set_executable_path(&mut self, path: PathBuf) {
@@ -71,23 +62,5 @@ impl Executable for Texcount {
                 exit!(1);
             });
         }
-    }
-}
-
-impl Texcount {
-    fn check_error(output: &std::process::Output) -> TexcountError {
-        let stdout = std::str::from_utf8(&output.stdout);
-        if stdout.is_err() {
-            return TexcountError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stdout");
-        }
-        let stdout = stdout.unwrap();
-
-        let stderr = std::str::from_utf8(&output.stderr);
-        if stderr.is_err() {
-            return TexcountError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stderr");
-        }
-        let stderr = stderr.unwrap();
-
-        TexcountError::Success
     }
 }
