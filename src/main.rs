@@ -18,7 +18,7 @@ use console::style;
 use prelude::*;
 
 fn main() {
-    if std::env::var_os("ITEX_DEBUG").is_some() {
+    if std::env::var_os("ITEX_DEBUG").is_some() || (cfg!(debug_assertions) && std::env::var_os("RUST_LOG").is_some()) {
         env_logger::init();
     }
     log::info!("Logging enabled");
