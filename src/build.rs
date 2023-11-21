@@ -16,12 +16,12 @@ pub fn build(debug: bool, draft_mode: bool, settings: Option<Settings>) {
     let pdflatex = PDFLatex::from_settings(settings.clone());
     let bibtex = Bibtex::from_settings(settings.clone());
 
-    pdflatex.run();
-    let bibtex_output = bibtex.run();
-    pdflatex.run();
-    let pdflatex_output = pdflatex.run();
+    pdflatex.run(false);
+    let bibtex_output = bibtex.run(true);
+    pdflatex.run(false);
+    let pdflatex_output = pdflatex.run(true);
 
-    if debug || settings.debug() || !pdflatex_output.status.success() {
+    if debug || settings.debug() {
         println!("{}", console::style("--- PDFLatex Output ---").blue().bold());
         stdout().write_all(&pdflatex_output.stdout).unwrap();
         println!("{}", console::style("--- Bibtex Output ---").blue().bold());

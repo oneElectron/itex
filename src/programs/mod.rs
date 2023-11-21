@@ -14,6 +14,6 @@ use std::path::PathBuf;
 
 pub trait Executable {
     fn from_settings(settings: crate::Settings) -> Self;
-    fn run(&self) -> std::process::Output;
+    fn run(&self, print_error: bool) -> std::process::Output;
     fn set_executable_path(&mut self, path: PathBuf);
 }

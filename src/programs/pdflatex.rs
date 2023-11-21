@@ -33,7 +33,7 @@ impl Executable for PDFLatex {
         }
     }
 
-    fn run(&self) -> std::process::Output {
+    fn run(&self, print_errors: bool) -> std::process::Output {
         let output = std::process::Command::new(self.exe_path.clone()).args(self.args.clone()).output();
 
         if output.is_err() {
@@ -44,6 +44,10 @@ impl Executable for PDFLatex {
         }
 
         let output = unwrap_result!(output, "Failed to read output of pdflatex");
+        
+        if print_errors {
+            Self::check_error(&output);
+        }
 
         output
     }
@@ -81,7 +85,7 @@ impl PDFLatex {
                 buffer = "";
             } else {
                 // This is new
-                if line.contains("warning") || line.contains("error") {
+                if line.to_ascii_lowercase().contains("warning") || line.to_ascii_lowercase().contains("error") {
                     buffer = line;
                 }
             }
