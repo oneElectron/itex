@@ -94,4 +94,3 @@ impl PDFLatex {
         let stderr = stderr.unwrap();
     }
 }
-
