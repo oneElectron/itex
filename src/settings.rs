@@ -174,7 +174,7 @@ impl Settings {
 
         #[cfg(windows)]
         {
-            let home = std::env::var("HOME").unwrap();
+            let home = std::env::var("UserProfile").unwrap();
             PathBuf::from(home).join("AppData/Local/ITex/itex-build.toml")
         }
     }
