@@ -44,7 +44,7 @@ impl Executable for PDFLatex {
         }
 
         let output = unwrap_result!(output, "Failed to read output of pdflatex");
-        
+
         if print_errors {
             Self::check_error(&output);
         }
