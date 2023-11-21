@@ -81,13 +81,20 @@ impl PDFLatex {
         if stdout.is_err() {
             return PDFLatexError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stdout");
         }
-        let stdout = stdout.unwrap();
+        let stdout = stdout.unwrap().to_lowercase();
+        let mut buffer: &str = "";
 
         for line in stdout.lines() {
-            if line.contains("warning") {
-                println!("{}", style(line).yellow().bold());
-            } else if line.contains("error") {
-                println!("{}", style(line).red().bold());
+            // check buffer to see if this iteration is a continuation of last error line
+            if !buffer.is_empty() {
+                // This is the continuation
+                println!("{}{}", style(buffer).yellow().bold(), style(line).yellow().bold());
+                buffer = "";
+            } else {
+                // This is new
+                if line.contains("warning") || line.contains("error") {
+                    buffer = line;
+                }
             }
         }
 
