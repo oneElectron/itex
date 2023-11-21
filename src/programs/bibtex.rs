@@ -41,7 +41,7 @@ impl Executable for Bibtex {
         }
 
         let output = unwrap_result!(output, "Failed to read output of pdflatex");
-        
+
         output
     }
 
