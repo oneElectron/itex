@@ -46,7 +46,7 @@ pub(super) fn search_in_windows() -> Result<PathBuf, Error> {
     app_data_dir.push("itex-templates");
     if app_data_dir.is_dir() {
         #[cfg(feature = "updater")]
-        crate::updater::version_check(&path);
+        crate::updater::version_check(&app_data_dir);
         Ok(app_data_dir)
     } else {
         Err(Error::NotFound)
