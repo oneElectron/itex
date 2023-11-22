@@ -101,7 +101,10 @@ fn internal_resolve_templates_folder(disable_os_search: bool, search_path: &Opti
             if let Ok(path_to_templates) = search_in_windows() {
                 return Ok(path_to_templates);
             }
+            #[cfg(feature = "updater")]
             return Err(Error::NotDownloaded);
+            #[cfg(not(feature = "updater"))]
+            return Err(Error::NotFound);
         }
     }
 
