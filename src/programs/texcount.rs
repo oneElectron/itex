@@ -26,7 +26,7 @@ impl Executable for Texcount {
         }
     }
 
-    fn run(&self) -> std::process::Output {
+    fn run(&self, _print_errors: bool) -> std::process::Output {
         let output = std::process::Command::new(self.exe_path.clone()).args(self.args.clone()).output();
 
         if output.is_err() {
