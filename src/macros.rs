@@ -27,7 +27,7 @@ macro_rules! unwrap_option {
                 let log_message = format!($($log_message),+);
                 let log_message = format!("{} | {}:{}", log_message, file!(), line!());
                 log::error!("{}", log_message);
-                println!("{}", style($error_message).red().bold());
+                println!("{}", console::style($error_message).red().bold());
                 exit!(1);
             }
 
@@ -40,7 +40,7 @@ macro_rules! unwrap_option {
             if $input.is_none() {
                 let log_message = format!("{} | {}:{}", $error_message.clone(), file!(), line!());
                 log::error!("{}", log_message.clone());
-                println!("{}", style($error_message).red().bold());
+                println!("{}", console::style($error_message).red().bold());
                 exit!(1);
             }
 
@@ -57,7 +57,7 @@ macro_rules! unwrap_result {
                 let log_message = format!($($log_message),+);
                 let log_message = format!("{} | {}:{}", log_message.clone(), file!(), line!());
                 log::error!("{}", log_message);
-                println!("{}", style($error_message).red().bold());
+                println!("{}", console::style($error_message).red().bold());
                 exit!(1);
             }
 
@@ -70,7 +70,7 @@ macro_rules! unwrap_result {
             if $input.is_err() {
                 let log_message = format!("{} | {}:{}", $error_message, file!(), line!());
                 log::error!("{}", log_message);
-                println!("{}", style($error_message).red().bold());
+                println!("{}", console::style($error_message).red().bold());
                 exit!(1);
             }
 

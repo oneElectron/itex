@@ -1,7 +1,6 @@
 //! Contains utilities for working with paths
 
 use crate::prelude::*;
-use console::style;
 use std::path::{Path, PathBuf};
 
 /// Takes an optional path to change to, otherwise change to the closest parent directory with an itex-build.toml

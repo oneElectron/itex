@@ -1,3 +1,4 @@
+use crate::prelude::*;
 use reqwest::Url;
 use serde::Deserialize;
 
@@ -13,7 +14,11 @@ pub fn get_template_url() -> Url {
         .get("https://api.github.com/repos/oneelectron/itex/releases/latest")
         .header("User-Agent", "reqwest");
 
-    let version_json = version_json.send().expect("Could not connect to GitHub").text().unwrap();
+    let version_json = version_json.send();
+
+    let version_json = unwrap_result!(version_json, "Could not connect to the GitHub. Are you connected to the internet?");
+
+    let version_json = version_json.text().unwrap();
 
     let version_data: VersionData = serde_json::from_str(version_json.as_str()).unwrap();
 
