@@ -90,11 +90,5 @@ impl PDFLatex {
                 }
             }
         }
-
-        let stderr = std::str::from_utf8(&output.stderr);
-        if stderr.is_err() {
-            return;
-        }
-        let stderr = stderr.unwrap();
     }
 }

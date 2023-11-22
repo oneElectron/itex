@@ -26,10 +26,6 @@ help:
     cargo run --no-default-features -- --help
     cargo run --no-default-features --features updater -- --help
 
-fmt: 
-    cargo fmt
-    cargo clippy
-
 dev-install:
     cargo install --path . --no-default-features --profile dev
 
@@ -50,3 +46,4 @@ codecov:
 
 fmt:
     cargo fmt --check
+    cargo clippy

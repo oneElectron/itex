@@ -1,5 +1,5 @@
 use super::Error;
-use std::{env, path::PathBuf, process::Command, result::Result, string::String};
+use std::{path::PathBuf, process::Command, result::Result, string::String};
 
 #[cfg(unix)]
 pub(super) fn search_in_homebrew() -> Result<PathBuf, Error> {
@@ -25,8 +25,9 @@ pub(super) fn search_in_homebrew() -> Result<PathBuf, Error> {
 }
 
 #[cfg(unix)]
+#[cfg(feature = "updater")]
 pub(super) fn search_in_unix() -> Result<PathBuf, Error> {
-    let home = env::var("HOME").expect("Could not find home");
+    let home = std::env::var("HOME").expect("Could not find home");
 
     let path = PathBuf::from(home + "/.local/share/itex/itex-templates");
     if path.is_dir() {
