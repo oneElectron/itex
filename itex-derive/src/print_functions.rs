@@ -33,7 +33,10 @@ pub(super) fn generate_display_function(field: SettingsField) -> TokenStream {
 
                 match &self.#field_name {
                     Some(value) => {
-                        println!("{} = {}", console::style(#field_name_string).bright().blue(), console::style(#inherited_value))
+                        match local_settings.#field_name.clone() {
+                            Some(v) => println!("{} = {}", console::style(#field_name_string).bright().blue(), console::style(#inherited_value)),
+                            None => println!("{} = {} (global)", console::style(#field_name_string).bright().blue(), console::style(#inherited_value)),
+                        }
                     },
                     None => {
                         println!("{} = {} (inherited)", console::style(stringify!(#field_name)).bright().blue(), #inherited_value);
