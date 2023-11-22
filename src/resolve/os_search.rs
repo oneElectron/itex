@@ -8,7 +8,7 @@ pub(super) fn search_in_homebrew() -> Result<PathBuf, Error> {
     }
     let cellar_path = String::from_utf8(Command::new("brew").arg("--prefix").output().unwrap().stdout.to_vec());
     if cellar_path.is_err() {
-        eprintln!("Failed to run brew --prefix and read the output");
+        println!("{}", console::style("Failed to run brew --prefix and read the output"));
         return Err(Error::NotFound);
     }
 
