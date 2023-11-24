@@ -8,16 +8,7 @@ pub struct PDFLatex {
     args: Vec<String>,
 }
 
-#[allow(dead_code)]
-pub enum PDFLatexError {
-    Success,
-    Unknown,
-    UnableToParseUTF8(&'static str),
-}
-
 impl Executable for PDFLatex {
-    type Error = PDFLatexError;
-
     fn from_settings(settings: crate::Settings) -> Self {
         let tex_filename = settings.tex_filename();
         let exe_path = "pdflatex".find_in_path();
@@ -42,7 +33,7 @@ impl Executable for PDFLatex {
         }
     }
 
-    fn run(&self) -> (std::process::Output, PDFLatexError) {
+    fn run(&self, print_errors: bool) -> std::process::Output {
         let output = std::process::Command::new(self.exe_path.clone()).args(self.args.clone()).output();
 
         if output.is_err() {
@@ -52,11 +43,13 @@ impl Executable for PDFLatex {
             );
         }
 
-        let output = output.unwrap();
+        let output = unwrap_result!(output, "Failed to read output of pdflatex");
 
-        let error = Self::check_error(&output);
+        if print_errors {
+            Self::check_error(&output);
+        }
 
-        (output, error)
+        output
     }
 
     fn set_executable_path(&mut self, path: PathBuf) {
@@ -76,19 +69,26 @@ impl Executable for PDFLatex {
 }
 
 impl PDFLatex {
-    fn check_error(output: &std::process::Output) -> PDFLatexError {
+    fn check_error(output: &std::process::Output) {
         let stdout = std::str::from_utf8(&output.stdout);
         if stdout.is_err() {
-            return PDFLatexError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stdout");
+            return;
         }
-        let stdout = stdout.unwrap();
+        let stdout = stdout.unwrap().to_lowercase();
+        let mut buffer: &str = "";
 
-        let stderr = std::str::from_utf8(&output.stderr);
-        if stderr.is_err() {
-            return PDFLatexError::UnableToParseUTF8("PDFLatex returned invalid UTF-8 in the stderr");
+        for line in stdout.lines() {
+            // check buffer to see if this iteration is a continuation of last error line
+            if !buffer.is_empty() {
+                // This is the continuation
+                println!("{}{}", style(buffer).yellow().bold(), style(line).yellow().bold());
+                buffer = "";
+            } else {
+                // This is new
+                if line.to_ascii_lowercase().contains("warning") || line.to_ascii_lowercase().contains("error") {
+                    buffer = line;
+                }
+            }
         }
-        let stderr = stderr.unwrap();
-
-        PDFLatexError::Success
     }
 }

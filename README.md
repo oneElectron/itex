@@ -6,6 +6,7 @@
 ![license](https://img.shields.io/github/license/oneelectron/itex?color=blue)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/oneelectron/itex?color=red)
 [![Ubuntu-latest](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml/badge.svg)](https://github.com/oneElectron/itex/actions/workflows/ubuntu-latest.yml)
+[![Windows-latest](https://github.com/oneElectron/itex/actions/workflows/windows.latest.yml/badge.svg)](https://github.com/oneElectron/itex/actions/workflows/windows.latest.yml)
 [![codecov](https://codecov.io/gh/oneElectron/itex/branch/main/graph/badge.svg?token=HU8FPL07Y7)](https://codecov.io/gh/oneElectron/itex)
 
 </div>

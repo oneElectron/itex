@@ -26,6 +26,14 @@ pub enum Commands {
         #[arg(long)]
         draft: bool,
     },
+
+    /// Build ITex project in safe mode
+    #[allow(non_camel_case_types)]
+    Safe_Build {
+        /// Path to build from
+        #[arg(short, long)]
+        path: Option<PathBuf>,
+    },
     /// Count the number of words in the current ITex project (requires texcount to be installed)
     Count {
         /// Path to folder
@@ -88,7 +96,7 @@ pub enum Commands {
     },
     /// Create a new itex build file
     #[allow(non_camel_case_types)]
-    New_Buildfile,
+    New_Buildfile { path: Option<PathBuf> },
     /// Set a setting
     Set {
         /// Path to folder
@@ -96,6 +104,7 @@ pub enum Commands {
         path: Option<PathBuf>,
 
         name: String,
+
         value: String,
     },
 

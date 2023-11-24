@@ -11,13 +11,14 @@ pub(super) fn generate_global_get_function(fields: Vec<SettingsField>) -> TokenS
         let field_name_string = field.name;
 
         match_statement.extend(quote! {
-            #field_name_string => itex_build_toml.#field_name(),
+            #field_name_string => itex_build_toml.#field_name(Some(&local_settings)),
         });
     }
 
     quote! {
         pub fn get(setting: Option<String>) -> std::result::Result<(), u32> {
-            let itex_build_toml = Settings::find_and_parse_toml();
+            let itex_build_toml = Settings::from_global();
+            let local_settings = Settings::from_local();
 
             if setting.is_none() {
                 println!("{}", itex_build_toml);

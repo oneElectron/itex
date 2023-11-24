@@ -22,13 +22,27 @@ pub fn clean(project_path: PathBuf, settings: &Settings) {
             println!("{}", style("failed to remove file in out folder").red().bold());
         }
     }
+
+    clean_build_artifacts_folder(settings);
+}
+
+pub fn clean_build_artifacts_folder(settings: &Settings) {
+    let build_artifacts_path = settings.build_artifacts_path();
+    if build_artifacts_path.is_dir() {
+        std::fs::remove_dir_all(settings.build_artifacts_path()).unwrap();
+    }
 }
 
 pub fn include_file(filename: &str) -> bool {
     let binding = PathBuf::from(filename);
-    let extension = binding.extension().unwrap().to_str();
+    let extension = binding.extension();
+    if extension.is_none() {
+        return true;
+    }
 
-    if extension.is_none() || extension.unwrap() == "pdf" {
+    let extension = extension.unwrap().to_string_lossy();
+
+    if extension == "pdf" {
         return true;
     }
 

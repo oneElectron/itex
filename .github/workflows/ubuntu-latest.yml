@@ -7,7 +7,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +22,15 @@ jobs:
 
     - name: Run tests with updater
       run: cargo test --verbose --no-default-features --features updater -- --test-threads=1
+
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run formatting checks
+      run: cargo fmt --all -- --check
 
   lint:
     runs-on: ubuntu-latest
