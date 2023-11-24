@@ -1,48 +1,50 @@
-use log::trace;
-use std::{fs, fs::read_dir, path::Path, path::PathBuf};
+use crate::prelude::*;
+use std::path::PathBuf;
 
 #[allow(dead_code)]
 pub enum CopyFilesExitCode {
     SomeFilesExist,
     AllFilesExist,
-    Other,
 }
 
-pub fn copy_files(from: PathBuf, to: &Path, dry_run: bool) -> Result<isize, CopyFilesExitCode> {
-    let template_files = read_dir(from).expect("could not find template folder");
+pub fn copy_files(from: PathBuf, dry_run: bool, info: &crate::info::TemplateInfo) -> Result<(), CopyFilesExitCode> {
+    let template_folder = std::fs::read_dir(from);
+    let template_folder = unwrap_result!(template_folder, "Could not read from templates folder");
 
-    let mut end: bool = false;
+    let pwd = std::env::current_dir().unwrap();
 
-    for file in template_files {
-        let file = file.unwrap().path();
+    for file in template_folder {
+        let file = unwrap_result!(file, "Could not read file");
 
-        let pwd = to.to_owned().clone();
-
-        if dry_run && pwd.with_file_name(file.file_name().unwrap().to_str().unwrap()).exists() {
-            println!("file exists: {}", file.file_name().unwrap().to_str().unwrap());
-            end = true;
+        if should_ignore_file(file.file_name().to_string_lossy().to_string(), info) {
+            continue;
         }
 
-        trace!(
-            "pwd = {}",
-            pwd.clone()
-                .with_file_name(file.clone().file_name().unwrap().to_str().unwrap())
-                .to_str()
-                .unwrap()
-        );
+        let file_path = pwd.clone().join(file.file_name());
 
-        if file.clone().file_name().unwrap().to_str().unwrap() != "itex-info.toml"
-            && file.clone().file_name().unwrap().to_str().unwrap() != "Makefile"
-            && !dry_run
-            && fs::copy(&file, pwd.with_file_name(file.file_name().unwrap().to_str().unwrap())).is_err()
-        {
-            println!("Error copying file");
+        log::trace!("Copying file: {}, is dry run: {}", file.file_name().to_string_lossy(), dry_run);
+
+        if dry_run && file_path.exists() {
+            return Err(CopyFilesExitCode::SomeFilesExist);
+        } else {
+            unwrap_result!(std::fs::copy(file.path(), file_path.clone()), "Could not copy file");
         }
     }
 
-    if end {
-        return Err(CopyFilesExitCode::SomeFilesExist);
+    Ok(())
+}
+
+fn should_ignore_file(filename: String, info: &TemplateInfo) -> bool {
+    let filename = filename.trim().to_owned();
+    if &filename == "itex-info.toml" {
+        return true;
     }
 
-    Ok(0)
+    if let Some(excluded_files) = info.excluded_files.clone() {
+        if excluded_files.contains(&filename) {
+            return true;
+        }
+    }
+
+    false
 }
