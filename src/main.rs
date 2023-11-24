@@ -44,7 +44,7 @@ fn main() {
             log::trace!("output_path = {:?}", output_path);
             log::trace!("search_path = {:?}", search_path);
             log::trace!("disable_os_search = {}", disable_os_search);
-          
+
             init::init(name, output_path.clone(), search_path, disable_os_search);
 
             output_path.push("out");
