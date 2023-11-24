@@ -4,6 +4,7 @@ mod cli;
 mod count;
 mod info;
 mod init;
+mod list;
 mod macros;
 mod path;
 mod prelude;
@@ -44,7 +45,7 @@ fn main() {
             log::trace!("search_path = {:?}", search_path);
             log::trace!("disable_os_search = {}", disable_os_search);
 
-            init(name, output_path.clone(), search_path, disable_os_search);
+            init::init(name, output_path.clone(), search_path, disable_os_search);
 
             output_path.push("out");
             if !output_path.is_dir() && std::fs::create_dir(output_path).is_err() {
@@ -55,7 +56,7 @@ fn main() {
         cli::Commands::List {
             disable_os_search,
             search_path,
-        } => init::list_template_names(search_path, disable_os_search),
+        } => list::list(search_path, disable_os_search),
 
         cli::Commands::Info {
             name,
@@ -70,7 +71,7 @@ fn main() {
         cli::Commands::Build { debug, draft, path } => {
             let og_path = path::change_to_itex_path(path);
 
-            build(debug, draft, None);
+            build::build(debug, draft, None);
 
             std::env::set_current_dir(og_path).unwrap();
         }
@@ -87,7 +88,7 @@ fn main() {
         cli::Commands::Count { path } => {
             let og_path = path::change_to_itex_path(path);
 
-            count();
+            count::count();
 
             let e = std::env::set_current_dir(og_path);
             unwrap_result!(e, "Failed to set current directory back");
@@ -96,7 +97,7 @@ fn main() {
         cli::Commands::Clean { path } => {
             let og_path = path::change_to_itex_path(path);
 
-            clean(std::env::current_dir().unwrap(), &Settings::from_global());
+            clean::clean(std::env::current_dir().unwrap(), &Settings::from_global());
 
             let e = std::env::set_current_dir(og_path);
             unwrap_result!(e, "Failed to set current directory back");
