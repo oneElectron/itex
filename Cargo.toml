@@ -4,47 +4,16 @@ authors = ["oneElectron <one.electron109@protonmail.com>"]
 description = "Initialize a LaTex project inside a folder instantly"
 readme = "README.md"
 license = "GPL-3.0"
-version = "1.4.0-dev"
+version = "2.0.0-dev"
 edition = "2021"
 repository = "https://github.com/oneElectron/itex"
 
-[package.metadata.wix]
-upgrade-guid = "459BCF50-7D07-444A-B486-1DFC1EFA7B5D"
-path-guid = "33EF7AC0-522D-4172-A4C7-D323EED966E2"
-
-[workspace]
-members = ["./itex-derive"]
-
-# Config for 'cargo dist'
-[workspace.metadata.dist]
-# The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
-cargo-dist-version = "0.4.0"
-# CI backends to support
-ci = ["github"]
-# The installers to generate for each app
-installers = ["shell", "powershell", "msi"]
-# Target platforms to build apps for (Rust target-triple syntax)
-targets = ["x86_64-unknown-linux-gnu", "aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-musl", "x86_64-pc-windows-msvc"]
-# Publish jobs to run in CI
-pr-run-mode = "plan"
-
 [dependencies]
-reqwest = { version = "0.11.*", features = ["blocking"], optional = true }
-serde = { version = "1.0.*", features = ["derive"] }
-serde_json = { version = "1.0.*", optional = true }
-zip = { version = "0.6.*", default-features = false, features = ["deflate"], optional = true }
-console = { version = "0.15.*", default-features = false, features = ["windows-console-colors", "ansi-parsing"] }
-toml = "0.8.*"
-clap = { version = "4.*", features = ["derive", "cargo"] }
-tokio = { version = "1.32.0", default-features = false, features = [] }
-log = { version = "0.4.20", features = ["std"] }
-env_logger = "0.10.0"
-find-in-path = { version = "1.0.0", features = ["add_exe_ext"] }
-itex-derive = { version = "1.4.0-dev", path = "./itex-derive" }
+
 
 [features]
 default = ["updater"]
-updater = ["dep:reqwest", "dep:zip", "dep:serde_json"]
+updater = []
 
 [profile.dev]
 opt-level = 0
@@ -56,16 +25,8 @@ lto = false
 incremental = true
 rpath = false
 
-[profile.codecov]
-inherits = "test"
-
 [profile.release]
 opt-level = 2
-strip = "symbols"
+strip = true
 debug = false
 lto = true
-
-# The profile that 'cargo dist' will build with
-[profile.dist]
-inherits = "release"
-lto = "fat"
